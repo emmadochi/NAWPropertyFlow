@@ -47,7 +47,7 @@ use App\Http\Controllers\NotificationController;
 |
 */
 
-Route::middleware([
+Route::domain('{tenant}.'.env('APP_DOMAIN', 'localhost'))->middleware([
     'web',
     InitializeTenancyBySubdomain::class,
     PreventAccessFromCentralDomains::class,

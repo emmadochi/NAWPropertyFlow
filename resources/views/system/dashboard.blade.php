@@ -341,7 +341,7 @@
                                                             <form method="POST" action="{{ route('system.tenants.upgrade', $tenant) }}" style="margin:0">
                                                                 @csrf @method('PATCH')
                                                                 <input type="hidden" name="package_tier" value="{{ $tier }}">
-                                                                <button type="submit" class="plan-option" style="width:100%;text-align:left;background:none;font-family:'Inter',sans-serif;" onclick="return confirm('Change {{ $tenant->company_name }} to the {{ $meta[\"label\"] }} plan?')">
+                                                                <button type="submit" class="plan-option" style="width:100%;text-align:left;background:none;font-family:'Inter',sans-serif;" onclick="return confirm('Change {{ $tenant->company_name }} to the {{ $meta['label'] }} plan?')">
                                                                     <div>
                                                                         <div class="plan-name">{{ $meta['label'] }}</div>
                                                                         <div class="plan-desc">{{ $meta['desc'] }}</div>

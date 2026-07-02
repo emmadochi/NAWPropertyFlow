@@ -175,18 +175,14 @@
 
                 <!-- Auth Buttons -->
                 <div class="hidden md:flex items-center space-x-4">
-                    @if (Route::has('login'))
-                        @auth
-                            <a href="{{ url('/dashboard') }}" class="text-sm font-bold text-white hover:text-brand-400 transition-colors">Dashboard</a>
-                        @else
-                            <a href="{{ route('login') }}" class="text-sm font-bold text-slate-300 hover:text-white transition-colors">Log in</a>
-                            @if (Route::has('register'))
-                                <a href="#" @click.prevent="openDemoModal('General')" class="px-5 py-2.5 rounded-full bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm shadow-lg shadow-brand-500/25 transition-all transform hover:-translate-y-0.5">
-                                    Book a Free Demo
-                                </a>
-                            @endif
-                        @endauth
-                    @endif
+                    @auth('system_admin')
+                        <a href="{{ route('system.dashboard') }}" class="text-sm font-bold text-white hover:text-brand-400 transition-colors">System Dashboard</a>
+                    @else
+                        <a href="{{ route('system.login') }}" class="text-sm font-bold text-slate-300 hover:text-white transition-colors">System Login</a>
+                        <a href="#" @click.prevent="openDemoModal('General')" class="px-5 py-2.5 rounded-full bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm shadow-lg shadow-brand-500/25 transition-all transform hover:-translate-y-0.5">
+                            Book a Free Demo
+                        </a>
+                    @endauth
                 </div>
 
                 <!-- Mobile menu button -->
@@ -208,16 +204,12 @@
                 <a href="#pricing" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-lg text-base font-medium text-slate-200 hover:bg-white/5">Pricing</a>
                 <a href="#testimonials" @click="mobileMenuOpen = false" class="block px-3 py-3 rounded-lg text-base font-medium text-slate-200 hover:bg-white/5">Testimonials</a>
                 <div class="pt-4 mt-2 border-t border-white/10 flex flex-col space-y-3">
-                    @if (Route::has('login'))
-                        @auth
-                            <a href="{{ url('/dashboard') }}" class="block text-center px-5 py-3 rounded-xl bg-white/10 text-white font-bold">Dashboard</a>
-                        @else
-                            <a href="{{ route('login') }}" class="block text-center px-5 py-3 rounded-xl bg-white/5 text-white font-bold">Log in</a>
-                            @if (Route::has('register'))
-                                <a href="#" @click.prevent="openDemoModal('General')" class="block text-center px-5 py-3 rounded-xl bg-brand-500 text-white font-bold shadow-lg shadow-brand-500/25">Book a Free Demo</a>
-                            @endif
-                        @endauth
-                    @endif
+                    @auth('system_admin')
+                        <a href="{{ route('system.dashboard') }}" class="block text-center px-5 py-3 rounded-xl bg-white/10 text-white font-bold">System Dashboard</a>
+                    @else
+                        <a href="{{ route('system.login') }}" class="block text-center px-5 py-3 rounded-xl bg-white/5 text-white font-bold">System Login</a>
+                        <a href="#" @click.prevent="openDemoModal('General')" class="block text-center px-5 py-3 rounded-xl bg-brand-500 text-white font-bold shadow-lg shadow-brand-500/25">Book a Free Demo</a>
+                    @endauth
                 </div>
             </div>
         </div>
@@ -269,44 +261,85 @@
                             app.nawpropertyflow.com
                         </div>
                     </div>
-                    <!-- Abstract UI Representation -->
-                    <div class="flex flex-1 overflow-hidden p-6 gap-6 bg-[#0B0F19]">
-                        <div class="w-48 hidden sm:flex flex-col gap-4">
-                            <div class="h-8 bg-white/5 rounded-md w-full mb-4"></div>
-                            <div class="h-4 bg-white/5 rounded w-3/4"></div>
-                            <div class="h-4 bg-brand-500/20 rounded w-full border-l-2 border-brand-500 pl-2"></div>
-                            <div class="h-4 bg-white/5 rounded w-5/6"></div>
-                            <div class="h-4 bg-white/5 rounded w-2/3"></div>
-                            <div class="h-4 bg-white/5 rounded w-4/5 mt-8"></div>
-                            <div class="h-4 bg-white/5 rounded w-full"></div>
+                    <!-- Real Data UI Representation -->
+                    <div class="flex flex-1 overflow-hidden bg-[#0B0F19] text-sm text-slate-300">
+                        <!-- Sidebar -->
+                        <div class="w-48 hidden sm:flex flex-col gap-2 p-4 border-r border-white/5 bg-dark-950/50">
+                            <div class="font-bold text-white mb-4 flex items-center gap-2"><svg class="w-5 h-5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg> Main Menu</div>
+                            <div class="py-2 px-3 bg-brand-500/20 text-brand-400 rounded-lg font-semibold flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg> Dashboard</div>
+                            <div class="py-2 px-3 hover:bg-white/5 rounded-lg flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg> Leads</div>
+                            <div class="py-2 px-3 hover:bg-white/5 rounded-lg flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg> Properties</div>
+                            <div class="py-2 px-3 hover:bg-white/5 rounded-lg flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg> Invoices</div>
+                            <div class="mt-auto py-2 px-3 hover:bg-white/5 rounded-lg flex items-center gap-2"><svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg> Settings</div>
                         </div>
-                        <div class="flex-1 flex flex-col gap-6">
+                        
+                        <!-- Main Content -->
+                        <div class="flex-1 flex flex-col p-4 sm:p-6 gap-6 overflow-hidden relative">
+                            <!-- Top bar -->
                             <div class="flex justify-between items-center">
-                                <div class="h-8 bg-white/10 rounded-lg w-48"></div>
-                                <div class="h-8 bg-brand-500/20 rounded-lg w-24"></div>
+                                <div>
+                                    <h2 class="text-xl font-bold text-white">Overview</h2>
+                                    <p class="text-xs text-slate-400">Welcome back, Adewale. Here's what's happening today.</p>
+                                </div>
+                                <div class="px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-lg cursor-pointer text-xs transition-colors hidden sm:flex items-center gap-2 shadow-lg shadow-brand-500/20">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg> New Lead
+                                </div>
                             </div>
+                            
+                            <!-- Stats Cards -->
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                                <div class="h-24 glass-panel rounded-xl border border-white/5 p-4 flex flex-col justify-end">
-                                    <div class="h-3 bg-white/20 rounded w-1/3 mb-2"></div>
-                                    <div class="h-6 bg-brand-500/50 rounded w-1/2"></div>
+                                <div class="glass-panel rounded-xl border border-white/5 p-4 flex flex-col relative overflow-hidden group">
+                                    <div class="absolute top-0 right-0 w-24 h-24 bg-brand-500/10 rounded-full blur-xl group-hover:bg-brand-500/20 transition-all"></div>
+                                    <div class="text-slate-400 text-xs font-semibold mb-1">Total Revenue</div>
+                                    <div class="text-2xl font-bold text-white mb-2">₦450.5M</div>
+                                    <div class="text-xs text-emerald-400 flex items-center gap-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg> +12.5% this month</div>
                                 </div>
-                                <div class="h-24 glass-panel rounded-xl border border-white/5 p-4 flex flex-col justify-end">
-                                    <div class="h-3 bg-white/20 rounded w-1/3 mb-2"></div>
-                                    <div class="h-6 bg-emerald-500/50 rounded w-1/2"></div>
+                                <div class="glass-panel rounded-xl border border-white/5 p-4 flex flex-col relative overflow-hidden group">
+                                    <div class="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-xl group-hover:bg-emerald-500/20 transition-all"></div>
+                                    <div class="text-slate-400 text-xs font-semibold mb-1">Active Leads</div>
+                                    <div class="text-2xl font-bold text-white mb-2">1,248</div>
+                                    <div class="text-xs text-emerald-400 flex items-center gap-1"><svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 10l7-7m0 0l7 7m-7-7v18"></path></svg> +42 new this week</div>
                                 </div>
-                                <div class="h-24 glass-panel rounded-xl border border-white/5 p-4 flex flex-col justify-end">
-                                    <div class="h-3 bg-white/20 rounded w-1/3 mb-2"></div>
-                                    <div class="h-6 bg-blue-500/50 rounded w-1/2"></div>
+                                <div class="glass-panel rounded-xl border border-white/5 p-4 flex flex-col relative overflow-hidden group">
+                                    <div class="absolute top-0 right-0 w-24 h-24 bg-blue-500/10 rounded-full blur-xl group-hover:bg-blue-500/20 transition-all"></div>
+                                    <div class="text-slate-400 text-xs font-semibold mb-1">Properties Sold</div>
+                                    <div class="text-2xl font-bold text-white mb-2">84</div>
+                                    <div class="text-xs text-blue-400 flex items-center gap-1">6 pending closure</div>
                                 </div>
                             </div>
-                            <div class="flex-1 glass-panel rounded-xl border border-white/5 p-4 flex flex-col gap-3">
-                                <div class="h-10 bg-white/5 rounded-lg w-full mb-2 flex items-center px-4">
-                                    <div class="h-3 bg-white/20 rounded w-1/4"></div>
+                            
+                            <!-- Recent Activity Table -->
+                            <div class="flex-1 glass-panel rounded-xl border border-white/5 flex flex-col overflow-hidden">
+                                <div class="p-4 border-b border-white/5 flex justify-between items-center">
+                                    <h3 class="font-bold text-white text-sm">Recent Transactions</h3>
+                                    <span class="text-xs text-brand-400 cursor-pointer hover:underline">View All</span>
                                 </div>
-                                <div class="h-8 bg-white/5 rounded w-full"></div>
-                                <div class="h-8 bg-white/5 rounded w-full"></div>
-                                <div class="h-8 bg-white/5 rounded w-full"></div>
-                                <div class="h-8 bg-white/5 rounded w-full"></div>
+                                <div class="flex-1 p-0 flex flex-col overflow-hidden">
+                                    <div class="grid grid-cols-3 sm:grid-cols-4 px-4 py-2 bg-white/5 text-xs font-semibold text-slate-400">
+                                        <div class="col-span-1">Client</div>
+                                        <div class="col-span-1 hidden sm:block">Property</div>
+                                        <div class="col-span-1">Amount</div>
+                                        <div class="col-span-1 text-right">Status</div>
+                                    </div>
+                                    <div class="grid grid-cols-3 sm:grid-cols-4 px-4 py-3 border-b border-white/5 items-center hover:bg-white/[0.02] transition-colors">
+                                        <div class="col-span-1 flex items-center gap-2 text-white font-medium"><div class="w-6 h-6 rounded-full bg-blue-500/20 text-blue-400 flex items-center justify-center text-[10px]">CO</div> Chioma Okafor</div>
+                                        <div class="col-span-1 text-slate-300 hidden sm:block truncate">Lekki Phase 1 Villa</div>
+                                        <div class="col-span-1 text-slate-300 font-mono">₦120M</div>
+                                        <div class="col-span-1 text-right"><span class="px-2 py-1 rounded bg-emerald-500/20 text-emerald-400 text-[10px] font-bold">Paid</span></div>
+                                    </div>
+                                    <div class="grid grid-cols-3 sm:grid-cols-4 px-4 py-3 border-b border-white/5 items-center hover:bg-white/[0.02] transition-colors">
+                                        <div class="col-span-1 flex items-center gap-2 text-white font-medium"><div class="w-6 h-6 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-[10px]">IB</div> Ibrahim Balogun</div>
+                                        <div class="col-span-1 text-slate-300 hidden sm:block truncate">Eko Atlantic Plot 4</div>
+                                        <div class="col-span-1 text-slate-300 font-mono">₦85.5M</div>
+                                        <div class="col-span-1 text-right"><span class="px-2 py-1 rounded bg-amber-500/20 text-amber-400 text-[10px] font-bold">Installment</span></div>
+                                    </div>
+                                    <div class="grid grid-cols-3 sm:grid-cols-4 px-4 py-3 border-b border-white/5 items-center hover:bg-white/[0.02] transition-colors">
+                                        <div class="col-span-1 flex items-center gap-2 text-white font-medium"><div class="w-6 h-6 rounded-full bg-rose-500/20 text-rose-400 flex items-center justify-center text-[10px]">AN</div> Ada Nwachukwu</div>
+                                        <div class="col-span-1 text-slate-300 hidden sm:block truncate">Abuja Maitama Duplex</div>
+                                        <div class="col-span-1 text-slate-300 font-mono">₦300M</div>
+                                        <div class="col-span-1 text-right"><span class="px-2 py-1 rounded bg-brand-500/20 text-brand-400 text-[10px] font-bold text-nowrap">Pending Review</span></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
