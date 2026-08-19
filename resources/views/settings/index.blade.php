@@ -84,8 +84,8 @@
     </div>
 
     <!-- Add User Modal -->
-    <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-gray-900/50 backdrop-blur-sm p-4" x-cloak>
-        <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-6 md:p-8" @click.away="showModal = false">
+    <div x-show="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 backdrop-blur-sm p-4 overflow-y-auto" x-cloak>
+        <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-h-[90vh] overflow-y-auto custom-sidebar-scroll" @click.away="showModal = false">
             
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-xl font-bold text-dark-900">Add New Team Member</h3>
