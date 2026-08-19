@@ -1,0 +1,47 @@
+{
+  "name": "RICAF PropertyFlow CRM",
+  "short_name": "RICAF CRM",
+  "description": "Property Management and Sales CRM for Ricaf Nigeria Limited",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFFFFF",
+  "theme_color": "#F37021",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Leads",
+      "short_name": "Leads",
+      "description": "View and manage CRM leads",
+      "url": "/leads",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Properties",
+      "short_name": "Properties",
+      "description": "View property listings and units",
+      "url": "/properties",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Sales Pipeline",
+      "short_name": "Sales",
+      "description": "Track closed deals and payment milestones",
+      "url": "/sales",
+      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ]
+}

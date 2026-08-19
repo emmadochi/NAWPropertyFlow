@@ -28,8 +28,13 @@
 <body>
     <div class="wrapper">
         <div class="container">
+            @php $__setting = \App\Models\CompanySetting::first(); @endphp
             <div class="header">
-                <div class="logo-text">NAW <span class="logo-accent">PropertyFlow</span></div>
+                @if($__setting?->logo_path)
+                    <img src="{{ asset('storage/' . $__setting->logo_path) }}" alt="{{ $__setting->company_name ?? config('app.name') }}" style="max-height: 48px; object-fit: contain;">
+                @else
+                    <div class="logo-text">{{ $__setting?->company_name ?? config('app.name') }}</div>
+                @endif
             </div>
             
             <div class="content">
@@ -60,14 +65,14 @@
 
                 <p class="body-text">
                     Please make the payment to the designated company bank account and upload your payment proof or send it to your assigned sales executive, 
-                    <strong>{{ $milestone->paymentPlan->sale->salesOfficer ? $milestone->paymentPlan->sale->salesOfficer->name : 'NAW Sales Desk' }}</strong>.
+                    <strong>{{ $milestone->paymentPlan->sale->salesOfficer ? $milestone->paymentPlan->sale->salesOfficer->name : ($__setting?->company_name ? $__setting->company_name . ' Sales Desk' : 'Sales Desk') }}</strong>.
                 </p>
 
-                <p class="body-text" style="margin-bottom: 0;">If you have already made this payment, please disregard this reminder as we verify and process your confirmation.<br><br>Warm regards,<br><strong>NAW PropertyFlow CRM Finance Team</strong></p>
+                <p class="body-text" style="margin-bottom: 0;">If you have already made this payment, please disregard this reminder as we verify and process your confirmation.<br><br>Warm regards,<br><strong>{{ $__setting?->company_name ?? config('app.name') }} Finance Team</strong></p>
             </div>
             
             <div class="footer">
-                <p class="footer-text">© {{ date('Y') }} NAW PropertyFlow CRM. All rights reserved.</p>
+                <p class="footer-text">© {{ date('Y') }} {{ $__setting?->company_name ?? config('app.name') }}. All rights reserved.</p>
             </div>
         </div>
     </div>

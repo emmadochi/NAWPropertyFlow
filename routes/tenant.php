@@ -51,6 +51,7 @@ Route::domain('{tenant}.'.env('APP_DOMAIN', 'localhost'))->middleware([
     'web',
     InitializeTenancyBySubdomain::class,
     PreventAccessFromCentralDomains::class,
+    \App\Http\Middleware\ForgetTenantParameter::class,
 ])->group(function () {
 
     // Landing redirect
@@ -74,6 +75,12 @@ Route::domain('{tenant}.'.env('APP_DOMAIN', 'localhost'))->middleware([
     Route::middleware(['auth'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+        
+        // Virtual Tour (Buckcrest Havens Prototype)
+        Route::get('/virtual-tour', function () {
+            return view('virtual-tour');
+        })->name('virtual-tour');
+
 
         // Leads
         Route::get('leads/import/template', [LeadController::class, 'importTemplate'])->name('leads.import-template');

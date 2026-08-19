@@ -28,8 +28,13 @@
 <body>
     <div class="wrapper">
         <div class="container">
+            @php $__setting = \App\Models\CompanySetting::first(); @endphp
             <div class="header">
-                <div class="logo-text">NAW <span class="logo-accent">PropertyFlow</span></div>
+                @if($__setting?->logo_path)
+                    <img src="{{ asset('storage/' . $__setting->logo_path) }}" alt="{{ $__setting->company_name ?? config('app.name') }}" style="max-height: 48px; object-fit: contain;">
+                @else
+                    <div class="logo-text">{{ $__setting?->company_name ?? config('app.name') }}</div>
+                @endif
                 <span class="invoice-badge">Payment Confirmed</span>
             </div>
             
@@ -73,11 +78,11 @@
 
                 <p style="font-size: 15px; color: #475569;">Our legal team is currently preparing the deed of assignment, allocations documents, and related property catalogs. We will contact you once they are ready for signature and pickup.</p>
 
-                <p style="font-size: 15px; color: #475569; margin-bottom: 0;">Thank you for your business!<br><strong>NAW PropertyFlow CRM Team</strong></p>
+                <p style="font-size: 15px; color: #475569; margin-bottom: 0;">Thank you for your business!<br><strong>{{ $__setting?->company_name ?? config('app.name') }} Team</strong></p>
             </div>
             
             <div class="footer">
-                <p class="footer-text">© {{ date('Y') }} NAW PropertyFlow CRM. All rights reserved.</p>
+                <p class="footer-text">© {{ date('Y') }} {{ $__setting?->company_name ?? config('app.name') }}. All rights reserved.</p>
                 <p class="footer-text" style="margin-top: 6px;">Please retain this email copy for your records.</p>
             </div>
         </div>

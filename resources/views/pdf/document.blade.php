@@ -117,10 +117,10 @@
                 @if($settings && $settings->logo_path && file_exists(public_path('storage/' . $settings->logo_path)))
                     <img src="{{ public_path('storage/' . $settings->logo_path) }}" style="height: 30px; vertical-align: middle; margin-right: 8px;">
                 @endif
-                {{ $settings->company_name ?? 'NAW Properties' }}
+                {{ $settings->company_name ?? config('app.name') }}
             </div>
             <div class="header-sub">
-                {{ $settings->address ?? 'Plot 12, Admiralty Way, Lekki Phase 1, Lagos, Nigeria' }} | {{ $settings->email ?? 'info@nawproperties.com' }}
+                {{ $settings->address ?? '' }} | {{ $settings->email ?? config('mail.from.address') }}
             </div>
         @endif
     </header>
@@ -129,7 +129,7 @@
         @if($settings && $settings->letterhead_footer)
             {!! $settings->letterhead_footer !!}
         @else
-            <div>Generated automatically by {{ $settings ? $settings->company_name : 'NAW Properties' }} | Page <span class="page-number"></span></div>
+            <div>Generated automatically by {{ $settings ? $settings->company_name : config('app.name') }} | Page <span class="page-number"></span></div>
         @endif
     </footer>
 

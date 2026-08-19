@@ -41,10 +41,14 @@
     <!-- Letterhead Preview card -->
     <div class="bg-white rounded-3xl border border-gray-150 p-8 md:p-12 shadow-sm relative overflow-hidden">
         
+        @php $__setting = \App\Models\CompanySetting::first(); @endphp
         <!-- Header Print branding representation -->
         <div class="border-b border-gray-100 pb-4 mb-6 text-center space-y-1">
-            <h2 class="text-xl font-bold text-brand-600 tracking-tight">NAW PROPERTIES</h2>
-            <p class="text-[10px] text-gray-400">Plot 12, Admiralty Way, Lekki Phase 1, Lagos, Nigeria | info@nawproperties.com</p>
+            @if($__setting?->logo_path)
+                <img src="{{ asset('storage/' . $__setting->logo_path) }}" alt="{{ $__setting->company_name ?? config('app.name') }}" class="h-8 mx-auto mb-1 object-contain">
+            @endif
+            <h2 class="text-xl font-bold text-brand-600 tracking-tight uppercase">{{ $__setting?->company_name ?? config('app.name') }}</h2>
+            <p class="text-[10px] text-gray-400">{{ $__setting?->address ?? '' }} @if($__setting?->email) | {{ $__setting->email }} @endif</p>
         </div>
 
         <div class="prose max-w-none text-xs text-gray-800 leading-relaxed font-sans text-justify">
@@ -58,7 +62,7 @@
                 <span>Audit signature: SYSTEM_DISPATCHED</span>
             </div>
             <div class="text-right">
-                <span class="block">&copy; NAW Properties Ltd</span>
+                <span class="block">&copy; {{ $__setting?->company_name ?? config('app.name') }}</span>
             </div>
         </div>
 

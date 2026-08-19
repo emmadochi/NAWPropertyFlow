@@ -37,11 +37,11 @@
                     @if($settings && $settings->logo_path && file_exists(public_path('storage/' . $settings->logo_path)))
                         <img src="{{ public_path('storage/' . $settings->logo_path) }}" style="height: 35px; vertical-align: middle; margin-right: 8px;">
                     @endif
-                    {{ $settings->company_name ?? 'NAW Properties' }}
+                    {{ $settings->company_name ?? config('app.name') }}
                 </div>
                 <div style="font-size: 12px; color: #64748b; margin-top: 5px;">
-                    {{ $settings->address ?? '12 Adeola Odeku Street, Victoria Island, Lagos' }}<br>
-                    {{ $settings->email ?? 'support@propertyflow.com' }} | {{ $settings->phone ?? '+234 1 234 5678' }}
+                    {{ $settings->address ?? '' }}<br>
+                    {{ $settings->email ?? config('mail.from.address') }} | {{ $settings->phone ?? '' }}
                 </div>
             </td>
             <td class="col-50" style="text-align: right;">
@@ -123,8 +123,8 @@
     </table>
 
     <div class="footer">
-        Thank you for choosing {{ $settings ? $settings->company_name : 'NAW PropertyFlow CRM' }}. This receipt is automatically generated and digitally stamped as proof of payment.<br>
-        For inquiries, contact {{ $settings->email ?? 'billing@propertyflow.com' }}.
+        Thank you for choosing {{ $settings ? $settings->company_name : config('app.name') }}. This receipt is automatically generated and digitally stamped as proof of payment.<br>
+        For inquiries, contact {{ $settings->email ?? config('mail.from.address') }}.
     </div>
 </body>
 </html>

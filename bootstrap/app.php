@@ -16,12 +16,21 @@ return Application::configure(basePath: dirname(__DIR__))
             'feature' => \App\Http\Middleware\CheckFeatureAccess::class,
         ]);
 
-        // System admin redirect: not authenticated → /system/login
-        // Tenant user redirect: handled by tenant.php guest middleware → /login
-        $middleware->redirectGuestsTo(fn () => route('system.login'));
+        // Dynamically redirect based on context
+        $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
+            return tenant() ? route('login', tenant('id')) : route('system.login');
+        });
 
-        // Redirect authenticated system admins to system dashboard
-        $middleware->redirectUsersTo(fn () => route('system.dashboard'));
+        // Redirect authenticated users
+        $middleware->redirectUsersTo(function (\Illuminate\Http\Request $request) {
+            if (tenant()) {
+                if (auth()->check() && auth()->user()->role === 'customer') {
+                    return route('buyer.dashboard', tenant('id'));
+                }
+                return route('dashboard', tenant('id'));
+            }
+            return route('system.dashboard');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

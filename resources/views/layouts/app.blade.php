@@ -5,7 +5,18 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'NAW PropertyFlow CRM') }}</title>
+    <title>{{ config('app.name', 'RICAF PropertyFlow CRM') }}</title>
+    
+    <!-- PWA Meta Tags & Icons -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#F37021">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="RICAF CRM">
+    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="icon" type="image/png" href="/icons/icon-192x192.png">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -23,16 +34,16 @@
                     },
                     colors: {
                         brand: {
-                            50: '#fffcf5',
-                            100: '#fff5e0',
-                            200: '#ffe6b3',
-                            300: '#ffd080',
-                            400: '#ffb54d',
-                            500: '#FEA500', // Core orange accent
-                            600: '#e09200',
-                            700: '#b87700',
-                            800: '#8f5c00',
-                            900: '#664200'
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            200: '#fed7aa',
+                            300: '#fdba74',
+                            400: '#fb923c',
+                            500: '#F37021', // RICAF Brand Orange
+                            600: '#ea580c', // RICAF Hover Deep Orange
+                            700: '#c2410c',
+                            800: '#9a3412',
+                            900: '#7c2d12'
                         },
                         dark: {
                             50: '#f8fafc',
@@ -55,6 +66,17 @@
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
+    <!-- PWA Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((reg) => console.log('RICAF PWA ServiceWorker registered: ', reg.scope))
+                    .catch((err) => console.log('RICAF PWA ServiceWorker registration failed: ', err));
+            });
+        }
+    </script>
+
     <style>
         [x-cloak] { display: none !important; }
         body {
@@ -64,23 +86,6 @@
     @stack('styles')
 </head>
 <body class="bg-gray-50 dark:bg-slate-900 text-dark-800 dark:text-slate-200 antialiased h-screen flex flex-col md:flex-row overflow-hidden transition-colors duration-200" x-data="{ mobileSidebarOpen: false }">
-
-    <!-- Mobile Header -->
-    <div class="md:hidden bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between w-full z-20 transition-colors duration-200">
-        <div class="flex items-center space-x-2">
-            <span class="p-2 bg-brand-100 rounded-lg text-brand-500">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                </svg>
-            </span>
-            <span class="font-extrabold text-xl tracking-tight text-dark-900 dark:text-white">NAW <span class="text-brand-500">PropertyFlow</span></span>
-        </div>
-        <button @click="mobileSidebarOpen = true" class="text-dark-600 dark:text-slate-300 focus:outline-none">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-        </button>
-    </div>
 
     @php
         $__companySetting = \App\Models\CompanySetting::first();
@@ -94,6 +99,29 @@
         $__tierLabel   = $__tierLabels[$__currentTier] ?? ucfirst($__currentTier);
         $__tierClass   = $__tierColors[$__currentTier] ?? 'bg-gray-100 text-gray-600';
     @endphp
+
+    <!-- Mobile Header -->
+    <div class="md:hidden bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between w-full z-20 transition-colors duration-200">
+        <div class="flex items-center space-x-2">
+            @if($__companySetting?->logo_path)
+                <img src="{{ asset('storage/' . $__companySetting->logo_path) }}"
+                     alt="Logo"
+                     class="w-7 h-7 rounded-lg object-contain bg-gray-50 border border-gray-100 flex-shrink-0">
+            @else
+                <span class="p-1.5 bg-brand-100 rounded-lg text-brand-500">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                </span>
+            @endif
+            <span class="font-extrabold text-lg tracking-tight text-dark-900 dark:text-white truncate max-w-[200px]">{{ $__companySetting?->company_name ?? config('app.name') }}</span>
+        </div>
+        <button @click="mobileSidebarOpen = true" class="text-dark-600 dark:text-slate-300 focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+    </div>
 
     <!-- Sidebar Layout -->
     <aside class="fixed inset-y-0 left-0 z-30 w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out md:static"
@@ -151,6 +179,14 @@
                         </svg>
                         <span>Dashboard</span>
                     </a>
+                    
+                    <a href="{{ route('virtual-tour') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('virtual-tour') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Virtual Tour <span class="ml-2 text-xs font-bold px-2 py-0.5 rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200" style="background-color: var(--primary-gold, #facc7e); color: black;">PRO</span></span>
+                    </a>
+
                     @if(in_array(Auth::user()->role, ['super_admin', 'company_admin', 'hr', 'sales_manager']) && $__cs?->hasFeature('leaderboard'))
                     <a href="{{ route('hr.leaderboard') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('hr.leaderboard') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -678,7 +714,7 @@
                     bar.style.top = '0';
                     bar.style.left = '0';
                     bar.style.height = '3px';
-                    bar.style.backgroundColor = '#FEA500'; // brand core orange accent
+                    bar.style.backgroundColor = '#d97706'; // deeper yellow accent
                     bar.style.zIndex = '9999';
                     bar.style.transition = 'width 0.2s ease, opacity 0.4s ease';
                     bar.style.width = '0';
@@ -1215,6 +1251,61 @@
                     } catch (e) {
                         console.error('Failed to fetch notifications:', e);
                     }
+                }
+            }
+        }
+    </script>
+
+    <!-- PWA Install Banner Component -->
+    <div x-data="pwaInstaller()" x-show="showInstallBanner" x-cloak
+         class="fixed bottom-4 right-4 z-50 max-w-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-2xl p-4 flex items-center space-x-3 transform transition-all duration-300">
+        <img src="/icons/icon-192x192.png" alt="RICAF App" class="w-11 h-11 rounded-xl object-contain bg-orange-50 border border-orange-100 p-1 flex-shrink-0">
+        <div class="flex-1 min-w-0">
+            <h4 class="text-xs font-bold text-dark-900 dark:text-white leading-tight">Install RICAF CRM App</h4>
+            <p class="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5">Quick access directly from your home screen</p>
+        </div>
+        <div class="flex items-center space-x-1.5 flex-shrink-0">
+            <button @click="installApp()" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-lg shadow-sm transition-all">
+                Install
+            </button>
+            <button @click="dismissBanner()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white p-1">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        function pwaInstaller() {
+            return {
+                deferredPrompt: null,
+                showInstallBanner: false,
+                init() {
+                    window.addEventListener('beforeinstallprompt', (e) => {
+                        e.preventDefault();
+                        this.deferredPrompt = e;
+                        if (!localStorage.getItem('pwa_banner_dismissed')) {
+                            this.showInstallBanner = true;
+                        }
+                    });
+                    window.addEventListener('appinstalled', () => {
+                        this.showInstallBanner = false;
+                        this.deferredPrompt = null;
+                        console.log('RICAF CRM App installed successfully!');
+                    });
+                },
+                async installApp() {
+                    if (this.deferredPrompt) {
+                        this.deferredPrompt.prompt();
+                        const { outcome } = await this.deferredPrompt.userChoice;
+                        if (outcome === 'accepted') {
+                            this.showInstallBanner = false;
+                        }
+                        this.deferredPrompt = null;
+                    }
+                },
+                dismissBanner() {
+                    this.showInstallBanner = false;
+                    localStorage.setItem('pwa_banner_dismissed', 'true');
                 }
             }
         }

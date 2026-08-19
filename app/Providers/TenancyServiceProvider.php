@@ -70,6 +70,9 @@ class TenancyServiceProvider extends ServiceProvider
             Events\InitializingTenancy::class => [],
             Events\TenancyInitialized::class => [
                 Listeners\BootstrapTenancy::class,
+                function () {
+                    \Illuminate\Support\Facades\URL::defaults(['tenant' => tenant('id')]);
+                }
             ],
 
             Events\EndingTenancy::class => [],

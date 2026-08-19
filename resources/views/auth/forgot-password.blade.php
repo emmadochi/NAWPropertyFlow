@@ -58,7 +58,7 @@
         @endif
 
         <!-- Form -->
-        <form action="{{ route('password.email') }}" method="POST" class="space-y-5">
+        <form action="{{ route('password.email', ['tenant' => tenant('id')]) }}" method="POST" class="space-y-5">
             @csrf
             <div>
                 <label for="email" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Email Address</label>
@@ -73,7 +73,7 @@
         </form>
 
         <div class="mt-6 text-center">
-            <a href="{{ route('login') }}" class="text-sm font-bold text-brand-600 hover:text-brand-700 transition-colors">Return to Login</a>
+            <a href="{{ route('login', ['tenant' => tenant('id')]) }}" class="text-sm font-bold text-brand-600 hover:text-brand-700 transition-colors">Return to Login</a>
         </div>
 
     </div>

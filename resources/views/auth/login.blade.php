@@ -64,7 +64,7 @@
         @endif
 
         <!-- Form -->
-        <form action="{{ route('login') }}" method="POST" class="space-y-5">
+        <form action="{{ route('login', ['tenant' => tenant('id')]) }}" method="POST" class="space-y-5">
             @csrf
             <div>
                 <label for="email" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Email Address</label>
@@ -76,7 +76,7 @@
             <div>
                 <div class="flex justify-between items-center mb-2">
                     <label for="password" class="block text-xs font-bold text-gray-700 uppercase tracking-wider">Password</label>
-                    <a href="{{ route('password.request') }}" class="text-xs font-bold text-brand-600 hover:text-brand-700 transition-colors">Forgot Password?</a>
+                    <a href="{{ route('password.request', ['tenant' => tenant('id')]) }}" class="text-xs font-bold text-brand-600 hover:text-brand-700 transition-colors">Forgot Password?</a>
                 </div>
                 <input type="password" name="password" id="password" required
                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none text-sm text-gray-800 transition-colors"

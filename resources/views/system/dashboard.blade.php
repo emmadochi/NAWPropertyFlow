@@ -106,7 +106,7 @@
         /* ── Table ── */
         .table-card {
             background: var(--dark-900); border: 1px solid rgba(255,255,255,0.07);
-            border-radius: 16px; overflow: hidden;
+            border-radius: 16px; overflow: visible;
         }
         .table-header {
             padding: 20px 24px; border-bottom: 1px solid rgba(255,255,255,0.06);
@@ -117,6 +117,8 @@
         th { padding: 12px 20px; text-align: left; font-size: 11px; font-weight: 600; color: var(--text-muted); letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 1px solid rgba(255,255,255,0.06); }
         td { padding: 16px 20px; border-bottom: 1px solid rgba(255,255,255,0.04); font-size: 14px; color: #cbd5e1; vertical-align: middle; }
         tr:last-child td { border-bottom: none; }
+        tr:last-child td:first-child { border-bottom-left-radius: 16px; }
+        tr:last-child td:last-child { border-bottom-right-radius: 16px; }
         tr:hover td { background: rgba(255,255,255,0.02); }
 
         .company-name { font-weight: 600; color: white; }
