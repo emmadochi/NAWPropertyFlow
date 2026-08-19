@@ -17,6 +17,36 @@
     <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
     <link rel="icon" type="image/png" href="/icons/icon-192x192.png">
 
+    <!-- Immediate PWA Prompt Capture -->
+    <script>
+        window.globalDeferredPwaPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.globalDeferredPwaPrompt = e;
+            console.log('beforeinstallprompt caught and ready');
+            window.dispatchEvent(new CustomEvent('pwa-ready-to-install'));
+        });
+
+        window.installPwaApp = async function() {
+            if (window.globalDeferredPwaPrompt) {
+                window.globalDeferredPwaPrompt.prompt();
+                const choice = await window.globalDeferredPwaPrompt.userChoice;
+                if (choice.outcome === 'accepted') {
+                    window.dispatchEvent(new CustomEvent('pwa-installed-dismiss'));
+                }
+                window.globalDeferredPwaPrompt = null;
+            } else {
+                console.log('Triggering fallback native install or prompt');
+            }
+        };
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then((reg) => console.log('RICAF PWA ServiceWorker ready'))
+                .catch((err) => console.log('SW error', err));
+        }
+    </script>
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -65,38 +95,6 @@
 
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-
-    <!-- PWA Service Worker & Global Install Logic -->
-    <script>
-        window.globalDeferredPwaPrompt = null;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            window.globalDeferredPwaPrompt = e;
-            window.dispatchEvent(new CustomEvent('pwa-ready-to-install'));
-        });
-
-        window.installPwaApp = async function() {
-            if (window.globalDeferredPwaPrompt) {
-                window.globalDeferredPwaPrompt.prompt();
-                const choice = await window.globalDeferredPwaPrompt.userChoice;
-                if (choice.outcome === 'accepted') {
-                    window.dispatchEvent(new CustomEvent('pwa-installed-dismiss'));
-                }
-                window.globalDeferredPwaPrompt = null;
-            } else {
-                // If Chrome address-bar icon is available or manual install
-                alert('Direct Browser Installation:\n\n• On Chrome Desktop: Look at the top right of your address bar and click the Install icon (computer screen with a down arrow).\n\n• On Mobile: Tap browser options (⋮ / Share) -> "Add to Home screen".');
-            }
-        };
-
-        if ('serviceWorker' in navigator) {
-            window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js')
-                    .then((reg) => console.log('RICAF PWA ServiceWorker registered: ', reg.scope))
-                    .catch((err) => console.log('RICAF PWA ServiceWorker registration failed: ', err));
-            });
-        }
-    </script>
 
     <style>
         [x-cloak] { display: none !important; }
