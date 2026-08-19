@@ -56,6 +56,22 @@ Route::get('/sw.js', function () {
     ]);
 });
 
+Route::get('/icons/icon-192x192.png', function () {
+    $path = public_path('icons/icon-192x192.png');
+    if (file_exists($path)) {
+        return response()->file($path, ['Content-Type' => 'image/png']);
+    }
+    abort(404);
+});
+
+Route::get('/icons/icon-512x512.png', function () {
+    $path = public_path('icons/icon-512x512.png');
+    if (file_exists($path)) {
+        return response()->file($path, ['Content-Type' => 'image/png']);
+    }
+    abort(404);
+});
+
 // ─── CRM Routes (Standalone Mode) ───────────────────────────────────────────
 if (! env('TENANCY_ENABLED', false)) {
     require __DIR__.'/tenant.php';
