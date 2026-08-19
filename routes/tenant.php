@@ -212,7 +212,22 @@ Route::middleware([
                 Route::post('hr/staff/{user}/reviews', [StaffProfileController::class, 'storeReview'])->name('hr.staff.reviews.store');
                 Route::post('hr/staff/{user}/onboarding', [StaffProfileController::class, 'storeOnboardingTask'])->name('hr.staff.onboarding.store');
                 Route::delete('hr/staff/onboarding/{task}', [StaffProfileController::class, 'destroyOnboardingTask'])->name('hr.staff.onboarding.destroy');
+
+                // Payroll & Compensation Management
+                Route::get('payroll', [\App\Http\Controllers\PayrollController::class, 'index'])->name('payroll.index');
+                Route::post('payroll', [\App\Http\Controllers\PayrollController::class, 'store'])->name('payroll.store');
+                Route::get('payroll/salaries', [\App\Http\Controllers\PayrollController::class, 'salaryStructures'])->name('payroll.salaries');
+                Route::post('payroll/salaries/{user}', [\App\Http\Controllers\PayrollController::class, 'updateSalaryStructure'])->name('payroll.salaries.update');
+                Route::post('payroll/deductions', [\App\Http\Controllers\PayrollController::class, 'storeDeduction'])->name('payroll.deductions.store');
+                Route::delete('payroll/deductions/{deduction}', [\App\Http\Controllers\PayrollController::class, 'destroyDeduction'])->name('payroll.deductions.destroy');
+                Route::get('payroll/{batch}', [\App\Http\Controllers\PayrollController::class, 'show'])->name('payroll.show');
+                Route::post('payroll/{batch}/approve', [\App\Http\Controllers\PayrollController::class, 'approve'])->name('payroll.approve');
+                Route::post('payroll/{batch}/mark-paid', [\App\Http\Controllers\PayrollController::class, 'markPaid'])->name('payroll.mark-paid');
+                Route::get('payroll/{batch}/export-bank', [\App\Http\Controllers\PayrollController::class, 'exportBankCsv'])->name('payroll.export-bank');
             });
+
+            // Employee Payslip Download
+            Route::get('payroll/payslip/{payslip}/download', [\App\Http\Controllers\PayrollController::class, 'downloadPayslip'])->name('payroll.payslip.download');
 
             Route::patch('hr/staff/onboarding/{task}/toggle', [StaffProfileController::class, 'toggleOnboardingTask'])->name('hr.staff.onboarding.toggle');
         });

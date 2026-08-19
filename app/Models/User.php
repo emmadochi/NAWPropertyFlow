@@ -182,4 +182,19 @@ class User extends Authenticatable
         $completed = $this->onboardingTasks()->where('is_completed', true)->count();
         return (int) (($completed / $total) * 100);
     }
+
+    public function salaryStructure()
+    {
+        return $this->hasOne(SalaryStructure::class);
+    }
+
+    public function payslips()
+    {
+        return $this->hasMany(Payslip::class);
+    }
+
+    public function payrollDeductions()
+    {
+        return $this->hasMany(PayrollDeduction::class);
+    }
 }
