@@ -102,6 +102,10 @@ class TenancyServiceProvider extends ServiceProvider
 
     public function boot()
     {
+        if (! env('TENANCY_ENABLED', false)) {
+            return;
+        }
+
         $this->bootEvents();
         $this->mapRoutes();
 
