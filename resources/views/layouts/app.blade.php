@@ -82,6 +82,23 @@
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
+        .custom-sidebar-scroll {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(156, 163, 175, 0.5) transparent;
+        }
+        .custom-sidebar-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-sidebar-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-sidebar-scroll::-webkit-scrollbar-thumb {
+            background-color: rgba(156, 163, 175, 0.4);
+            border-radius: 9999px;
+        }
+        .custom-sidebar-scroll::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(156, 163, 175, 0.7);
+        }
     </style>
     @stack('styles')
 </head>
@@ -152,17 +169,18 @@
                             </span>
                         </div>
                     </div>
-                <button @click="mobileSidebarOpen = false" class="md:hidden text-gray-500 dark:text-slate-400 focus:outline-none">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
-                </button>
+                    <button @click="mobileSidebarOpen = false" class="md:hidden text-gray-500 dark:text-slate-400 focus:outline-none">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
             </div>
 
             <!-- Navigation Links -->
             {{-- Cache company settings ONCE per sidebar render to avoid N+1 queries --}}
             @php $__cs = \App\Models\CompanySetting::first(); @endphp
-            <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-slate-700">
+            <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto min-h-0 select-none custom-sidebar-scroll" style="overflow-y: scroll !important; -webkit-overflow-scrolling: touch;">
                 @if(Auth::user()->role === 'customer')
                     <a href="{{ route('buyer.dashboard') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('buyer.dashboard') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
