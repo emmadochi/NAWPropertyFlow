@@ -505,7 +505,7 @@
                         @endif
 
                         <!-- PWA Quick Install Button in Top Bar -->
-                        <div x-data="pwaInstaller()" x-cloak x-show="canInstall" class="inline-flex items-center">
+                        <div x-data="pwaInstaller()" class="inline-flex items-center">
                             <button @click="installApp()" 
                                     class="inline-flex items-center space-x-1.5 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-md shadow-brand-500/20 transition-all transform hover:scale-105 active:scale-95"
                                     title="Install RICAF CRM on this device">
@@ -1343,6 +1343,9 @@
                             this.canInstall = false;
                         }
                         globalDeferredPwaPrompt = null;
+                    } else {
+                        // If already installed or browser needs menu action
+                        alert('To install RICAF CRM:\n\n• On Chrome Desktop: Click the Install icon (computer with down-arrow) in your URL address bar.\n• On Mobile (Chrome/Safari): Tap Share / Options (⋮) -> "Add to Home screen" or "Install App".');
                     }
                 },
                 dismissBanner() {
