@@ -504,6 +504,18 @@
                             </span>
                         @endif
 
+                        <!-- PWA Quick Install Button in Top Bar -->
+                        <div x-data="pwaInstaller()" x-cloak x-show="canInstall" class="inline-flex items-center">
+                            <button @click="installApp()" 
+                                    class="inline-flex items-center space-x-1.5 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-md shadow-brand-500/20 transition-all transform hover:scale-105 active:scale-95"
+                                    title="Install RICAF CRM on this device">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                                </svg>
+                                <span>Install App</span>
+                            </button>
+                        </div>
+
                         <!-- Global Search Shortcut Button -->
                         <button @click="$dispatch('open-global-search')" class="hidden sm:inline-flex items-center space-x-2 text-left bg-gray-50 border border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600 rounded-xl px-3 py-1.5 text-xs transition-colors cursor-pointer focus:outline-none">
                             <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1274,56 +1286,68 @@
         }
     </script>
 
-    <!-- PWA Install Banner Component -->
+    <!-- PWA Top Install Prompt Banner -->
     <div x-data="pwaInstaller()" x-show="showInstallBanner" x-cloak
-         class="fixed bottom-4 right-4 z-50 max-w-sm bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-2xl p-4 flex items-center space-x-3 transform transition-all duration-300">
-        <img src="/icons/icon-192x192.png" alt="RICAF App" class="w-11 h-11 rounded-xl object-contain bg-orange-50 border border-orange-100 p-1 flex-shrink-0">
+         class="fixed top-3 left-1/2 transform -translate-x-1/2 z-50 w-11/12 max-w-md bg-white dark:bg-slate-800 border border-brand-200 dark:border-brand-500/30 rounded-2xl shadow-2xl p-3.5 flex items-center space-x-3 transition-all duration-300 animate-bounce-once">
+        <img src="/icons/icon-192x192.png" alt="RICAF App" class="w-10 h-10 rounded-xl object-contain bg-orange-50 border border-orange-100 p-1 flex-shrink-0">
         <div class="flex-1 min-w-0">
-            <h4 class="text-xs font-bold text-dark-900 dark:text-white leading-tight">Install RICAF CRM App</h4>
-            <p class="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5">Quick access directly from your home screen</p>
+            <h4 class="text-xs font-extrabold text-dark-900 dark:text-white leading-tight">Install RICAF CRM App</h4>
+            <p class="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5">Add to Home Screen for fast offline access</p>
         </div>
         <div class="flex items-center space-x-1.5 flex-shrink-0">
-            <button @click="installApp()" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-lg shadow-sm transition-all">
+            <button @click="installApp()" class="px-3.5 py-1.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md shadow-brand-500/20 transition-all">
                 Install
             </button>
-            <button @click="dismissBanner()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white p-1">
+            <button @click="dismissBanner()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
         </div>
     </div>
 
     <script>
+        let globalDeferredPwaPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            globalDeferredPwaPrompt = e;
+            window.dispatchEvent(new CustomEvent('pwa-ready-to-install'));
+        });
+
         function pwaInstaller() {
             return {
-                deferredPrompt: null,
+                canInstall: !!globalDeferredPwaPrompt,
                 showInstallBanner: false,
                 init() {
-                    window.addEventListener('beforeinstallprompt', (e) => {
-                        e.preventDefault();
-                        this.deferredPrompt = e;
-                        if (!localStorage.getItem('pwa_banner_dismissed')) {
+                    window.addEventListener('pwa-ready-to-install', () => {
+                        this.canInstall = true;
+                        if (!localStorage.getItem('pwa_banner_dismissed_v2')) {
                             this.showInstallBanner = true;
                         }
                     });
+                    if (globalDeferredPwaPrompt && !localStorage.getItem('pwa_banner_dismissed_v2')) {
+                        this.canInstall = true;
+                        this.showInstallBanner = true;
+                    }
                     window.addEventListener('appinstalled', () => {
                         this.showInstallBanner = false;
-                        this.deferredPrompt = null;
+                        this.canInstall = false;
+                        globalDeferredPwaPrompt = null;
                         console.log('RICAF CRM App installed successfully!');
                     });
                 },
                 async installApp() {
-                    if (this.deferredPrompt) {
-                        this.deferredPrompt.prompt();
-                        const { outcome } = await this.deferredPrompt.userChoice;
+                    if (globalDeferredPwaPrompt) {
+                        globalDeferredPwaPrompt.prompt();
+                        const { outcome } = await globalDeferredPwaPrompt.userChoice;
                         if (outcome === 'accepted') {
                             this.showInstallBanner = false;
+                            this.canInstall = false;
                         }
-                        this.deferredPrompt = null;
+                        globalDeferredPwaPrompt = null;
                     }
                 },
                 dismissBanner() {
                     this.showInstallBanner = false;
-                    localStorage.setItem('pwa_banner_dismissed', 'true');
+                    localStorage.setItem('pwa_banner_dismissed_v2', 'true');
                 }
             }
         }
