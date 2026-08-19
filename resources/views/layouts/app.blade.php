@@ -66,8 +66,15 @@
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <!-- PWA Service Worker Registration -->
+    <!-- PWA Service Worker & Install Prompt Capture -->
     <script>
+        window.globalDeferredPwaPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            window.globalDeferredPwaPrompt = e;
+            window.dispatchEvent(new CustomEvent('pwa-ready-to-install'));
+        });
+
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('/sw.js')
@@ -1305,16 +1312,9 @@
     </div>
 
     <script>
-        let globalDeferredPwaPrompt = null;
-        window.addEventListener('beforeinstallprompt', (e) => {
-            e.preventDefault();
-            globalDeferredPwaPrompt = e;
-            window.dispatchEvent(new CustomEvent('pwa-ready-to-install'));
-        });
-
         function pwaInstaller() {
             return {
-                canInstall: !!globalDeferredPwaPrompt,
+                canInstall: !!window.globalDeferredPwaPrompt,
                 showInstallBanner: false,
                 init() {
                     window.addEventListener('pwa-ready-to-install', () => {
@@ -1323,29 +1323,29 @@
                             this.showInstallBanner = true;
                         }
                     });
-                    if (globalDeferredPwaPrompt && !localStorage.getItem('pwa_banner_dismissed_v2')) {
+                    if (window.globalDeferredPwaPrompt && !localStorage.getItem('pwa_banner_dismissed_v2')) {
                         this.canInstall = true;
                         this.showInstallBanner = true;
                     }
                     window.addEventListener('appinstalled', () => {
                         this.showInstallBanner = false;
                         this.canInstall = false;
-                        globalDeferredPwaPrompt = null;
+                        window.globalDeferredPwaPrompt = null;
                         console.log('RICAF CRM App installed successfully!');
                     });
                 },
                 async installApp() {
-                    if (globalDeferredPwaPrompt) {
-                        globalDeferredPwaPrompt.prompt();
-                        const { outcome } = await globalDeferredPwaPrompt.userChoice;
+                    if (window.globalDeferredPwaPrompt) {
+                        window.globalDeferredPwaPrompt.prompt();
+                        const { outcome } = await window.globalDeferredPwaPrompt.userChoice;
                         if (outcome === 'accepted') {
                             this.showInstallBanner = false;
                             this.canInstall = false;
                         }
-                        globalDeferredPwaPrompt = null;
+                        window.globalDeferredPwaPrompt = null;
                     } else {
-                        // If already installed or browser needs menu action
-                        alert('To install RICAF CRM:\n\n• On Chrome Desktop: Click the Install icon (computer with down-arrow) in your URL address bar.\n• On Mobile (Chrome/Safari): Tap Share / Options (⋮) -> "Add to Home screen" or "Install App".');
+                        // Direct browser guidance
+                        alert('To install RICAF CRM directly:\n\n• On Chrome Desktop: Look at the top right of your address bar and click the "Install RICAF CRM" icon (or click the three dots ⋮ -> "Save and Share" -> "Install RICAF CRM").\n\n• On Mobile: Tap browser menu (⋮ / Share) -> "Add to Home screen".');
                     }
                 },
                 dismissBanner() {
