@@ -105,7 +105,7 @@
 <body class="bg-gray-50 dark:bg-slate-900 text-dark-800 dark:text-slate-200 antialiased h-screen flex flex-col md:flex-row overflow-hidden transition-colors duration-200" x-data="{ mobileSidebarOpen: false }">
 
     @php
-        $__companySetting = \App\Models\CompanySetting::first();
+        $__companySetting = \App\Models\CompanySetting::getCached();
         $__tierLabels = ['starter' => 'Starter', 'professional' => 'Professional', 'enterprise' => 'Enterprise'];
         $__tierColors = [
             'starter'      => 'bg-gray-100 text-gray-600',
@@ -179,7 +179,7 @@
 
             <!-- Navigation Links -->
             {{-- Cache company settings ONCE per sidebar render to avoid N+1 queries --}}
-            @php $__cs = \App\Models\CompanySetting::first(); @endphp
+            @php $__cs = $__companySetting; @endphp
             <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto min-h-0 select-none custom-sidebar-scroll" style="overflow-y: scroll !important; -webkit-overflow-scrolling: touch;">
                 @if(Auth::user()->role === 'customer')
                     <a href="{{ route('buyer.dashboard') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('buyer.dashboard') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">

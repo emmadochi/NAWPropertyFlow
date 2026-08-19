@@ -54,6 +54,30 @@ class CompanySetting extends Model
     ];
 
     /**
+     * Get cached company setting to eliminate repeated database queries.
+     */
+    public static function getCached(): ?self
+    {
+        return \Illuminate\Support\Facades\Cache::rememberForever('active_company_setting', function () {
+            return static::first();
+        });
+    }
+
+    /**
+     * Clear cached company setting on update/save.
+     */
+    protected static function booted()
+    {
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('active_company_setting');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('active_company_setting');
+        });
+    }
+
+    /**
      * Check if the current package tier has a specific feature.
      *
      * @param string $feature
