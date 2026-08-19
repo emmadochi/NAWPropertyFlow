@@ -19,6 +19,43 @@ use App\Http\Controllers\System\TenantController;
 |
 */
 
+// ─── PWA Manifest & Service Worker Direct Endpoints ──────────────────────
+Route::get('/manifest.json', function () {
+    $path = public_path('manifest.json');
+    if (file_exists($path)) {
+        return response()->file($path, [
+            'Content-Type' => 'application/manifest+json; charset=utf-8',
+        ]);
+    }
+    return response()->json([
+        'name' => config('app.name', 'RICAF PropertyFlow CRM'),
+        'short_name' => 'RICAF CRM',
+        'id' => '/',
+        'start_url' => '/',
+        'scope' => '/',
+        'display' => 'standalone',
+        'background_color' => '#FFFFFF',
+        'theme_color' => '#F37021',
+        'icons' => [
+            ['src' => '/icons/icon-192x192.png', 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any'],
+            ['src' => '/icons/icon-512x512.png', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any'],
+        ]
+    ]);
+});
+
+Route::get('/sw.js', function () {
+    $path = public_path('sw.js');
+    if (file_exists($path)) {
+        return response()->file($path, [
+            'Content-Type' => 'application/javascript; charset=utf-8',
+            'Service-Worker-Allowed' => '/',
+        ]);
+    }
+    return response("self.addEventListener('fetch', () => {});", 200, [
+        'Content-Type' => 'application/javascript; charset=utf-8',
+    ]);
+});
+
 // ─── CRM Routes (Standalone Mode) ───────────────────────────────────────────
 if (! env('TENANCY_ENABLED', false)) {
     require __DIR__.'/tenant.php';
