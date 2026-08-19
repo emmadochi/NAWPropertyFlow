@@ -66,7 +66,7 @@
     <!-- Alpine.js -->
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <!-- PWA Service Worker & Install Prompt Capture -->
+    <!-- PWA Service Worker & Global Install Logic -->
     <script>
         window.globalDeferredPwaPrompt = null;
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -74,6 +74,20 @@
             window.globalDeferredPwaPrompt = e;
             window.dispatchEvent(new CustomEvent('pwa-ready-to-install'));
         });
+
+        window.installPwaApp = async function() {
+            if (window.globalDeferredPwaPrompt) {
+                window.globalDeferredPwaPrompt.prompt();
+                const choice = await window.globalDeferredPwaPrompt.userChoice;
+                if (choice.outcome === 'accepted') {
+                    window.dispatchEvent(new CustomEvent('pwa-installed-dismiss'));
+                }
+                window.globalDeferredPwaPrompt = null;
+            } else {
+                // If Chrome address-bar icon is available or manual install
+                alert('Direct Browser Installation:\n\n• On Chrome Desktop: Look at the top right of your address bar and click the Install icon (computer screen with a down arrow).\n\n• On Mobile: Tap browser options (⋮ / Share) -> "Add to Home screen".');
+            }
+        };
 
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
@@ -572,8 +586,8 @@
                         @endif
 
                         <!-- PWA Quick Install Button in Top Bar -->
-                        <div x-data="pwaInstaller()" class="inline-flex items-center">
-                            <button @click="installApp()" 
+                        <div class="inline-flex items-center">
+                            <button onclick="window.installPwaApp()" 
                                     class="inline-flex items-center space-x-1.5 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-md shadow-brand-500/20 transition-all transform hover:scale-105 active:scale-95"
                                     title="Install RICAF CRM on this device">
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1354,15 +1368,35 @@
     </script>
 
     <!-- PWA Top Install Prompt Banner -->
-    <div x-data="pwaInstaller()" x-show="showInstallBanner" x-cloak
-         class="fixed top-3 left-1/2 transform -translate-x-1/2 z-50 w-11/12 max-w-md bg-white dark:bg-slate-800 border border-brand-200 dark:border-brand-500/30 rounded-2xl shadow-2xl p-3.5 flex items-center space-x-3 transition-all duration-300 animate-bounce-once">
+    <div x-data="{
+            showInstallBanner: false,
+            init() {
+                window.addEventListener('pwa-ready-to-install', () => {
+                    if (!localStorage.getItem('pwa_banner_dismissed_v2')) {
+                        this.showInstallBanner = true;
+                    }
+                });
+                window.addEventListener('pwa-installed-dismiss', () => {
+                    this.showInstallBanner = false;
+                });
+                if (window.globalDeferredPwaPrompt && !localStorage.getItem('pwa_banner_dismissed_v2')) {
+                    this.showInstallBanner = true;
+                }
+            },
+            dismissBanner() {
+                this.showInstallBanner = false;
+                localStorage.setItem('pwa_banner_dismissed_v2', 'true');
+            }
+         }"
+         x-show="showInstallBanner" x-cloak
+         class="fixed top-3 left-1/2 transform -translate-x-1/2 z-50 w-11/12 max-w-md bg-white dark:bg-slate-800 border border-brand-200 dark:border-brand-500/30 rounded-2xl shadow-2xl p-3.5 flex items-center space-x-3 transition-all duration-300">
         <img src="/icons/icon-192x192.png" alt="RICAF App" class="w-10 h-10 rounded-xl object-contain bg-orange-50 border border-orange-100 p-1 flex-shrink-0">
         <div class="flex-1 min-w-0">
             <h4 class="text-xs font-extrabold text-dark-900 dark:text-white leading-tight">Install RICAF CRM App</h4>
             <p class="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5">Add to Home Screen for fast offline access</p>
         </div>
         <div class="flex items-center space-x-1.5 flex-shrink-0">
-            <button @click="installApp()" class="px-3.5 py-1.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md shadow-brand-500/20 transition-all">
+            <button onclick="window.installPwaApp()" class="px-3.5 py-1.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md shadow-brand-500/20 transition-all">
                 Install
             </button>
             <button @click="dismissBanner()" class="text-gray-400 hover:text-gray-600 dark:hover:text-white p-1 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700">
@@ -1370,51 +1404,6 @@
             </button>
         </div>
     </div>
-
-    <script>
-        function pwaInstaller() {
-            return {
-                canInstall: !!window.globalDeferredPwaPrompt,
-                showInstallBanner: false,
-                init() {
-                    window.addEventListener('pwa-ready-to-install', () => {
-                        this.canInstall = true;
-                        if (!localStorage.getItem('pwa_banner_dismissed_v2')) {
-                            this.showInstallBanner = true;
-                        }
-                    });
-                    if (window.globalDeferredPwaPrompt && !localStorage.getItem('pwa_banner_dismissed_v2')) {
-                        this.canInstall = true;
-                        this.showInstallBanner = true;
-                    }
-                    window.addEventListener('appinstalled', () => {
-                        this.showInstallBanner = false;
-                        this.canInstall = false;
-                        window.globalDeferredPwaPrompt = null;
-                        console.log('RICAF CRM App installed successfully!');
-                    });
-                },
-                async installApp() {
-                    if (window.globalDeferredPwaPrompt) {
-                        window.globalDeferredPwaPrompt.prompt();
-                        const { outcome } = await window.globalDeferredPwaPrompt.userChoice;
-                        if (outcome === 'accepted') {
-                            this.showInstallBanner = false;
-                            this.canInstall = false;
-                        }
-                        window.globalDeferredPwaPrompt = null;
-                    } else {
-                        // Direct browser guidance
-                        alert('To install RICAF CRM directly:\n\n• On Chrome Desktop: Look at the top right of your address bar and click the "Install RICAF CRM" icon (or click the three dots ⋮ -> "Save and Share" -> "Install RICAF CRM").\n\n• On Mobile: Tap browser menu (⋮ / Share) -> "Add to Home screen".');
-                    }
-                },
-                dismissBanner() {
-                    this.showInstallBanner = false;
-                    localStorage.setItem('pwa_banner_dismissed_v2', 'true');
-                }
-            }
-        }
-    </script>
 
     @stack('scripts')
 </body>
