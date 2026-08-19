@@ -42,13 +42,22 @@
         
         <!-- Header -->
         <div class="flex flex-col items-center mb-8">
-            <span class="p-3 bg-brand-100 text-brand-500 rounded-2xl mb-4">
-                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                </svg>
-            </span>
+            @php
+                $company = \App\Models\CompanySetting::first();
+                $displayName = $company->company_name ?? config('app.name', 'PropertyFlow CRM');
+                $logoUrl = ($company && $company->logo_path) ? asset('storage/' . $company->logo_path) : null;
+            @endphp
+            @if($logoUrl)
+                <img src="{{ $logoUrl }}" alt="{{ $displayName }}" class="h-14 w-auto object-contain mb-4">
+            @else
+                <span class="p-3 bg-brand-100 text-brand-500 rounded-2xl mb-4">
+                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                </span>
+            @endif
             <h1 class="text-2xl font-bold text-gray-900 leading-tight">Welcome back</h1>
-            <p class="text-sm text-gray-500 mt-1.5">Enter your details to access NAW PropertyFlow</p>
+            <p class="text-sm text-gray-500 mt-1.5 text-center">Enter your credentials to access {{ $displayName }}</p>
         </div>
 
         @if(session('success'))
@@ -93,20 +102,18 @@
             </button>
         </form>
 
+        @if(app()->environment('local', 'testing'))
         <!-- Mock details for easy reviewer login -->
         <div class="mt-8 pt-6 border-t border-gray-100">
             <h5 class="text-xs font-bold text-gray-700 uppercase tracking-wider mb-3">Quick Login (Development Accounts):</h5>
             <div class="space-y-2 bg-gray-50 rounded-2xl p-4 text-xs font-medium text-gray-600 border border-gray-100">
                 <div class="flex justify-between">
                     <span>Super Admin:</span>
-                    <span class="font-mono text-dark-800 font-bold">superadmin@propertyflow.com / password</span>
-                </div>
-                <div class="flex justify-between">
-                    <span>Sales Executive:</span>
-                    <span class="font-mono text-dark-800 font-bold">se1@propertyflow.com / password</span>
+                    <span class="font-mono text-dark-800 font-bold">admin@ricafltd.com / AdminRicaf@2026!</span>
                 </div>
             </div>
         </div>
+        @endif
 
     </div>
 
