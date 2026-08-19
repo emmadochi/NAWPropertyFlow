@@ -153,6 +153,25 @@
                         <label class="block text-sm font-bold text-gray-700 mb-2">Commission Rate (%) <span class="font-normal text-gray-400 text-xs">- Optional</span></label>
                         <input type="number" step="0.1" max="100" min="0" name="commission_rate" class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl focus:ring-brand-500 focus:border-brand-500 block p-3" placeholder="e.g. 5.0">
                     </div>
+
+                    <!-- Salary & Compensation Structure -->
+                    <div class="col-span-1 md:col-span-2 pt-4 border-t border-gray-100">
+                        <h4 class="text-xs font-bold text-dark-900 uppercase tracking-wider mb-3">Agreed Salary & Compensation (Optional)</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Agreed Base Salary (₦/Month)</label>
+                                <input type="number" step="0.01" min="0" name="base_salary" class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl focus:ring-brand-500 focus:border-brand-500 block p-3" placeholder="e.g. 250000">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Housing Allowance (₦)</label>
+                                <input type="number" step="0.01" min="0" name="housing_allowance" class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl focus:ring-brand-500 focus:border-brand-500 block p-3" placeholder="e.g. 50000">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-600 mb-1">Transport Allowance (₦)</label>
+                                <input type="number" step="0.01" min="0" name="transport_allowance" class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl focus:ring-brand-500 focus:border-brand-500 block p-3" placeholder="e.g. 30000">
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="flex items-center justify-end space-x-3 pt-4 border-t border-gray-100">

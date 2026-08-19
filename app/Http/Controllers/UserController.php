@@ -60,6 +60,19 @@ class UserController extends Controller
 
         $user = User::create($validated);
 
+        // Save initial agreed salary structure if provided
+        if (!empty($request->base_salary) || !empty($request->housing_allowance) || !empty($request->transport_allowance)) {
+            \App\Models\SalaryStructure::create([
+                'user_id' => $user->id,
+                'base_salary' => $request->base_salary ?? 0,
+                'housing_allowance' => $request->housing_allowance ?? 0,
+                'transport_allowance' => $request->transport_allowance ?? 0,
+                'other_allowances' => 0,
+                'tax_percent' => 0,
+                'pension_percent' => 0,
+            ]);
+        }
+
         // Seed default onboarding tasks
         $defaultTasks = [
             'Submit ID documents & signed employment contract',

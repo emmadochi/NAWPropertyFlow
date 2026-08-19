@@ -137,26 +137,37 @@
     @endphp
 
     <!-- Mobile Header -->
-    <div class="md:hidden bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 py-3 flex items-center justify-between w-full z-20 transition-colors duration-200">
-        <div class="flex items-center space-x-2">
+    <div class="md:hidden bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 py-2.5 flex items-center justify-between w-full z-20 transition-colors duration-200">
+        <div class="flex items-center space-x-2 min-w-0">
             @if($__companySetting?->logo_path)
                 <img src="{{ asset('storage/' . $__companySetting->logo_path) }}"
                      alt="Logo"
                      class="w-7 h-7 rounded-lg object-contain bg-gray-50 border border-gray-100 flex-shrink-0">
             @else
-                <span class="p-1.5 bg-brand-100 rounded-lg text-brand-500">
+                <span class="p-1.5 bg-brand-100 rounded-lg text-brand-500 flex-shrink-0">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                     </svg>
                 </span>
             @endif
-            <span class="font-extrabold text-lg tracking-tight text-dark-900 dark:text-white truncate max-w-[200px]">{{ $__companySetting?->company_name ?? config('app.name') }}</span>
+            <span class="font-extrabold text-sm tracking-tight text-dark-900 dark:text-white truncate">{{ $__companySetting?->company_name ?? config('app.name') }}</span>
         </div>
-        <button @click="mobileSidebarOpen = true" class="text-dark-600 dark:text-slate-300 focus:outline-none">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-            </svg>
-        </button>
+
+        <div class="flex items-center space-x-2 flex-shrink-0">
+            <!-- Mobile 1-Tap PWA Install Pill -->
+            <button onclick="window.installPwaApp()" 
+                    class="inline-flex items-center space-x-1 bg-gradient-to-r from-brand-500 to-brand-600 text-white text-[11px] font-extrabold px-2.5 py-1 rounded-lg shadow-sm">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                <span>Install</span>
+            </button>
+
+            <!-- Mobile Hamburger Toggle -->
+            <button @click="mobileSidebarOpen = true" class="text-dark-600 dark:text-slate-300 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 focus:outline-none">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
     </div>
 
     <!-- Sidebar Layout -->
