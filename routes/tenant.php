@@ -47,11 +47,8 @@ use App\Http\Controllers\NotificationController;
 |
 */
 
-Route::domain('{tenant}.'.env('APP_DOMAIN', 'localhost'))->middleware([
+Route::middleware([
     'web',
-    InitializeTenancyBySubdomain::class,
-    PreventAccessFromCentralDomains::class,
-    \App\Http\Middleware\ForgetTenantParameter::class,
 ])->group(function () {
 
     // Landing redirect

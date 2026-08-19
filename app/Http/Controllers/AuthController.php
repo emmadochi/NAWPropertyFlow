@@ -14,9 +14,9 @@ class AuthController extends Controller
     {
         if (Auth::check()) {
             if (Auth::user()->role === 'customer') {
-                return redirect()->route('buyer.dashboard', tenant('id'));
+                return redirect()->route('buyer.dashboard');
             }
-            return redirect()->route('dashboard', tenant('id'));
+            return redirect()->route('dashboard');
         }
         return view('auth.login');
     }
@@ -42,11 +42,11 @@ class AuthController extends Controller
             }
 
             if (Auth::user()->role === 'customer') {
-                return redirect()->route('buyer.dashboard', tenant('id'))
+                return redirect()->route('buyer.dashboard')
                     ->with('success', 'Welcome, ' . Auth::user()->name);
             }
 
-            return redirect()->intended(route('dashboard', tenant('id')))
+            return redirect()->intended(route('dashboard'))
                 ->with('success', 'Welcome back, ' . Auth::user()->name);
         }
 
@@ -64,7 +64,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login', tenant('id'))->with('success', 'Logged out successfully.');
+        return redirect()->route('login')->with('success', 'Logged out successfully.');
     }
 
     /**

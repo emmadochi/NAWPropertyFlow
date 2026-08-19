@@ -18,18 +18,15 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Dynamically redirect based on context
         $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
-            return tenant() ? route('login', tenant('id')) : route('system.login');
+            return route('login');
         });
 
         // Redirect authenticated users
         $middleware->redirectUsersTo(function (\Illuminate\Http\Request $request) {
-            if (tenant()) {
-                if (auth()->check() && auth()->user()->role === 'customer') {
-                    return route('buyer.dashboard', tenant('id'));
-                }
-                return route('dashboard', tenant('id'));
+            if (auth()->check() && auth()->user()->role === 'customer') {
+                return route('buyer.dashboard');
             }
-            return route('system.dashboard');
+            return route('dashboard');
         });
     })
     ->withExceptions(function (Exceptions $exceptions): void {

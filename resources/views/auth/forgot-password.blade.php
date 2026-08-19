@@ -58,13 +58,13 @@
         @endif
 
         <!-- Form -->
-        <form action="{{ route('password.email', ['tenant' => tenant('id')]) }}" method="POST" class="space-y-5">
+        <form action="{{ route('password.email') }}" method="POST" class="space-y-5">
             @csrf
             <div>
                 <label for="email" class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Email Address</label>
                 <input type="email" name="email" id="email" required autofocus
                        class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none text-sm text-gray-800 transition-colors"
-                       placeholder="e.g. admin@propertyflow.com">
+                       placeholder="e.g. admin@ricafltd.com">
             </div>
 
             <button type="submit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-brand-500/20 hover:shadow-brand-600/30 transition-all text-sm tracking-wide">
@@ -73,7 +73,7 @@
         </form>
 
         <div class="mt-6 text-center">
-            <a href="{{ route('login', ['tenant' => tenant('id')]) }}" class="text-sm font-bold text-brand-600 hover:text-brand-700 transition-colors">Return to Login</a>
+            <a href="{{ route('login') }}" class="text-sm font-bold text-brand-600 hover:text-brand-700 transition-colors">Return to Login</a>
         </div>
 
     </div>
