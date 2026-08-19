@@ -419,26 +419,77 @@
             </nav>
 
             <!-- User Bio Panel & Logout -->
-            <div class="p-4 border-t border-gray-100 dark:border-slate-800 flex-shrink-0">
+            <div class="p-4 border-t border-gray-100 dark:border-slate-800 flex-shrink-0" x-data="{ showPasswordModal: false }">
                 <div class="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-3 flex items-center justify-between border border-gray-100 dark:border-slate-700/50">
-                    <div class="flex items-center space-x-3 overflow-hidden">
-                        <div class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center font-bold flex-shrink-0 text-sm shadow-sm">
+                    <div class="flex items-center space-x-3 overflow-hidden cursor-pointer" @click="showPasswordModal = true" title="Click to Change Password">
+                        <div class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center font-bold flex-shrink-0 text-sm shadow-sm hover:scale-105 transition-transform">
                             {{ substr(Auth::user()->name, 0, 2) }}
                         </div>
                         <div class="truncate pr-2">
-                            <h4 class="text-sm font-semibold text-dark-900 dark:text-white truncate leading-none mb-1">{{ Auth::user()->name }}</h4>
+                            <h4 class="text-sm font-semibold text-dark-900 dark:text-white truncate leading-none mb-1 hover:text-brand-500">{{ Auth::user()->name }}</h4>
                             <span class="text-xs text-gray-500 dark:text-slate-400 uppercase font-semibold tracking-wider">{{ str_replace('_', ' ', Auth::user()->role) }}</span>
                         </div>
                     </div>
                     
-                    <form action="{{ route('logout') }}" method="POST" class="inline">
-                        @csrf
-                        <button type="submit" class="text-gray-400 dark:text-slate-400 hover:text-rose-500 transition-colors p-1.5 rounded-lg hover:bg-white dark:hover:bg-slate-700" title="Logout">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                    <div class="flex items-center space-x-1">
+                        <button @click="showPasswordModal = true" class="text-gray-400 dark:text-slate-400 hover:text-brand-500 p-1.5 rounded-lg hover:bg-white dark:hover:bg-slate-700 transition-colors" title="Change Password">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
                             </svg>
                         </button>
-                    </form>
+                        <form action="{{ route('logout') }}" method="POST" class="inline">
+                            @csrf
+                            <button type="submit" class="text-gray-400 dark:text-slate-400 hover:text-rose-500 transition-colors p-1.5 rounded-lg hover:bg-white dark:hover:bg-slate-700" title="Logout">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path>
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Change Password Modal -->
+                <div x-show="showPasswordModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm" @click="showPasswordModal = false"></div>
+                    <div class="relative bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 md:p-8 shadow-2xl border border-gray-200 dark:border-slate-700">
+                        <div class="flex items-center space-x-3 mb-5">
+                            <div class="w-10 h-10 rounded-2xl bg-orange-50 text-brand-500 flex items-center justify-center font-bold">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-extrabold text-dark-900 dark:text-white">Change Password</h3>
+                                <p class="text-xs text-gray-500 dark:text-slate-400">Update your account credentials securely.</p>
+                            </div>
+                        </div>
+
+                        <form action="{{ route('password.change') }}" method="POST" class="space-y-4">
+                            @csrf
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Current Password *</label>
+                                <input type="password" name="current_password" required
+                                       class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-sm font-semibold focus:border-brand-500 focus:outline-none">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">New Password *</label>
+                                <input type="password" name="new_password" required
+                                       class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-sm font-semibold focus:border-brand-500 focus:outline-none"
+                                       placeholder="Minimum 8 characters">
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">Confirm New Password *</label>
+                                <input type="password" name="new_password_confirmation" required
+                                       class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-sm font-semibold focus:border-brand-500 focus:outline-none"
+                                       placeholder="Confirm new password">
+                            </div>
+
+                            <div class="pt-4 flex items-center justify-end space-x-3">
+                                <button type="button" @click="showPasswordModal = false" class="px-4 py-2 text-xs font-bold text-gray-600 dark:text-slate-400 hover:bg-gray-100 rounded-xl">Cancel</button>
+                                <button type="submit" class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-5 py-2.5 rounded-xl text-xs shadow-md shadow-brand-500/20">Update Password</button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

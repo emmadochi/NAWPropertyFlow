@@ -66,11 +66,14 @@ Route::middleware([
         Route::post('/login', [AuthController::class, 'login']);
         Route::get('/forgot-password', [AuthController::class, 'showForgotPassword'])->name('password.request');
         Route::post('/forgot-password', [AuthController::class, 'handleForgotPassword'])->name('password.email');
+        Route::get('/reset-password', [AuthController::class, 'showResetPassword'])->name('password.reset');
+        Route::post('/reset-password', [AuthController::class, 'updatePasswordWithToken'])->name('password.update');
     });
 
     // Authenticated Routes
     Route::middleware(['auth'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+        Route::post('/change-password', [AuthController::class, 'changePassword'])->name('password.change');
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         
         // Virtual Tour (Buckcrest Havens Prototype)
