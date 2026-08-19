@@ -124,12 +124,12 @@
     </div>
 
     <!-- Sidebar Layout -->
-    <aside class="fixed inset-y-0 left-0 z-30 w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out md:static"
+    <aside class="fixed inset-y-0 left-0 z-30 w-64 h-screen bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 flex flex-col justify-between transform -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out md:static md:h-screen overflow-hidden flex-shrink-0"
            :class="{'translate-x-0': mobileSidebarOpen, '-translate-x-full': !mobileSidebarOpen}">
         
-        <div class="flex flex-col h-full">
+        <div class="flex flex-col h-full min-h-0">
             <!-- Sidebar Header / Logo -->
-            <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-800">
+            <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-800 flex-shrink-0">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3 min-w-0">
                         @if($__companySetting?->logo_path)
@@ -162,7 +162,7 @@
             <!-- Navigation Links -->
             {{-- Cache company settings ONCE per sidebar render to avoid N+1 queries --}}
             @php $__cs = \App\Models\CompanySetting::first(); @endphp
-            <nav class="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
+            <nav class="flex-1 px-4 py-4 space-y-1 overflow-y-auto min-h-0 scrollbar-thin scrollbar-thumb-gray-200 dark:scrollbar-thumb-slate-700">
                 @if(Auth::user()->role === 'customer')
                     <a href="{{ route('buyer.dashboard') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('buyer.dashboard') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -385,7 +385,7 @@
             </nav>
 
             <!-- User Bio Panel & Logout -->
-            <div class="p-4 border-t border-gray-100 dark:border-slate-800">
+            <div class="p-4 border-t border-gray-100 dark:border-slate-800 flex-shrink-0">
                 <div class="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-3 flex items-center justify-between border border-gray-100 dark:border-slate-700/50">
                     <div class="flex items-center space-x-3 overflow-hidden">
                         <div class="w-10 h-10 rounded-full bg-brand-500 text-white flex items-center justify-center font-bold flex-shrink-0 text-sm shadow-sm">
