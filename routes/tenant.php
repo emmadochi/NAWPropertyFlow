@@ -60,6 +60,11 @@ Route::middleware([
     Route::get('campaigns/track/open/{token}', [CampaignController::class, 'trackOpen'])->name('campaigns.track.open');
     Route::get('campaigns/track/click/{token}', [CampaignController::class, 'trackClick'])->name('campaigns.track.click');
 
+    // Customer Magic Link Authentication (Rate limited for security)
+    Route::get('portal/access/{token}', [BuyerDashboardController::class, 'magicLogin'])
+        ->middleware(['throttle:30,1'])
+        ->name('portal.magic-login');
+
     // Guest Routes
     Route::middleware('guest')->group(function () {
         Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -236,11 +241,6 @@ Route::middleware([
 
             Route::patch('hr/staff/onboarding/{task}/toggle', [StaffProfileController::class, 'toggleOnboardingTask'])->name('hr.staff.onboarding.toggle');
         });
-
-        // Customer Magic Link Authentication (Rate limited for security)
-        Route::get('portal/access/{token}', [BuyerDashboardController::class, 'magicLogin'])
-            ->middleware(['throttle:30,1'])
-            ->name('portal.magic-login');
 
         // Customer Portal
         Route::middleware(['role:customer', 'feature:customer_portal'])->group(function () {
