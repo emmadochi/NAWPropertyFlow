@@ -255,7 +255,9 @@
                     @endif
 
                     {{-- 2. SALES & CLIENTS --}}
+                    @if(Auth::user()->hasPermission('leads.view_all') || Auth::user()->hasPermission('leads.view_own') || Auth::user()->hasPermission('inspections.schedule') || Auth::user()->hasPermission('followups.manage'))
                     <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Sales & Clients</div>
+                    @if(Auth::user()->hasPermission('leads.view_all') || Auth::user()->hasPermission('leads.view_own'))
                     <a href="{{ route('leads.index') }}" class="flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('leads.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <div class="flex items-center space-x-3">
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -265,12 +267,16 @@
                         </div>
                         <span x-data="{ count: 0 }" x-init="window.addEventListener('sidebar-badges-updated', e => { count = e.detail.leads || 0 })" x-show="count > 0" x-text="count + ' New'" class="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300" x-cloak></span>
                     </a>
+                    @endif
+                    @if(Auth::user()->hasPermission('followups.manage') || Auth::user()->hasPermission('leads.view_own'))
                     <a href="{{ route('follow-ups.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('follow-ups.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         <span>Follow-Ups</span>
                     </a>
+                    @endif
+                    @if(Auth::user()->hasPermission('inspections.schedule') || Auth::user()->hasPermission('inspections.view_all'))
                     <a href="{{ route('inspections.index') }}" class="flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('inspections.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <div class="flex items-center space-x-3">
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -280,8 +286,11 @@
                         </div>
                         <span x-data="{ count: 0 }" x-init="window.addEventListener('sidebar-badges-updated', e => { count = e.detail.inspections || 0 })" x-show="count > 0" x-text="count" class="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300" x-cloak></span>
                     </a>
+                    @endif
+                    @endif
 
                     {{-- 3. INVENTORY --}}
+                    @if(Auth::user()->hasPermission('properties.view') || Auth::user()->hasPermission('properties.create'))
                     <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Inventory</div>
                     <a href="{{ route('properties.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('properties.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -289,15 +298,18 @@
                         </svg>
                         <span>Properties</span>
                     </a>
+                    @if(Auth::user()->hasPermission('units.manage') || Auth::user()->isCompanyAdmin())
                     <a href="{{ route('projects.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('projects.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                         </svg>
                         <span>Projects</span>
                     </a>
+                    @endif
+                    @endif
 
                     {{-- 4. MARKETING (Professional+) --}}
-                    @if(in_array(Auth::user()->role, ['super_admin', 'company_admin', 'sales_manager', 'media_manager']) && $__cs?->hasFeature('marketing'))
+                    @if((Auth::user()->hasPermission('marketing.view') || Auth::user()->hasPermission('marketing.send_broadcast')) && $__cs?->hasFeature('marketing'))
                     <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Marketing</div>
                     <a href="{{ route('campaigns.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('campaigns.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -305,6 +317,7 @@
                         </svg>
                         <span>Campaigns</span>
                     </a>
+                    @if(Auth::user()->hasPermission('marketing.manage_drip'))
                     <a href="{{ route('drip-sequences.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('drip-sequences.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
@@ -312,9 +325,11 @@
                         <span>Drip Sequences</span>
                     </a>
                     @endif
+                    @endif
 
                     {{-- 5. DOCUMENTS (Professional+) --}}
                     @if($__cs?->hasFeature('file_manager') || $__cs?->hasFeature('docs'))
+                    @if(Auth::user()->hasPermission('properties.view') || Auth::user()->hasPermission('hr.view_staff'))
                     <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Documents</div>
                     @if($__cs?->hasFeature('file_manager'))
                     <a href="{{ route('file-storage.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('file-storage.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
@@ -331,7 +346,7 @@
                         </svg>
                         <span>Generated Docs</span>
                     </a>
-                    @if(in_array(Auth::user()->role, ['super_admin', 'company_admin']))
+                    @if(Auth::user()->isCompanyAdmin())
                     <a href="{{ route('document-templates.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('document-templates.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
@@ -341,9 +356,10 @@
                     @endif
                     @endif
                     @endif
+                    @endif
 
                     {{-- 6. ANALYTICS (Enterprise) --}}
-                    @if(in_array(Auth::user()->role, ['super_admin', 'company_admin', 'hr', 'sales_manager', 'media_manager', 'project_manager']) && $__cs?->hasFeature('advanced_reports'))
+                    @if((Auth::user()->hasPermission('finance.view_ledger') || Auth::user()->hasPermission('hr.manage_targets') || Auth::user()->isCompanyAdmin()) && $__cs?->hasFeature('advanced_reports'))
                     <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Analytics</div>
                     <a href="{{ route('reports.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('reports.index') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -362,13 +378,15 @@
 
                     {{-- 7. HR & PERFORMANCE (Enterprise) --}}
                     @if($__cs?->hasFeature('hr'))
-                    <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">HR & Performance</div>
+                    @if(Auth::user()->hasPermission('hr.view_staff') || Auth::user()->hasPermission('hr.approve_leaves') || Auth::user()->hasPermission('hr.review_submissions') || Auth::user()->hasPermission('hr.manage_targets') || Auth::user()->hasPermission('finance.manage_payroll') || Auth::user()->hasPermission('finance.log_expenses') || Auth::user()->hasPermission('finance.approve_expenses'))
+                    <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">HR &amp; Finance</div>
                     <a href="{{ route('hr.submissions.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('hr.submissions.index') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                         </svg>
                         <span>My KPI Logs</span>
                     </a>
+                    @if(Auth::user()->hasPermission('hr.approve_leaves') || Auth::user()->isCompanyAdmin())
                     <a href="{{ route('hr.leave.index') }}" class="flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('hr.leave.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <div class="flex items-center space-x-3">
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -378,27 +396,34 @@
                         </div>
                         <span x-data="{ count: 0 }" x-init="window.addEventListener('sidebar-badges-updated', e => { count = e.detail.hr || 0 })" x-show="count > 0" x-text="count + ' Pending'" class="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300" x-cloak></span>
                     </a>
-                    @if(Auth::check() && (Auth::user()->hasRole(['super_admin', 'company_admin', 'hr']) || Auth::user()->managedDepartments()->where('is_active', true)->exists()))
+                    @endif
+                    @if(Auth::user()->hasPermission('hr.review_submissions') || (Auth::check() && Auth::user()->managedDepartments()->where('is_active', true)->exists()))
                     <a href="{{ route('hr.submissions.review') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('hr.submissions.review') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         <span>Submissions Review</span>
                     </a>
+                    @endif
+                    @if(Auth::user()->hasPermission('hr.manage_targets'))
                     <a href="{{ route('hr.department-targets.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('hr.department-targets.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
                         </svg>
                         <span>Department Targets</span>
                     </a>
+                    @endif
 
-                    @if(in_array(Auth::user()->role, ['super_admin', 'company_admin', 'hr', 'accountant', 'finance_manager']))
+                    @if(Auth::user()->hasPermission('finance.manage_payroll'))
                     <a href="{{ route('payroll.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('payroll.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
-                        <span>Payroll & Salaries</span>
+                        <span>Payroll &amp; Salaries</span>
                     </a>
+                    @endif
+
+                    @if(Auth::user()->hasPermission('finance.log_expenses') || Auth::user()->hasPermission('finance.approve_expenses') || Auth::user()->hasPermission('finance.view_ledger'))
                     <a href="{{ route('accounting.expenses.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('accounting.expenses.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
@@ -410,10 +435,10 @@
                     @endif
 
                     {{-- 8. ADMINISTRATION --}}
-                    @if(in_array(Auth::user()->role, ['super_admin', 'company_admin', 'hr', 'accountant', 'finance_manager']))
+                    @if(Auth::user()->hasPermission('hr.manage_users') || Auth::user()->hasPermission('system.manage_roles') || Auth::user()->isCompanyAdmin())
                     <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Administration</div>
 
-                    {{-- Team Settings: all tiers (company_admin / hr only) --}}
+                    @if(Auth::user()->hasPermission('hr.manage_users') || Auth::user()->isCompanyAdmin())
                     <a href="{{ route('settings.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('settings.index') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
@@ -421,6 +446,7 @@
                         </svg>
                         <span>Team Settings</span>
                     </a>
+                    @endif
 
                     @if(Auth::user()->isSuperAdmin() || Auth::user()->hasPermission('system.manage_roles'))
                     <a href="{{ route('settings.roles.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('settings.roles.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">

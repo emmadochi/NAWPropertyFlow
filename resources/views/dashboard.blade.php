@@ -210,16 +210,33 @@
     <!-- Top Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
         <div>
+            @if(Auth::user()->role === 'hr' || (Auth::user()->roleRelation && Auth::user()->roleRelation->slug === 'hr'))
+            <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">HR Management Dashboard</h1>
+            <p class="text-sm text-gray-500 mt-1">Staff directory, leave approvals, attendance KPI submissions, and talent pipeline.</p>
+            @elseif(Auth::user()->role === 'accountant' || Auth::user()->role === 'finance_manager')
+            <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">Financial &amp; Accounting Dashboard</h1>
+            <p class="text-sm text-gray-500 mt-1">Cash flow inflows, revenue reconciliation, expenses OPEX, and company ledger.</p>
+            @else
             <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">CRM Dashboard</h1>
             <p class="text-sm text-gray-500 mt-1">Real-time leads tracking, conversions metrics, and performance dashboard.</p>
+            @endif
         </div>
         <div class="flex space-x-3">
+            @if(Auth::user()->hasPermission('leads.create'))
             <a href="{{ route('leads.index') }}" class="inline-flex items-center space-x-2 px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-500/10 hover:shadow-brand-600/20 transition-all">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>
                 <span>Add New Lead</span>
             </a>
+            @elseif(Auth::user()->hasPermission('hr.manage_users'))
+            <a href="{{ route('settings.index') }}" class="inline-flex items-center space-x-2 px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-500/10 hover:shadow-brand-600/20 transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"></path>
+                </svg>
+                <span>Add Staff Member</span>
+            </a>
+            @endif
         </div>
     </div>
 
