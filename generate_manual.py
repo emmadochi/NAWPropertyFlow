@@ -367,23 +367,30 @@ def create_masterpiece_document():
             "• Open & Click Analytics: Full tracking on email engagement."
         ),
         (
-            "10. HR Management, Sales Leaderboard & 1-Click Automated Payroll",
+            "10. Dynamic Multi-Department Management & Custom KPI Governance (Zero-Code Scalability)",
+            "• Infinite Organizational Scalability: Create and manage unlimited operational departments (e.g. Media & Creative, Administration, Legal & Land Titles, Customer Relations, Logistics, Security) without writing new code.\n"
+            "• Custom KPI & Metric Configurator: Define unique performance metrics for each department (e.g., 'Site Videos Shot', 'Engagement Numbers', 'Deed of Assignment Drafted', 'Office Maintenance Turnaround %').\n"
+            "• Hierarchical Staff Submissions: Staff submit daily/weekly performance logs against their departmental metrics and attach supporting files.\n"
+            "• HOD Approval & MD Scorecards: Head of Departments review and approve submissions, which instantly feed into the Executive Consolidated Department Performance Report."
+        ),
+        (
+            "11. HR Governance, Sales Leaderboard & 1-Click Automated Payroll",
             "• Gamified Sales Leaderboard: Live monthly rankings highlighting Gold, Silver, and Bronze sales champions, revenue totals, and conversion rates.\n"
             "• Departmental Target Tracking: Set revenue and unit quotas per department.\n"
             "• 1-Click Automated Monthly Payroll: Automatically aggregates base staff salaries + all approved monthly marketer commissions into consolidated payslips ready for bank export.\n"
-            "• Staff Governance: Employee leave applications, staff submissions/reports, onboarding checklists, and disciplinary/review logs."
+            "• Staff Governance: Employee leave applications, staff onboarding checklists, and disciplinary/review logs."
         ),
         (
-            "11. Cloud File Storage & Digital Asset Vault",
+            "12. Cloud File Storage & Digital Asset Vault",
             "• Enterprise Document Repository: Create structured folders for Estate Layouts, Survey Plans, Land Titles, and Corporate Documents.\n"
             "• Granular Actions: Upload, preview, rename, and download high-resolution architectural files securely."
         ),
         (
-            "12. Virtual 3D Tour Integration (Prototype)",
+            "13. Virtual 3D Tour Integration (Prototype)",
             "• Interactive Visual Walkthrough: Embedded virtual tour exploration for prospective buyers to experience estate environments remotely."
         ),
         (
-            "13. Multi-Branch Operations & Consolidated Reporting",
+            "14. Multi-Branch Operations & Consolidated Reporting",
             "• Multi-Branch Switching: Filter the entire CRM across Head Office, Island Branch, Mainland Branch, or regional offices.\n"
             "• Executive Export Suite: 1-click CSV/Excel exports for Leads by Source, Sales by Agent, Follow-Up Compliance, and Branch Comparisons."
         )
