@@ -264,7 +264,8 @@ Route::middleware([
             Route::delete('file-storage/files/{file}', [FileStorageController::class, 'destroyFile'])->name('file-storage.files.destroy');
         });
 
-        // Global APIs
+        // Global APIs & Notifications
+        Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::get('api/global-search', [SearchController::class, 'search'])->name('api.global-search');
         Route::get('api/notifications', [NotificationController::class, 'getAlerts'])->name('api.notifications');
     });

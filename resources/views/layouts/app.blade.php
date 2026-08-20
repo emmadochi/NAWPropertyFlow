@@ -227,6 +227,16 @@
                         </svg>
                         <span>Dashboard</span>
                     </a>
+
+                    <a href="{{ route('notifications.index') }}" class="flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('notifications.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                            </svg>
+                            <span>Notifications</span>
+                        </div>
+                        <span x-data="{ count: 0 }" x-init="window.addEventListener('notifications-unread-updated', e => { count = e.detail || 0 })" x-show="count > 0" x-text="count" class="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300" x-cloak></span>
+                    </a>
                     
                     <a href="{{ route('virtual-tour') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('virtual-tour') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,11 +256,14 @@
 
                     {{-- 2. SALES & CLIENTS --}}
                     <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Sales & Clients</div>
-                    <a href="{{ route('leads.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('leads.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                        <span>Leads Pipeline</span>
+                    <a href="{{ route('leads.index') }}" class="flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('leads.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                            </svg>
+                            <span>Leads Pipeline</span>
+                        </div>
+                        <span x-data="{ count: 0 }" x-init="window.addEventListener('sidebar-badges-updated', e => { count = e.detail.leads || 0 })" x-show="count > 0" x-text="count + ' New'" class="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-orange-100 text-orange-700 dark:bg-orange-950 dark:text-orange-300" x-cloak></span>
                     </a>
                     <a href="{{ route('follow-ups.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('follow-ups.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -258,11 +271,14 @@
                         </svg>
                         <span>Follow-Ups</span>
                     </a>
-                    <a href="{{ route('inspections.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('inspections.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        <span>Inspections</span>
+                    <a href="{{ route('inspections.index') }}" class="flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('inspections.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <span>Inspections</span>
+                        </div>
+                        <span x-data="{ count: 0 }" x-init="window.addEventListener('sidebar-badges-updated', e => { count = e.detail.inspections || 0 })" x-show="count > 0" x-text="count" class="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300" x-cloak></span>
                     </a>
 
                     {{-- 3. INVENTORY --}}
@@ -353,11 +369,14 @@
                         </svg>
                         <span>My KPI Logs</span>
                     </a>
-                    <a href="{{ route('hr.leave.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('hr.leave.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                        </svg>
-                        <span>Leave Requests</span>
+                    <a href="{{ route('hr.leave.index') }}" class="flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('hr.leave.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <span>Leave Requests</span>
+                        </div>
+                        <span x-data="{ count: 0 }" x-init="window.addEventListener('sidebar-badges-updated', e => { count = e.detail.hr || 0 })" x-show="count > 0" x-text="count + ' Pending'" class="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300" x-cloak></span>
                     </a>
                     @if(Auth::check() && (Auth::user()->hasRole(['super_admin', 'company_admin', 'hr']) || Auth::user()->managedDepartments()->where('is_active', true)->exists()))
                     <a href="{{ route('hr.submissions.review') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('hr.submissions.review') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
@@ -699,6 +718,13 @@
                                         </div>
                                     </template>
                                 </div>
+
+                                <div class="px-4 py-2.5 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                                    <a href="{{ route('notifications.index') }}" @click="open = false" class="text-[11px] font-extrabold text-brand-600 hover:text-brand-700 transition-colors inline-flex items-center space-x-1">
+                                        <span>View Notification Center</span>
+                                        <span>&rarr;</span>
+                                    </a>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -806,6 +832,13 @@
                                             All caught up! No pending alerts.
                                         </div>
                                     </template>
+                                </div>
+
+                                <div class="px-4 py-2.5 border-t border-gray-100 bg-gray-50/50 flex items-center justify-between">
+                                    <a href="{{ route('notifications.index') }}" @click="open = false" class="text-[11px] font-extrabold text-brand-600 hover:text-brand-700 transition-colors inline-flex items-center space-x-1">
+                                        <span>View Notification Center</span>
+                                        <span>&rarr;</span>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -1366,8 +1399,14 @@
                             }
                         });
                         const data = await response.json();
-                        this.unreadCount = data.unread_count;
-                        this.alerts = data.alerts;
+                        this.unreadCount = data.unread_count || 0;
+                        this.alerts = data.alerts || [];
+
+                        // Dispatch custom events to update sidebar tags in real-time
+                        window.dispatchEvent(new CustomEvent('notifications-unread-updated', { detail: this.unreadCount }));
+                        if (data.badges) {
+                            window.dispatchEvent(new CustomEvent('sidebar-badges-updated', { detail: data.badges }));
+                        }
                     } catch (e) {
                         console.error('Failed to fetch notifications:', e);
                     }
