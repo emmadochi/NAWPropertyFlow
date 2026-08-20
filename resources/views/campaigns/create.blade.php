@@ -40,23 +40,46 @@
             </div>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-            <button type="button" @click="loadTemplate('launch')" class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 hover:border-brand-500 hover:shadow-md transition-all text-left group">
-                <div class="w-8 h-8 rounded-lg bg-orange-50 text-brand-500 flex items-center justify-center font-bold mb-2 group-hover:scale-110 transition-transform">🚀</div>
+            <button type="button" @click="loadTemplate('launch')" 
+                    class="p-3.5 rounded-2xl border transition-all text-left group relative"
+                    :class="activeTemplate === 'launch' ? 'bg-orange-50/90 dark:bg-slate-800 border-brand-500 shadow-md ring-2 ring-brand-500/20' : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-brand-400 hover:shadow-sm'">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="w-8 h-8 rounded-xl bg-orange-100 text-brand-600 flex items-center justify-center font-bold text-base group-hover:scale-110 transition-transform">🚀</div>
+                    <span x-show="activeTemplate === 'launch'" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-brand-500 text-white">Active</span>
+                </div>
                 <h4 class="text-xs font-bold text-dark-900 dark:text-white">New Estate Launch</h4>
                 <p class="text-[10px] text-gray-400 mt-0.5 leading-tight">Hero banner, price perk, plot sizes &amp; inspection CTA.</p>
             </button>
-            <button type="button" @click="loadTemplate('digest')" class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 hover:border-brand-500 hover:shadow-md transition-all text-left group">
-                <div class="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center font-bold mb-2 group-hover:scale-110 transition-transform">📰</div>
+
+            <button type="button" @click="loadTemplate('digest')" 
+                    class="p-3.5 rounded-2xl border transition-all text-left group relative"
+                    :class="activeTemplate === 'digest' ? 'bg-blue-50/90 dark:bg-slate-800 border-blue-500 shadow-md ring-2 ring-blue-500/20' : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-blue-400 hover:shadow-sm'">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-base group-hover:scale-110 transition-transform">📰</div>
+                    <span x-show="activeTemplate === 'digest'" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-blue-600 text-white">Active</span>
+                </div>
                 <h4 class="text-xs font-bold text-dark-900 dark:text-white">Monthly Investor Digest</h4>
                 <p class="text-[10px] text-gray-400 mt-0.5 leading-tight">Market commentary, featured property cards &amp; updates.</p>
             </button>
-            <button type="button" @click="loadTemplate('promo')" class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 hover:border-brand-500 hover:shadow-md transition-all text-left group">
-                <div class="w-8 h-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold mb-2 group-hover:scale-110 transition-transform">🏷️</div>
+
+            <button type="button" @click="loadTemplate('promo')" 
+                    class="p-3.5 rounded-2xl border transition-all text-left group relative"
+                    :class="activeTemplate === 'promo' ? 'bg-emerald-50/90 dark:bg-slate-800 border-emerald-500 shadow-md ring-2 ring-emerald-500/20' : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-emerald-400 hover:shadow-sm'">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="w-8 h-8 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-base group-hover:scale-110 transition-transform">🏷️</div>
+                    <span x-show="activeTemplate === 'promo'" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-emerald-600 text-white">Active</span>
+                </div>
                 <h4 class="text-xs font-bold text-dark-900 dark:text-white">Flash Discount Promo</h4>
                 <p class="text-[10px] text-gray-400 mt-0.5 leading-tight">15% discount badge, installment spread &amp; WhatsApp link.</p>
             </button>
-            <button type="button" @click="loadTemplate('progress')" class="p-3 bg-white dark:bg-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 hover:border-brand-500 hover:shadow-md transition-all text-left group">
-                <div class="w-8 h-8 rounded-lg bg-purple-50 text-purple-600 flex items-center justify-center font-bold mb-2 group-hover:scale-110 transition-transform">🏗️</div>
+
+            <button type="button" @click="loadTemplate('progress')" 
+                    class="p-3.5 rounded-2xl border transition-all text-left group relative"
+                    :class="activeTemplate === 'progress' ? 'bg-purple-50/90 dark:bg-slate-800 border-purple-500 shadow-md ring-2 ring-purple-500/20' : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-purple-400 hover:shadow-sm'">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="w-8 h-8 rounded-xl bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-base group-hover:scale-110 transition-transform">🏗️</div>
+                    <span x-show="activeTemplate === 'progress'" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-purple-600 text-white">Active</span>
+                </div>
                 <h4 class="text-xs font-bold text-dark-900 dark:text-white">Construction Progress</h4>
                 <p class="text-[10px] text-gray-400 mt-0.5 leading-tight">Site milestone photos, road grading &amp; allocation news.</p>
             </button>
@@ -354,6 +377,7 @@ function campaignCreator() {
         type: 'email',
         campaignName: '',
         subject: '',
+        activeTemplate: 'launch',
         audienceStatus: '',
         audienceSource: '',
         previewCount: '...',
@@ -369,10 +393,14 @@ function campaignCreator() {
         init() {
             this.$watch('type', () => this.updatePreview());
             this.updatePreview();
-            this.loadTemplate('launch'); // default load luxury launch template
+            this.$nextTick(() => {
+                this.loadTemplate('launch'); // default load luxury launch template
+            });
         },
 
         loadTemplate(key) {
+            this.activeTemplate = key;
+            this.type = 'email'; // Ensure switched to rich email format
             const company = '{{ \App\Models\CompanySetting::getCached()?->company_name ?? "RICAF Nigeria Limited" }}';
             const phone = '{{ \App\Models\CompanySetting::getCached()?->phone ?? "+234 800 RICAF CRM" }}';
 
@@ -488,10 +516,23 @@ function campaignCreator() {
         <p style="font-size: 13px; color: #475569;">You can also access your real-time payment schedule and property documents anytime on your Client Portal.</p>
     </div>
 </div>`;
-            }
+            this.$nextTick(() => {
+                const editor = document.getElementById('campaign-editor');
+                const source = document.getElementById('campaign-editor-source');
+                const bodyInput = document.getElementById('campaign-body-input');
 
-            document.getElementById('campaign-editor').innerHTML = tpl;
-            campaign_sync();
+                if (editor) editor.innerHTML = tpl;
+                if (source) source.value = tpl;
+                if (bodyInput) bodyInput.value = tpl;
+                
+                campaign_sync();
+
+                // Smoothly scroll down towards the editor on small screens
+                const editorWrap = document.getElementById('campaign-editor-wrap');
+                if (editorWrap && window.innerWidth < 768) {
+                    editorWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
         },
 
         insertCampaignToken(token) {
