@@ -30,7 +30,7 @@ class UserController extends Controller
             'name'            => 'required|string|max:255',
             'email'           => 'required|email|unique:users,email|max:255',
             'password'        => 'required|string|min:6',
-            'role'            => 'required|string|in:company_admin,hr,sales_manager,sales_executive,media_manager,project_manager',
+            'role'            => 'required|string|in:company_admin,hr,sales_manager,sales_executive,media_manager,project_manager,accountant,finance_manager',
             'department_id'   => 'nullable|exists:departments,id',
             'department'      => 'nullable|string',
             'phone_number'    => 'nullable|string|max:30',
@@ -106,7 +106,7 @@ class UserController extends Controller
         }
 
         $validated = $request->validate([
-            'role' => 'required|string|in:company_admin,hr,sales_manager,sales_executive,media_manager,project_manager',
+            'role' => 'required|string|in:company_admin,hr,sales_manager,sales_executive,media_manager,project_manager,accountant,finance_manager',
             'department_id' => 'nullable|exists:departments,id',
             'department'    => 'nullable|string',
             'status' => 'required|string|in:active,inactive',

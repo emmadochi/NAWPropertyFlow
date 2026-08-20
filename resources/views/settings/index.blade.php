@@ -120,6 +120,7 @@
                             <option value="" disabled selected>Select a role...</option>
                             <option value="sales_executive">Sales Executive (Marketer)</option>
                             <option value="sales_manager">Sales Manager</option>
+                            <option value="accountant">Accountant / Finance Officer</option>
                             <option value="hr">Human Resources</option>
                             <option value="media_manager">Media / Marketing Manager</option>
                             <option value="project_manager">Project Manager</option>
