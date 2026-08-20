@@ -7,7 +7,7 @@ use App\Models\FollowUp;
 use App\Models\Inspection;
 use App\Models\Lead;
 use App\Models\PaymentMilestone;
-use App\Models\LeaveApplication;
+use App\Models\LeaveRequest;
 use App\Models\StaffSubmission;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -175,7 +175,7 @@ class NotificationController extends Controller
 
         // 5. HR Staff Leave Requests (For Admin/HR)
         if ($isAdmin || $user->role === 'hr_manager') {
-            $pendingLeaves = LeaveApplication::where('status', 'Pending')
+            $pendingLeaves = LeaveRequest::where('status', 'Pending')
                 ->with('user')
                 ->orderBy('created_at', 'desc')
                 ->limit(3)
@@ -189,8 +189,8 @@ class NotificationController extends Controller
                     'icon' => '📝',
                     'title' => 'Leave Application Pending',
                     'description' => ($leave->user?->name ?? 'Staff') . " requested {$leave->type} ({$leave->days_count} days).",
-                    'time' => $leave->created_at->diffForHumans(),
-                    'url' => route('hr.leaves.index')
+                    'time' => $leave->created_at ? $leave->created_at->diffForHumans() : 'Recently',
+                    'url' => route('hr.leave.index')
                 ];
             }
         }
@@ -233,7 +233,7 @@ class NotificationController extends Controller
         // HR badge: Pending leave requests
         $hrCount = 0;
         if ($isAdmin || $user->role === 'hr_manager') {
-            $hrCount = LeaveApplication::where('status', 'Pending')->count();
+            $hrCount = LeaveRequest::where('status', 'Pending')->count();
         }
 
         return [

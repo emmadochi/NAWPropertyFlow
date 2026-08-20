@@ -26,6 +26,12 @@ class EnterpriseWorkflowAndSecurityTest extends TestCase
             '--path' => 'database/migrations/tenant',
             '--realpath' => false,
         ]);
+
+        \App\Models\CompanySetting::forceCreate([
+            'company_name' => 'RICAF Nigeria Limited',
+            'package_tier' => 'enterprise',
+            'email' => 'info@ricafltd.com'
+        ]);
     }
     public function test_sales_executive_can_only_create_and_view_their_own_leads()
     {
@@ -196,5 +202,114 @@ class EnterpriseWorkflowAndSecurityTest extends TestCase
         // 4. Test tampering with invalid token
         $fakeResponse = $this->get(route('portal.magic-login', ['token' => 'invalid_fake_token_12345']));
         $fakeResponse->assertStatus(404);
+    }
+
+    /**
+     * TEST 4: Client Self-Service Proof of Payment (POP) Upload.
+     */
+    public function test_client_can_upload_proof_of_payment_from_portal()
+    {
+        \Illuminate\Support\Facades\Storage::fake('public');
+
+        $lead = Lead::forceCreate([
+            'full_name' => 'Madam Grace',
+            'phone_number' => '08099998888',
+            'email' => 'grace_' . Str::random(5) . '@gmail.com',
+            'status' => 'Closed Won'
+        ]);
+
+        $buyerUser = User::forceCreate([
+            'name' => $lead->full_name,
+            'email' => $lead->email,
+            'password' => Hash::make('secret'),
+            'role' => 'customer',
+            'status' => 'active'
+        ]);
+
+        $property = Property::forceCreate([
+            'name' => 'Royal Palm Estate',
+            'property_type' => 'Land',
+            'price' => 5000000.00,
+            'location' => 'Lekki Scheme 2'
+        ]);
+
+        $officer = User::forceCreate([
+            'name' => 'Agent Chidi',
+            'email' => 'chidi_' . Str::random(5) . '@ricafltd.com',
+            'password' => Hash::make('secret'),
+            'role' => 'sales_executive',
+            'status' => 'active'
+        ]);
+
+        $sale = Sale::forceCreate([
+            'lead_id' => $lead->id,
+            'property_id' => $property->id,
+            'sales_officer_id' => $officer->id,
+            'deal_value' => 5000000.00,
+            'status' => 'active'
+        ]);
+
+        $plan = PaymentPlan::forceCreate([
+            'sale_id' => $sale->id,
+            'total_amount' => 5000000.00,
+            'amount_paid' => 2000000.00,
+            'balance' => 3000000.00,
+            'plan_type' => 'installment',
+            'status' => 'active'
+        ]);
+
+        $milestone = PaymentMilestone::forceCreate([
+            'payment_plan_id' => $plan->id,
+            'label' => 'Tranche 2',
+            'amount_due' => 1500000.00,
+            'due_date' => now()->addMonth()->format('Y-m-d'),
+            'status' => 'pending'
+        ]);
+
+        $file = \Illuminate\Http\UploadedFile::fake()->create('bank_receipt.pdf', 250);
+
+        // Buyer uploads POP
+        $response = $this->actingAs($buyerUser)->post(route('buyer.payments.submit-pop', $milestone->id), [
+            'amount_paid' => 1500000.00,
+            'bank_reference' => 'GTB/TRX-998811',
+            'payment_date' => now()->format('Y-m-d'),
+            'proof_file' => $file,
+            'notes' => 'Transfer completed via mobile app.'
+        ]);
+
+        $response->assertSessionHas('success');
+        $milestone->refresh();
+        $this->assertNotNull($milestone->proof_of_payment);
+        $this->assertEquals(1500000.00, $milestone->amount_paid);
+        $this->assertEquals('GTB/TRX-998811', $milestone->bank_reference);
+        $this->assertNotNull($milestone->pop_submitted_at);
+    }
+
+    /**
+     * TEST 5: 3-Tier Notification Center & API Endpoint.
+     */
+    public function test_notification_center_and_live_badge_counters()
+    {
+        $admin = User::forceCreate([
+            'name' => 'Managing Director',
+            'email' => 'md_' . Str::random(5) . '@ricafltd.com',
+            'password' => Hash::make('secret'),
+            'role' => 'company_admin',
+            'status' => 'active'
+        ]);
+
+        // 1. Test Notification Center view
+        $viewResponse = $this->actingAs($admin)->get(route('notifications.index'));
+        $viewResponse->assertStatus(200);
+        $viewResponse->assertSee('Notification Center');
+
+        // 2. Test Notification API endpoint
+        $apiResponse = $this->actingAs($admin)->getJson(route('api.notifications'));
+        $apiResponse->assertStatus(200);
+        $apiResponse->assertJsonStructure([
+            'unread_count',
+            'alerts',
+            'badges' => ['leads', 'milestones', 'inspections', 'hr']
+        ]);
     }
 }
