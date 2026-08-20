@@ -225,6 +225,34 @@
 @endphp
 
 <div class="tour-container">
+    {{-- Coming Soon Alert Banner --}}
+    <div class="w-full max-w-4xl mx-auto mb-6">
+        <div class="bg-gradient-to-r from-amber-500/10 via-brand-500/15 to-amber-500/10 border border-amber-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
+            <div class="flex items-center space-x-3 text-center sm:text-left">
+                <span class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400 border border-amber-500/40 text-lg shadow-inner">
+                    🚀
+                </span>
+                <div>
+                    <div class="flex items-center justify-center sm:justify-start space-x-2">
+                        <span class="px-2 py-0.5 text-[10px] font-black uppercase tracking-wider bg-amber-500 text-slate-950 rounded-md">
+                            Coming Soon
+                        </span>
+                        <h4 class="text-xs sm:text-sm font-bold text-white tracking-tight">Interactive 3D Virtual Estate Tour &amp; Spatial CAD Mapping</h4>
+                    </div>
+                    <p class="text-[11px] text-gray-400 mt-0.5">
+                        This feature is currently in active development. Full 360° drone walkthroughs, real-time plot locking, and CAD layout integrations will be unlocked in the upcoming update.
+                    </p>
+                </div>
+            </div>
+            <div class="shrink-0">
+                <span class="px-3 py-1 text-[10px] font-extrabold uppercase tracking-wider bg-slate-800 text-amber-300 border border-amber-500/20 rounded-full inline-flex items-center space-x-1.5 shadow-sm">
+                    <span class="h-1.5 w-1.5 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span>Beta Preview</span>
+                </span>
+            </div>
+        </div>
+    </div>
+
     {{-- Header Banner & Estate Dropdown Selector --}}
     <div class="w-full max-w-4xl mx-auto text-center space-y-4 mb-4">
         <span class="px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-widest bg-brand-500/10 text-brand-500 border border-brand-500/30 rounded-full inline-block">
