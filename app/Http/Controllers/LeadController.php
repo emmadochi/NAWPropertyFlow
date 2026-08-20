@@ -93,6 +93,11 @@ class LeadController extends Controller
             }
         }
 
+        // Safeguard: If created by a sales_executive, automatically lock assignment to them
+        if (Auth::user()->role === 'sales_executive') {
+            $validated['assigned_to'] = Auth::id();
+        }
+
         $this->leadService->createLead($validated);
 
         return redirect()->route('leads.index')->with('success', 'Lead created successfully.');
@@ -272,6 +277,11 @@ class LeadController extends Controller
             unset($validated['branch_id']);
         }
 
+        // Safeguard: Sales executives cannot change who a lead is assigned to
+        if ($user->role === 'sales_executive') {
+            $validated['assigned_to'] = $user->id;
+        }
+
         $this->leadService->updateLead($lead, $validated);
 
         return back()->with('success', 'Lead updated successfully.');
@@ -418,6 +428,7 @@ class LeadController extends Controller
                 'budget_range' => !empty($data['budget_range']) ? trim($data['budget_range']) : 'N/A',
                 'preferred_location' => isset($data['preferred_location']) ? trim($data['preferred_location']) : null,
                 'lead_source' => !empty($data['lead_source']) ? trim($data['lead_source']) : 'CSV Import',
+                'assigned_to' => ($user->role === 'sales_executive') ? $user->id : (isset($data['assigned_to']) ? $data['assigned_to'] : null),
                 'status' => !empty($data['status']) ? trim($data['status']) : 'New',
                 'notes' => isset($data['notes']) ? trim($data['notes']) : null,
                 'branch_id' => $branchId,
