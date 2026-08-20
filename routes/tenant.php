@@ -245,6 +245,7 @@ Route::middleware([
         // Customer Portal
         Route::middleware(['role:customer', 'feature:customer_portal'])->group(function () {
             Route::get('buyer/dashboard', [BuyerDashboardController::class, 'index'])->name('buyer.dashboard');
+            Route::post('buyer/payments/{milestone}/submit-pop', [BuyerDashboardController::class, 'submitProofOfPayment'])->name('buyer.payments.submit-pop');
             Route::get('buyer/payments/{milestone}/receipt', [BuyerDashboardController::class, 'downloadReceipt'])->name('buyer.payments.receipt');
             Route::get('buyer/documents/{document}/download', [BuyerDashboardController::class, 'downloadDocument'])->name('buyer.documents.download');
             Route::get('buyer/generated-documents/{document}/download', [BuyerDashboardController::class, 'downloadGeneratedDocument'])->name('buyer.generated-documents.download');

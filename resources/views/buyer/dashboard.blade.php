@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="space-y-8">
+<div class="space-y-8" x-data="{ activeMilestone: null }">
     {{-- Welcome Banner --}}
     <div class="bg-gradient-to-r from-brand-500 via-brand-600 to-dark-900 rounded-3xl p-8 text-white relative overflow-hidden shadow-xl shadow-brand-500/10">
         <div class="absolute right-0 top-0 opacity-10 w-96 transform translate-x-12 -translate-y-12">
@@ -131,23 +131,45 @@
                                             </td>
                                             <td class="px-6 py-4 font-semibold text-gray-500">
                                                 {{ $ms->due_date }}
-                                            </td>
-                                            <td class="px-6 py-4">
-                                                <span class="px-2 py-0.5 rounded text-[9px] font-bold border capitalize 
-                                                    @if($ms->status === 'paid') bg-emerald-50 text-emerald-700 border-emerald-200
-                                                    @elseif($ms->status === 'pending') bg-amber-50 text-amber-700 border-amber-200
-                                                    @else bg-rose-50 text-rose-700 border-rose-200
-                                                    @endif">
-                                                    {{ $ms->status }}
-                                                </span>
-                                            </td>
-                                            <td class="px-6 py-4 text-right">
+                                                                             <td class="px-6 py-4">
                                                 @if($ms->status === 'paid')
-                                                    <a href="{{ route('buyer.payments.receipt', $ms) }}" target="_blank" class="text-[10px] font-extrabold text-brand-600 hover:text-brand-700 bg-brand-50 border border-brand-100 px-3 py-1.5 rounded-xl transition-all">
-                                                        Download Receipt
-                                                    </a>
+                                                    @if($ms->verified_at)
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                            ✓ Paid &amp; Verified
+                                                        </span>
+                                                    @else
+                                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                            ⏳ Under Audit
+                                                        </span>
+                                                    @endif
+                                                @elseif($ms->proof_of_payment)
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold bg-blue-50 text-blue-700 border border-blue-200">
+                                                        📄 Reviewing POP
+                                                    </span>
+                                                @elseif($ms->status === 'partial')
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold bg-amber-50 text-amber-700 border border-amber-200">
+                                                        Partially Paid
+                                                    </span>
                                                 @else
-                                                    <span class="text-[10px] text-gray-300 font-semibold">Receipt Pending</span>
+                                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-[9px] font-bold bg-gray-50 text-gray-600 border border-gray-200">
+                                                        Pending
+                                                    </span>
+                                                @endif
+                                            </td>
+                                            <td class="px-6 py-4 text-right space-x-1.5">
+                                                @if($ms->status === 'paid' && $ms->verified_at)
+                                                    <a href="{{ route('buyer.payments.receipt', $ms) }}" target="_blank" class="text-[10px] font-extrabold text-emerald-700 hover:text-emerald-800 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl transition-all inline-flex items-center space-x-1">
+                                                        <span>Official Receipt</span>
+                                                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                                    </a>
+                                                @elseif($ms->proof_of_payment)
+                                                    <button type="button" @click="activeMilestone = { id: {{ $ms->id }}, label: '{{ $ms->label }}', amount_due: {{ $ms->amount_due }}, amount_paid: {{ $ms->amount_paid }} }" class="text-[10px] font-bold text-blue-600 hover:text-blue-700 bg-blue-50 border border-blue-200 px-2.5 py-1.5 rounded-xl transition-all">
+                                                        Update POP
+                                                    </button>
+                                                @else
+                                                    <button type="button" @click="activeMilestone = { id: {{ $ms->id }}, label: '{{ $ms->label }}', amount_due: {{ $ms->amount_due }}, amount_paid: {{ $ms->amount_paid }} }" class="text-[10px] font-bold text-white bg-brand-500 hover:bg-brand-600 px-3 py-1.5 rounded-xl transition-all shadow-sm">
+                                                        Upload Proof
+                                                    </button>
                                                 @endif
                                             </td>
                                         </tr>
@@ -158,7 +180,7 @@
                         </table>
                     </div>
                 </div>
-            </div>
+            </div>           </div>
 
             {{-- Sidebar Column (Right 1 col) --}}
             <div class="space-y-6">
@@ -238,5 +260,60 @@
             </div>
         </div>
     @endif
+
+    {{-- Proof of Payment Upload Modal (Alpine.js controlled) --}}
+    <div x-cloak x-show="activeMilestone !== null" class="fixed inset-0 z-50 overflow-y-auto flex items-center justify-center p-4 bg-dark-900/60 backdrop-blur-sm transition-opacity" x-transition>
+        <div class="bg-white rounded-3xl border border-gray-150 shadow-2xl w-full max-w-md overflow-hidden p-6 md:p-8 space-y-6" @click.away="activeMilestone = null">
+            <div class="flex justify-between items-center pb-3 border-b border-gray-100">
+                <div>
+                    <h3 class="text-base font-extrabold text-dark-900">Upload Proof of Payment</h3>
+                    <p class="text-xs text-brand-600 font-bold mt-0.5" x-text="activeMilestone ? activeMilestone.label : ''"></p>
+                </div>
+                <button @click="activeMilestone = null" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-xl hover:bg-gray-100">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <form :action="'/buyer/payments/' + (activeMilestone ? activeMilestone.id : '') + '/submit-pop'" method="POST" enctype="multipart/form-data" class="space-y-4">
+                @csrf
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Amount Paid (₦) *</label>
+                    <input type="number" step="0.01" name="amount_paid" :value="activeMilestone ? activeMilestone.amount_due : ''" required
+                           class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 outline-none text-sm text-gray-900 font-bold bg-gray-50/50">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Bank Reference / Teller # *</label>
+                    <input type="text" name="bank_reference" required placeholder="e.g. GTB/TRX-948201 or Cash Deposit"
+                           class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 outline-none text-sm text-gray-900">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Payment Date</label>
+                    <input type="date" name="payment_date" value="{{ date('Y-m-d') }}"
+                           class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 outline-none text-sm text-gray-900">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Attach Receipt / Transfer Screenshot *</label>
+                    <input type="file" name="proof_file" required accept=".pdf,.png,.jpg,.jpeg"
+                           class="w-full px-3 py-2 border border-gray-200 rounded-xl text-xs text-gray-700 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-brand-50 file:text-brand-700 hover:file:bg-brand-100">
+                    <p class="text-[10px] text-gray-400 mt-1">Upload JPEG, PNG, or PDF file (Max 10MB).</p>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Additional Note (Optional)</label>
+                    <textarea name="notes" rows="2" placeholder="e.g. Transfer made from Access Bank account..." class="w-full px-4 py-2 rounded-xl border border-gray-200 focus:border-brand-500 outline-none text-xs text-gray-900"></textarea>
+                </div>
+
+                <div class="flex justify-end space-x-3 pt-3 border-t border-gray-100">
+                    <button type="button" @click="activeMilestone = null" class="px-4 py-2 text-xs font-bold text-gray-500 hover:text-gray-700">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-lg shadow-brand-500/10">
+                        Submit Proof of Payment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 @endsection

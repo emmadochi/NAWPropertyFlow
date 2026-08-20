@@ -18,6 +18,8 @@ class PaymentMilestone extends Model
         'paid_at',
         'bank_reference',
         'receipt_path',
+        'proof_of_payment',
+        'pop_submitted_at',
         'verified_at',
         'verified_by',
         'status',
@@ -29,6 +31,7 @@ class PaymentMilestone extends Model
         'due_date' => 'date',
         'amount_paid' => 'decimal:2',
         'paid_at' => 'datetime',
+        'pop_submitted_at' => 'datetime',
         'verified_at' => 'datetime',
     ];
 

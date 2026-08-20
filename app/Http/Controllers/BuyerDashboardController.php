@@ -104,6 +104,52 @@ class BuyerDashboardController extends Controller
     }
 
     /**
+     * Submit Proof of Payment (POP) directly from Buyer Portal.
+     */
+    public function submitProofOfPayment(Request $request, PaymentMilestone $milestone)
+    {
+        $buyerEmail = Auth::user()->email;
+        $lead = $milestone->paymentPlan->sale->lead;
+
+        // Security check: ensure milestone belongs to this buyer
+        if ($lead->email !== $buyerEmail && Auth::user()->role === 'customer') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $request->validate([
+            'amount_paid' => 'required|numeric|min:1',
+            'bank_reference' => 'required|string|max:100',
+            'payment_date' => 'nullable|date',
+            'proof_file' => 'required|file|mimes:jpg,jpeg,png,pdf|max:10240', // 10MB max
+            'notes' => 'nullable|string|max:500',
+        ]);
+
+        // Upload Proof of Payment file
+        $path = $request->file('proof_file')->store('proofs_of_payment', 'public');
+
+        // Update Milestone with submitted POP data
+        $milestone->update([
+            'amount_paid' => $request->amount_paid,
+            'bank_reference' => $request->bank_reference,
+            'paid_at' => $request->payment_date ? \Carbon\Carbon::parse($request->payment_date) : now(),
+            'proof_of_payment' => $path,
+            'pop_submitted_at' => now(),
+            'notes' => $request->notes ? ($milestone->notes . "\n[Buyer Note]: " . $request->notes) : $milestone->notes,
+            'status' => 'partial', // Mark as submitted/pending audit
+        ]);
+
+        // Log Timeline Activity on CRM
+        app(\App\Services\LeadService::class)->logActivity(
+            $lead->id,
+            Auth::id(),
+            'Payment Submitted',
+            "Client uploaded Proof of Payment (₦" . number_format($request->amount_paid, 2) . ") for '{$milestone->label}' [Ref: {$request->bank_reference}]. Awaiting Admin Verification."
+        );
+
+        return back()->with('success', 'Your Proof of Payment has been uploaded successfully! Our accounts desk is reviewing it.');
+    }
+
+    /**
      * Generate & stream a payment milestone receipt.
      */
     public function downloadReceipt(PaymentMilestone $milestone)
@@ -111,7 +157,7 @@ class BuyerDashboardController extends Controller
         $buyerEmail = Auth::user()->email;
 
         // Security check: ensure milestone belongs to this buyer
-        if ($milestone->paymentPlan->sale->lead->email !== $buyerEmail) {
+        if ($milestone->paymentPlan->sale->lead->email !== $buyerEmail && Auth::user()->role === 'customer') {
             abort(403, 'Unauthorized receipt download.');
         }
 
