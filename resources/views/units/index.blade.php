@@ -90,26 +90,28 @@
 }" x-init="$watch('planType', () => calculateMilestones()); $watch('numberOfInstallments', () => calculateMilestones()); $watch('downpaymentPercent', () => calculateMilestones()); $watch('dealValue', () => calculateMilestones()); $watch('activeUnitPrice', () => initMilestones())">
 
     <!-- Header Section -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
-        <div>
-            <a href="{{ route('properties.index') }}" class="inline-flex items-center space-x-1.5 text-xs font-semibold text-gray-500 hover:text-brand-500 transition-colors mb-2">
+    <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div class="min-w-0">
+            <a href="{{ route('properties.index') }}" class="inline-flex items-center space-x-1.5 text-xs font-semibold text-gray-500 dark:text-slate-400 hover:text-brand-500 transition-colors mb-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                 </svg>
                 <span>Back to Property Portfolio</span>
             </a>
-            <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">{{ $property->name }} — Units Pipeline</h1>
-            <p class="text-sm text-gray-500 mt-1">Manage individual unit sizes, sales reservations, and bulk generate unit blocks.</p>
+            <h1 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-dark-900 dark:text-white tracking-tight leading-snug break-words">
+                {{ $property->name }} — Units Pipeline
+            </h1>
+            <p class="text-xs sm:text-sm text-gray-500 dark:text-slate-400 mt-1">Manage individual unit sizes, sales reservations, and bulk generate unit blocks.</p>
         </div>
         @if(Auth::user()->role !== 'sales_executive')
-        <div class="flex space-x-2">
-            <button @click="bulkCreateOpen = true" class="inline-flex items-center space-x-2 px-4 py-2.5 bg-white border border-gray-250 text-gray-700 font-bold text-xs rounded-xl shadow-sm hover:bg-gray-50 transition-all">
-                <svg class="w-4 h-4 text-gray-550" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <button @click="bulkCreateOpen = true" class="inline-flex items-center space-x-2 px-3.5 py-2 sm:px-4 sm:py-2.5 bg-white dark:bg-slate-800 border border-gray-250 dark:border-slate-700 text-gray-700 dark:text-slate-200 font-bold text-xs rounded-xl shadow-sm hover:bg-gray-50 dark:hover:bg-slate-700 transition-all">
+                <svg class="w-4 h-4 text-gray-550 dark:text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                 </svg>
-                <span>Bulk Generate Units</span>
+                <span>Bulk Generate</span>
             </button>
-            <button @click="addUnitOpen = true" class="inline-flex items-center space-x-2 px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md transition-all">
+            <button @click="addUnitOpen = true" class="inline-flex items-center space-x-2 px-3.5 py-2 sm:px-4 sm:py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md shadow-brand-500/20 transition-all">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                 </svg>

@@ -587,11 +587,11 @@
                     $allBranchesForSelector = \App\Models\Branch::orderBy('name', 'asc')->get();
                     $currentSelectedBranchId = session('selected_branch_id', 'all');
                 @endphp
-                <div class="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-6 py-4 flex items-center justify-between flex-shrink-0 transition-colors duration-200">
-                    <div class="flex items-center space-x-2">
-                        <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Active Scope:</span>
+                <div class="bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 sm:px-6 py-2.5 sm:py-3 flex flex-wrap items-center justify-between gap-2 flex-shrink-0 transition-colors duration-200">
+                    <div class="flex items-center space-x-2 min-w-0">
+                        <span class="hidden sm:inline-block text-[11px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider">Active Scope:</span>
                         <form action="" method="GET" class="inline" id="branch-scope-form">
-                            <select name="switch_branch_id" onchange="this.form.submit()" class="bg-gray-50 border border-gray-200 text-gray-800 rounded-xl px-3 py-1.5 text-xs font-bold focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none cursor-pointer">
+                            <select name="switch_branch_id" onchange="this.form.submit()" class="bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-800 dark:text-slate-200 rounded-xl px-2.5 py-1 text-xs font-bold focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none cursor-pointer max-w-[190px] sm:max-w-none truncate">
                                 <option value="all" {{ $currentSelectedBranchId === 'all' ? 'selected' : '' }}>All Branches (Global)</option>
                                 @foreach($allBranchesForSelector as $br)
                                     <option value="{{ $br->id }}" {{ $currentSelectedBranchId == $br->id ? 'selected' : '' }}>{{ $br->name }}</option>
@@ -599,26 +599,27 @@
                             </select>
                         </form>
                     </div>
-                    <div class="flex items-center space-x-4">
+
+                    <div class="flex items-center space-x-2 sm:space-x-3 ml-auto">
                         @if($currentSelectedBranchId !== 'all')
                             @php $activeBr = $allBranchesForSelector->firstWhere('id', $currentSelectedBranchId); @endphp
                             @if($activeBr)
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand-100 text-brand-800">
+                                <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-brand-100 dark:bg-brand-950/60 text-brand-800 dark:text-brand-300">
                                     {{ $activeBr->city }}
                                 </span>
                             @endif
                         @else
-                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-800">
-                                Corporate Head Office
+                            <span class="hidden md:inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-slate-300">
+                                Head Office
                             </span>
                         @endif
 
-                        <!-- PWA Quick Install Button in Top Bar -->
-                        <div class="inline-flex items-center">
+                        <!-- PWA Quick Install Button in Top Bar (Hidden on mobile since mobile header already has it) -->
+                        <div class="hidden sm:inline-flex items-center">
                             <button onclick="window.installPwaApp()" 
-                                    class="inline-flex items-center space-x-1.5 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white text-xs font-bold px-3 py-1.5 rounded-xl shadow-md shadow-brand-500/20 transition-all transform hover:scale-105 active:scale-95"
+                                    class="inline-flex items-center space-x-1.5 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white text-xs font-bold px-3 py-1 rounded-xl shadow-md shadow-brand-500/20 transition-all transform hover:scale-105 active:scale-95"
                                     title="Install RICAF CRM on this device">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                                 </svg>
                                 <span>Install App</span>
@@ -626,15 +627,15 @@
                         </div>
 
                         <!-- Global Search Shortcut Button -->
-                        <button @click="$dispatch('open-global-search')" class="hidden sm:inline-flex items-center space-x-2 text-left bg-gray-50 border border-gray-200 hover:border-gray-300 text-gray-400 hover:text-gray-600 rounded-xl px-3 py-1.5 text-xs transition-colors cursor-pointer focus:outline-none">
+                        <button @click="$dispatch('open-global-search')" class="hidden sm:inline-flex items-center space-x-2 text-left bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 hover:border-gray-300 dark:hover:border-slate-600 text-gray-400 dark:text-slate-400 hover:text-gray-600 dark:hover:text-slate-200 rounded-xl px-3 py-1 text-xs transition-colors cursor-pointer focus:outline-none">
                             <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                             <span class="font-medium">Search...</span>
-                            <kbd class="bg-white border border-gray-200 text-[10px] font-semibold text-gray-400 rounded px-1.5 py-0.5 ml-2 font-sans">Ctrl K</kbd>
+                            <kbd class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 text-[10px] font-semibold text-gray-400 rounded px-1.5 py-0.5 ml-2 font-sans">Ctrl K</kbd>
                         </button>
-                        <button @click="$dispatch('open-global-search')" class="sm:hidden p-1 text-gray-400 hover:text-dark-700 transition-colors focus:outline-none">
-                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <button @click="$dispatch('open-global-search')" class="sm:hidden p-1.5 text-gray-400 dark:text-slate-400 hover:text-dark-700 dark:hover:text-white transition-colors focus:outline-none rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
                         </button>
