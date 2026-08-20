@@ -79,25 +79,6 @@ class CampaignController extends Controller
             ->with('success', 'Campaign created as draft. Review details below.');
     }
 
-    public function previewAudience(Request $request)
-    {
-        $type = $request->input('type', 'email');
-        $status = $request->input('audience_status');
-        $source = $request->input('audience_source');
-
-        $query = \App\Models\Lead::query()->withoutGlobalScopes();
-        if ($type === 'email') {
-            $query->whereNotNull('email')->where('email', '!=', '');
-        } else {
-            $query->whereNotNull('phone_number')->where('phone_number', '!=', '');
-        }
-
-        if ($status) $query->where('status', $status);
-        if ($source) $query->where('lead_source', $source);
-
-        return response()->json(['count' => $query->count()]);
-    }
-
     /**
      * Send an instant test email of the draft campaign to the current logged-in user or specified test email.
      */
