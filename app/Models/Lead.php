@@ -44,7 +44,34 @@ class Lead extends Model
         'status',
         'notes',
         'branch_id',
+        'portal_token',
+        'portal_token_created_at',
     ];
+
+    protected $casts = [
+        'portal_token_created_at' => 'datetime',
+    ];
+
+    /**
+     * Get existing portal token or securely generate a new 64-character token.
+     */
+    public function getOrCreatePortalToken(): string
+    {
+        if (empty($this->portal_token)) {
+            $this->portal_token = bin2hex(random_bytes(32));
+            $this->portal_token_created_at = now();
+            $this->saveQuietly();
+        }
+        return $this->portal_token;
+    }
+
+    /**
+     * Get the full secure magic link URL for the client.
+     */
+    public function getPortalMagicUrl(): string
+    {
+        return route('portal.magic-login', ['token' => $this->getOrCreatePortalToken()]);
+    }
 
     // Relationships
     public function propertyInterest()

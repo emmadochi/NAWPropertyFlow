@@ -128,6 +128,63 @@
                 </div>
                 @endif
             </div>
+
+            <!-- Client Portal Sharing Card -->
+            <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-dark-950 rounded-2xl p-5 text-white shadow-lg space-y-4 border border-slate-700/60"
+                 x-data="{ 
+                    copied: false, 
+                    portalUrl: '{{ $lead->getPortalMagicUrl() }}',
+                    copyLink() {
+                        navigator.clipboard.writeText(this.portalUrl);
+                        this.copied = true;
+                        setTimeout(() => this.copied = false, 2500);
+                    }
+                 }">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2">
+                        <span class="w-8 h-8 rounded-xl bg-brand-500/20 text-brand-400 flex items-center justify-center font-bold text-sm">📱</span>
+                        <div>
+                            <h4 class="text-xs font-extrabold tracking-tight uppercase text-brand-400">Client Portal Access</h4>
+                            <p class="text-[11px] text-slate-300">1-Tap Live Portfolio &amp; Receipts</p>
+                        </div>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase">Active</span>
+                </div>
+
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    Share this secure link with <strong class="text-white">{{ $lead->full_name }}</strong> to let them track construction milestones, view allocations, and download PDF receipts without typing passwords.
+                </p>
+
+                <div class="space-y-2 pt-1">
+                    @php
+                        $companyName = \App\Models\CompanySetting::getCached()?->company_name ?? 'RICAF Nigeria Limited';
+                        $waText = urlencode("Hello {$lead->full_name},\n\nThank you for choosing {$companyName}. Here is your dedicated Client Portal to track your property allocations, construction progress, and download your official payment receipts anytime:\n\n" . $lead->getPortalMagicUrl() . "\n\nBest regards,\n{$companyName}");
+                    @endphp
+
+                    @if($lead->whatsapp_number || $lead->phone_number)
+                    <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $lead->whatsapp_number ?: $lead->phone_number) }}?text={{ $waText }}" 
+                       target="_blank" 
+                       class="w-full py-2.5 px-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition-all shadow-md shadow-emerald-600/20 flex items-center justify-center space-x-2">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.197 1.45 4.817 1.453 5.461 0 9.898-4.432 9.9-9.893.002-2.646-1.01-5.132-2.85-6.974S14.653 1.082 12.01 1.08c-5.468 0-9.91 4.436-9.912 9.898-.001 1.83.486 3.62 1.411 5.2l-.994 3.628 3.722-.972zm11.233-7.502c-.3-.15-1.77-.875-2.045-.975s-.475-.15-.675.15-.775.975-.95 1.175-.35.225-.65.075c-.3-.15-1.265-.467-2.41-1.485-.89-.79-1.49-1.77-1.665-2.07s-.018-.462.13-.61c.135-.133.3-.35.45-.525.15-.175.2-.3.3-.5s.05-.375-.025-.525-.675-1.625-.925-2.225c-.244-.589-.491-.51-.675-.52-.175-.01-.375-.01-.575-.01s-.525.075-.8.375c-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.11 3.225 5.11 4.525.714.31 1.27.495 1.7.635.717.227 1.37.195 1.885.118.574-.085 1.77-.725 2.02-1.39s.25-1.235.175-1.39-.275-.25-.575-.4z"/></svg>
+                        <span>Share on WhatsApp</span>
+                    </a>
+                    @endif
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" @click="copyLink()" 
+                                class="w-full py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 font-bold text-xs rounded-xl transition-all flex items-center justify-center space-x-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                            <span x-text="copied ? 'Copied Link! ✓' : 'Copy Access Link'"></span>
+                        </button>
+                        
+                        <a :href="portalUrl" target="_blank" 
+                           class="w-full py-2 px-3 bg-brand-500/20 hover:bg-brand-500/30 border border-brand-500/30 text-brand-300 font-bold text-xs rounded-xl transition-all flex items-center justify-center space-x-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                            <span>Preview Portal</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- Right: Tabbed Activities details -->

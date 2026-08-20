@@ -237,6 +237,11 @@ Route::middleware([
             Route::patch('hr/staff/onboarding/{task}/toggle', [StaffProfileController::class, 'toggleOnboardingTask'])->name('hr.staff.onboarding.toggle');
         });
 
+        // Customer Magic Link Authentication (Rate limited for security)
+        Route::get('portal/access/{token}', [BuyerDashboardController::class, 'magicLogin'])
+            ->middleware(['throttle:30,1'])
+            ->name('portal.magic-login');
+
         // Customer Portal
         Route::middleware(['role:customer', 'feature:customer_portal'])->group(function () {
             Route::get('buyer/dashboard', [BuyerDashboardController::class, 'index'])->name('buyer.dashboard');

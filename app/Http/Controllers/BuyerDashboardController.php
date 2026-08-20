@@ -14,6 +14,50 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class BuyerDashboardController extends Controller
 {
     /**
+     * Authenticate a client instantly and securely via their 1-tap Magic Portal Token.
+     */
+    public function magicLogin(Request $request, string $token)
+    {
+        // 1. Find lead with matching 64-char token
+        $lead = \App\Models\Lead::where('portal_token', $token)->first();
+
+        if (!$lead) {
+            abort(404, 'Invalid or expired Client Portal access link.');
+        }
+
+        // 2. Ensure customer user account exists for this client email
+        $user = null;
+        if (!empty($lead->email)) {
+            $user = \App\Models\User::where('email', $lead->email)->first();
+        }
+
+        if (!$user) {
+            $user = \App\Models\User::create([
+                'name' => $lead->full_name,
+                'email' => $lead->email ?: ('client_' . $lead->id . '@ricafltd.com'),
+                'password' => \Illuminate\Support\Facades\Hash::make(\Illuminate\Support\Str::random(16)),
+                'role' => 'customer',
+                'status' => 'active',
+                'phone_number' => $lead->phone_number,
+                'branch_id' => $lead->branch_id,
+            ]);
+        }
+
+        // 3. Authenticate user into session
+        Auth::login($user, true);
+
+        // 4. Log portal access activity
+        app(\App\Services\LeadService::class)->logActivity(
+            $lead->id,
+            $user->id,
+            'Portal Login',
+            "Client accessed their private buyer portal via secure 1-tap magic link."
+        );
+
+        return redirect()->route('buyer.dashboard')->with('success', 'Welcome to your RICAF Client Portal!');
+    }
+
+    /**
      * Display the Buyer Portal Dashboard.
      */
     public function index()
