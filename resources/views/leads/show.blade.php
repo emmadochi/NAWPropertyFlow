@@ -742,7 +742,12 @@
                     <button type="submit" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl">
                         Schedule Tour
                     </button>
-                  <!-- Record Sale Modal -->
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Record Sale Modal -->
     <div x-cloak x-show="recordSaleOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/60 backdrop-blur-sm transition-opacity overflow-y-auto">
         <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full shadow-2xl p-6 md:p-8 space-y-5 my-8 max-h-[90vh] overflow-y-auto custom-sidebar-scroll border border-gray-200 dark:border-slate-700" @click.away="recordSaleOpen = false"
              x-data="{
