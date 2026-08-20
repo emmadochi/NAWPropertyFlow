@@ -31,6 +31,14 @@ class PropertyController extends Controller
     }
 
     /**
+     * Display the specified property or redirect to its units pipeline.
+     */
+    public function show(Property $property)
+    {
+        return redirect()->route('properties.units.index', $property->id);
+    }
+
+    /**
      * Store a newly created property.
      */
     public function store(Request $request)
