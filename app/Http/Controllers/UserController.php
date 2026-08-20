@@ -161,15 +161,20 @@ class UserController extends Controller
             return back()->withErrors(['error' => 'You cannot delete yourself.']);
         }
 
-        // Enforce hierarchy rules
-        if (!Auth::user()->hasRole(['super_admin', 'company_admin'])) {
-            if ($user->hasRole(['super_admin', 'company_admin'])) {
-                return back()->withErrors(['error' => 'You do not have permission to remove this administrator.']);
+        // Immutable Super Admin Guard - Super Admin can NEVER be removed
+        if ($user->isSuperAdmin()) {
+            return back()->withErrors(['error' => '🛡️ Security Violation: The Super Administrator account is immutable and cannot be removed.']);
+        }
+
+        // Enforce hierarchy rules: HR and lower roles cannot delete Company Admins
+        if (!Auth::user()->isSuperAdmin()) {
+            if ($user->isCompanyAdmin() || $user->hasRole(['super_admin', 'company_admin'])) {
+                return back()->withErrors(['error' => 'You do not have permission to remove an executive administrator.']);
             }
         }
 
         $user->delete();
 
-        return back()->with('success', 'User removed successfully.');
+        return back()->with('success', "{$user->name} has been removed from the team.");
     }
 }

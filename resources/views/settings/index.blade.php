@@ -64,11 +64,25 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 text-right">
-                            <form action="{{ route('settings.users.destroy', $u->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to remove this user?');">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="text-rose-500 hover:text-rose-700 font-medium text-xs px-2 py-1">Remove</button>
-                            </form>
+                            @if($u->isSuperAdmin())
+                                <span class="inline-flex items-center space-x-1 text-xs font-semibold text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-lg">
+                                    <svg class="w-3.5 h-3.5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                                    <span>Protected</span>
+                                </span>
+                            @elseif($u->isCompanyAdmin() && !Auth::user()->isSuperAdmin())
+                                <span class="inline-flex items-center space-x-1 text-xs font-semibold text-gray-400 bg-gray-50 border border-gray-200 px-2.5 py-1 rounded-lg">
+                                    <svg class="w-3.5 h-3.5 text-gray-400" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"></path></svg>
+                                    <span>Admin</span>
+                                </span>
+                            @elseif($u->id === Auth::id())
+                                <span class="text-xs font-medium text-gray-400 px-2 py-1">You</span>
+                            @else
+                                <form action="{{ route('settings.users.destroy', $u->id) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to remove this user?');">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="text-rose-500 hover:text-rose-700 font-medium text-xs px-2 py-1">Remove</button>
+                                </form>
+                            @endif
                         </td>
                     </tr>
                     @empty
