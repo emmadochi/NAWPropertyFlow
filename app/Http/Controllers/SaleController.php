@@ -26,6 +26,11 @@ class SaleController extends Controller
             'sales_officer_id' => 'nullable|exists:users,id',
             'deal_value' => 'required|numeric|min:0',
             'units_purchased' => 'required|integer|min:1',
+            'plan_type' => 'nullable|string|in:outright,installment',
+            'initial_deposit' => 'nullable|numeric|min:0',
+            'installment_months' => 'nullable|integer|min:1|max:60',
+            'bank_reference' => 'nullable|string|max:100',
+            'payment_method' => 'nullable|string|max:100',
             'payment_receipt' => 'nullable|file|mimes:pdf,jpg,png,jpeg|max:10240',
         ]);
 
@@ -34,8 +39,8 @@ class SaleController extends Controller
             $validated['payment_receipt'] = $path;
         }
 
-        $this->salesService->recordSale($validated);
+        $sale = $this->salesService->recordSale($validated);
 
-        return back()->with('success', 'Sale recorded successfully. Lead updated to Closed Won!');
+        return back()->with('success', 'Sale recorded successfully! Payment plan initialized & official PDF receipt generated.');
     }
 }

@@ -61,23 +61,71 @@ class SalesService
                 }
             }
 
-            // 4. Create payment plan (default or custom)
+            // 4. Create payment plan (outright or installment milestones)
             $planType = $data['plan_type'] ?? 'outright';
-            $installments = $data['number_of_installments'] ?? 1;
-            $milestones = $data['milestones'] ?? [
-                [
-                    'label' => 'Outright Payment',
-                    'amount_due' => $sale->deal_value,
-                    'due_date' => Carbon::now()->addDays(7)->toDateString(),
-                ]
-            ];
+            $initialDeposit = isset($data['initial_deposit']) ? floatval($data['initial_deposit']) : 0;
+            $bankRef = $data['bank_reference'] ?? ('REF-' . strtoupper(substr(uniqid(), -6)));
+            $payMethod = $data['payment_method'] ?? 'Bank Transfer';
 
-            $this->paymentService->createPlan($sale, [
+            $milestones = [];
+
+            if ($planType === 'outright') {
+                $milestones[] = [
+                    'label' => '100% Outright Full Payment',
+                    'amount_due' => $sale->deal_value,
+                    'due_date' => Carbon::now()->toDateString(),
+                ];
+            } else {
+                // Installment plan: Deposit milestone + monthly spread
+                $spreadMonths = isset($data['installment_months']) ? max(1, intval($data['installment_months'])) : 6;
+                $balance = max(0, $sale->deal_value - $initialDeposit);
+                $monthlyAmount = $spreadMonths > 0 ? round($balance / $spreadMonths, 2) : 0;
+
+                // Milestone 1: Initial Deposit
+                $milestones[] = [
+                    'label' => 'Initial Commitment Deposit',
+                    'amount_due' => $initialDeposit > 0 ? $initialDeposit : $sale->deal_value,
+                    'due_date' => Carbon::now()->toDateString(),
+                ];
+
+                // Milestones 2..N: Monthly Installments
+                if ($balance > 0) {
+                    for ($i = 1; $i <= $spreadMonths; $i++) {
+                        $isLast = ($i === $spreadMonths);
+                        $installmentAmt = $isLast ? ($balance - ($monthlyAmount * ($spreadMonths - 1))) : $monthlyAmount;
+                        $milestones[] = [
+                            'label' => "Installment Tranche #{$i} of {$spreadMonths}",
+                            'amount_due' => max(0, $installmentAmt),
+                            'due_date' => Carbon::now()->addMonths($i)->toDateString(),
+                        ];
+                    }
+                }
+            }
+
+            $paymentPlan = $this->paymentService->createPlan($sale, [
                 'plan_type' => $planType,
-                'number_of_installments' => $installments,
+                'number_of_installments' => count($milestones),
                 'milestones' => $milestones,
-                'notes' => $data['notes'] ?? null,
+                'notes' => $data['notes'] ?? ("Closed deal with " . ($planType === 'outright' ? 'full payment' : 'installment structure') . "."),
             ]);
+
+            // If initial payment was made (outright full deal or initial deposit > 0)
+            $firstMilestone = $paymentPlan->milestones()->first();
+            if ($firstMilestone) {
+                if ($planType === 'outright') {
+                    $this->paymentService->recordMilestonePayment($firstMilestone, [
+                        'amount_paid' => $sale->deal_value,
+                        'bank_reference' => $bankRef,
+                        'notes' => "Full outright payment recorded on sale closing via {$payMethod}.",
+                    ]);
+                } elseif ($initialDeposit > 0) {
+                    $this->paymentService->recordMilestonePayment($firstMilestone, [
+                        'amount_paid' => $initialDeposit,
+                        'bank_reference' => $bankRef,
+                        'notes' => "Initial commitment deposit recorded on sale closing via {$payMethod}.",
+                    ]);
+                }
+            }
 
             // 5. Calculate commissions
             $this->paymentService->calculateCommissions($sale);
@@ -86,11 +134,11 @@ class SalesService
             $this->leadService->logActivity(
                 $lead->id,
                 $currentUserId,
-                'Sale Closed',
-                "Deal closed successfully for property '{$property->name}'. Value: ₦" . number_format($sale->deal_value, 2)
+                'Sale Closed & Receipt Issued',
+                "Deal closed for '{$property->name}'. Value: ₦" . number_format($sale->deal_value, 2) . " (" . ucfirst($planType) . ($initialDeposit > 0 ? ", Initial Deposit: ₦" . number_format($initialDeposit, 2) : '') . ")"
             );
 
-            // Create customer user account for portal transparency
+            // Create customer user account for buyer portal access
             if ($lead->email) {
                 $userExists = \App\Models\User::where('email', $lead->email)->exists();
                 if (!$userExists) {
@@ -105,7 +153,7 @@ class SalesService
                 }
             }
 
-            // 7. Send invoice email
+            // 7. Send invoice/receipt notification email
             if ($lead->email) {
                 try {
                     Mail::to($lead->email)->send(new PaymentInvoiceMail($sale));

@@ -685,20 +685,34 @@
                     <button type="submit" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl">
                         Schedule Tour
                     </button>
+                  <!-- Record Sale Modal -->
+    <div x-cloak x-show="recordSaleOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/60 backdrop-blur-sm transition-opacity overflow-y-auto">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full shadow-2xl p-6 md:p-8 space-y-5 my-8 max-h-[90vh] overflow-y-auto custom-sidebar-scroll border border-gray-200 dark:border-slate-700" @click.away="recordSaleOpen = false"
+             x-data="{
+                selectedPropertyId: '{{ $lead->property_interest_id ?? '' }}',
+                paymentType: 'installment',
+                dealValue: {{ $lead->propertyInterest ? $lead->propertyInterest->price : 0 }},
+                initialDeposit: 0,
+                spreadMonths: 6,
+                calcBalance() {
+                    return Math.max(0, (parseFloat(this.dealValue) || 0) - (parseFloat(this.initialDeposit) || 0));
+                },
+                calcMonthly() {
+                    const bal = this.calcBalance();
+                    const m = parseInt(this.spreadMonths) || 1;
+                    return m > 0 ? (bal / m).toFixed(2) : 0;
+                }
+             }">
+            <div class="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-slate-700">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">💰</div>
+                    <div>
+                        <h3 class="text-base font-extrabold text-dark-900 dark:text-white">Record Closed Deal (Sale)</h3>
+                        <p class="text-[11px] text-gray-400">Generate contract, payment plan &amp; instant official PDF receipt.</p>
+                    </div>
                 </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- Record Sale Modal -->
-    <div x-cloak x-show="recordSaleOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/60 transition-opacity">
-        <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl p-6 md:p-8 space-y-6" @click.away="recordSaleOpen = false">
-            <div class="flex justify-between items-center pb-3 border-b border-gray-100">
-                <h3 class="text-lg font-bold text-dark-900">Record Deal Closed (Sale)</h3>
                 <button @click="recordSaleOpen = false" class="text-gray-400 hover:text-gray-600">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                    </svg>
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                 </button>
             </div>
 
@@ -706,22 +720,22 @@
                 @csrf
                 <input type="hidden" name="lead_id" value="{{ $lead->id }}">
                 
-                <div x-data="{ selectedPropertyId: '{{ $lead->property_interest_id ?? '' }}' }" class="space-y-4">
+                <div class="space-y-3">
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Purchased Property *</label>
+                        <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Purchased Property *</label>
                         <select name="property_id" required x-model="selectedPropertyId"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 outline-none text-sm text-gray-700 bg-white">
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-xs font-semibold text-gray-800 dark:text-white focus:border-brand-500 outline-none">
                             <option value="">-- Choose Property --</option>
                             @foreach($properties as $property)
-                            <option value="{{ $property->id }}">{{ $property->name }} - ₦{{ number_format($property->price, 0) }}</option>
+                            <option value="{{ $property->id }}">{{ $property->name }} ({{ $property->location }}) - ₦{{ number_format($property->price, 0) }}</option>
                             @endforeach
                         </select>
                     </div>
 
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Specific Property Unit (Optional)</label>
+                        <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Property Unit / Plot # (Optional)</label>
                         <select name="property_unit_id"
-                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 outline-none text-sm text-gray-700 bg-white">
+                                class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-xs font-semibold text-gray-800 dark:text-white focus:border-brand-500 outline-none">
                             <option value="">-- General Allocation (No specific unit) --</option>
                             @foreach($properties as $property)
                                 @foreach($property->units as $unit)
@@ -732,42 +746,114 @@
                             @endforeach
                         </select>
                     </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Total Deal Value (₦) *</label>
+                            <input type="number" name="deal_value" x-model="dealValue" step="0.01" required
+                                   class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-xs font-extrabold text-brand-600 focus:border-brand-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Units / Plots *</label>
+                            <input type="number" name="units_purchased" min="1" value="1" required
+                                   class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-xs font-bold text-gray-800 dark:text-white focus:border-brand-500 outline-none">
+                        </div>
+                    </div>
+
+                    <!-- Payment Plan & Initial Deposit Structure -->
+                    <div class="bg-gray-50 dark:bg-slate-900/60 rounded-2xl p-4 border border-gray-150 dark:border-slate-700 space-y-3">
+                        <label class="block text-[10px] font-bold text-dark-900 dark:text-white uppercase tracking-wider">Payment Structure</label>
+                        
+                        <div class="grid grid-cols-2 gap-2">
+                            <label class="flex items-center space-x-2 p-2.5 rounded-xl border cursor-pointer transition-all"
+                                   :class="paymentType === 'outright' ? 'bg-orange-50/70 border-brand-500 text-brand-700' : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300'">
+                                <input type="radio" name="plan_type" value="outright" x-model="paymentType" class="text-brand-500">
+                                <span class="text-xs font-bold">100% Outright</span>
+                            </label>
+                            <label class="flex items-center space-x-2 p-2.5 rounded-xl border cursor-pointer transition-all"
+                                   :class="paymentType === 'installment' ? 'bg-orange-50/70 border-brand-500 text-brand-700' : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-600 dark:text-slate-300'">
+                                <input type="radio" name="plan_type" value="installment" x-model="paymentType" class="text-brand-500">
+                                <span class="text-xs font-bold">Part-Payment / Spread</span>
+                            </label>
+                        </div>
+
+                        <!-- If Part-Payment Selected -->
+                        <div x-show="paymentType === 'installment'" class="space-y-3 pt-2 border-t border-gray-200 dark:border-slate-700">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-600 dark:text-slate-300 mb-1">Deposit Paid Today (₦) *</label>
+                                    <input type="number" name="initial_deposit" x-model="initialDeposit" step="0.01" min="0" placeholder="e.g. 15000000"
+                                           class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-800 text-xs font-bold text-emerald-600 focus:border-brand-500 outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-bold text-gray-600 dark:text-slate-300 mb-1">Balance Spread Duration</label>
+                                    <select name="installment_months" x-model="spreadMonths"
+                                            class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-800 text-xs font-semibold text-gray-800 dark:text-white focus:border-brand-500 outline-none">
+                                        <option value="3">3 Months Spread</option>
+                                        <option value="6">6 Months Spread</option>
+                                        <option value="12">12 Months (1 Year)</option>
+                                        <option value="18">18 Months Spread</option>
+                                        <option value="24">24 Months (2 Years)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <!-- Live Calculation Helper Box -->
+                            <div class="bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-gray-200 dark:border-slate-700 text-[11px] space-y-1">
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500">Remaining Balance:</span>
+                                    <span class="font-extrabold text-rose-600">₦<span x-text="calcBalance().toLocaleString()"></span></span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-gray-500">Est. Monthly Installment:</span>
+                                    <span class="font-bold text-gray-800 dark:text-white">₦<span x-text="Number(calcMonthly()).toLocaleString()"></span> / month</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Payment Transaction Proof -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Bank Reference / Teller #</label>
+                            <input type="text" name="bank_reference" placeholder="e.g. GTB-TXN-98421"
+                                   class="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-xs font-semibold text-gray-800 dark:text-white focus:border-brand-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Payment Method</label>
+                            <select name="payment_method" class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-xs font-semibold text-gray-800 dark:text-white focus:border-brand-500 outline-none">
+                                <option value="Bank Transfer">Bank Transfer (EFT/NIP)</option>
+                                <option value="Cheque / Draft">Bank Cheque / Draft</option>
+                                <option value="Debit Card">Online Card (Paystack/Flutterwave)</option>
+                                <option value="Cash Deposit">Bank Branch Cash Deposit</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Upload Proof of Payment (Optional)</label>
+                        <input type="file" name="payment_receipt" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-brand-600 hover:file:bg-orange-100 cursor-pointer">
+                    </div>
+
+                    @if(Auth::user()->role !== 'sales_executive')
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Sales Officer Commission Credit</label>
+                        <select name="sales_officer_id"
+                                class="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-xs font-semibold text-gray-800 dark:text-white focus:border-brand-500 outline-none">
+                            <option value="">Default ({{ $lead->assignedOfficer ? $lead->assignedOfficer->name : 'Unassigned' }})</option>
+                            @foreach($officers as $officer)
+                            <option value="{{ $officer->id }}">{{ $officer->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Final Deal Value (₦) *</label>
-                    <input type="number" name="deal_value" step="0.01" value="{{ $lead->propertyInterest ? $lead->propertyInterest->price : '' }}" required
-                           class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 outline-none text-sm text-gray-800">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Units Purchased *</label>
-                    <input type="number" name="units_purchased" min="1" value="1" required
-                           class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 outline-none text-sm text-gray-800">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Payment Receipt File (PDF/Image)</label>
-                    <input type="file" name="payment_receipt" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-emerald-50 file:text-emerald-600 hover:file:bg-emerald-100 cursor-pointer">
-                </div>
-
-                @if(Auth::user()->role !== 'sales_executive')
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Sales Officer Credit</label>
-                    <select name="sales_officer_id"
-                            class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 outline-none text-sm text-gray-700 bg-white">
-                        <option value="">Default ({{ $lead->assignedOfficer ? $lead->assignedOfficer->name : 'Unassigned' }})</option>
-                        @foreach($officers as $officer)
-                        <option value="{{ $officer->id }}">{{ $officer->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                @endif
-
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" @click="recordSaleOpen = false" class="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-700">Cancel</button>
-                    <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-600/15">
-                        Close Won Deal
+                <div class="flex justify-end space-x-3 pt-3 border-t border-gray-100 dark:border-slate-700">
+                    <button type="button" @click="recordSaleOpen = false" class="px-4 py-2 text-xs font-bold text-gray-500 hover:text-gray-700">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center space-x-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span>Confirm Sale &amp; Issue Receipt</span>
                     </button>
                 </div>
             </form>

@@ -50,11 +50,18 @@ class PaymentInvoiceMail extends Mailable
     public function attachments(): array
     {
         $attachments = [];
-        
-        // If there's a payment receipt file on storage, attach it to the email
+
+        // If there's an official generated milestone receipt PDF, attach it
+        $firstMilestone = $this->sale->paymentPlan?->milestones()->where('status', '!=', 'pending')->first();
+        if ($firstMilestone && $firstMilestone->receipt_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($firstMilestone->receipt_path)) {
+            $attachments[] = Attachment::fromPath(\Illuminate\Support\Facades\Storage::disk('public')->path($firstMilestone->receipt_path))
+                ->as('Official_Payment_Receipt_REC-' . str_pad($firstMilestone->id, 6, '0', STR_PAD_LEFT) . '.pdf');
+        }
+
+        // If there's a user-uploaded proof receipt file on storage, attach it
         if ($this->sale->payment_receipt && \Illuminate\Support\Facades\Storage::disk('public')->exists($this->sale->payment_receipt)) {
             $attachments[] = Attachment::fromPath(\Illuminate\Support\Facades\Storage::disk('public')->path($this->sale->payment_receipt))
-                ->as('payment_receipt.' . pathinfo($this->sale->payment_receipt, PATHINFO_EXTENSION));
+                ->as('payment_proof.' . pathinfo($this->sale->payment_receipt, PATHINFO_EXTENSION));
         }
 
         return $attachments;
