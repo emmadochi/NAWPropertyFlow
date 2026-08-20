@@ -40,6 +40,73 @@
         </div>
     </div>
 
+    <!-- Executive Overview KPI Counters (Visible to Admins, HR & Managers, and personalized for Sales Executives) -->
+    @php
+        $statsUser = Auth::user();
+        $isExec = ($statsUser->role === 'sales_executive');
+        $baseQuery = \App\Models\Lead::query();
+        if ($isExec) {
+            $baseQuery->where('assigned_to', $statsUser->id);
+        } elseif (!in_array($statsUser->role, ['super_admin', 'company_admin', 'hr'])) {
+            if ($statsUser->branch_id) {
+                $baseQuery->where('branch_id', $statsUser->branch_id);
+            }
+        }
+        $totalLeadsCount = (clone $baseQuery)->count();
+        $newLeadsCount = (clone $baseQuery)->where('status', 'New')->count();
+        $inspectionsCount = (clone $baseQuery)->whereIn('status', ['Inspection Scheduled', 'Follow Up'])->count();
+        $closedWonCount = (clone $baseQuery)->where('status', 'Closed Won')->count();
+        $convRate = $totalLeadsCount > 0 ? round(($closedWonCount / $totalLeadsCount) * 100, 1) : 0;
+    @endphp
+
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-150 dark:border-slate-700 shadow-sm flex items-center justify-between">
+            <div>
+                <span class="text-[10px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider block">
+                    {{ $isExec ? 'My Total Leads' : 'Total Leads Captured' }}
+                </span>
+                <span class="text-2xl font-black text-dark-900 dark:text-white mt-1 block">{{ number_format($totalLeadsCount) }}</span>
+                <span class="text-[11px] text-gray-500 font-semibold">Active in pipeline</span>
+            </div>
+            <div class="w-11 h-11 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-lg">
+                👥
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-150 dark:border-slate-700 shadow-sm flex items-center justify-between">
+            <div>
+                <span class="text-[10px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider block">New Prospects</span>
+                <span class="text-2xl font-black text-amber-600 mt-1 block">{{ number_format($newLeadsCount) }}</span>
+                <span class="text-[11px] text-amber-600 font-semibold">Awaiting first contact</span>
+            </div>
+            <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold text-lg">
+                🆕
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-150 dark:border-slate-700 shadow-sm flex items-center justify-between">
+            <div>
+                <span class="text-[10px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider block">Tours & Follow-Ups</span>
+                <span class="text-2xl font-black text-blue-600 mt-1 block">{{ number_format($inspectionsCount) }}</span>
+                <span class="text-[11px] text-blue-600 font-semibold">Active engagements</span>
+            </div>
+            <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">
+                🏡
+            </div>
+        </div>
+
+        <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border border-gray-150 dark:border-slate-700 shadow-sm flex items-center justify-between">
+            <div>
+                <span class="text-[10px] font-bold text-gray-400 dark:text-slate-400 uppercase tracking-wider block">Closed Won Deals</span>
+                <span class="text-2xl font-black text-emerald-600 mt-1 block">{{ number_format($closedWonCount) }}</span>
+                <span class="text-[11px] text-emerald-600 font-semibold">{{ $convRate }}% conversion rate</span>
+            </div>
+            <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-lg">
+                🏆
+            </div>
+        </div>
+    </div>
+
     <!-- Filters Section -->
     <div class="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm flex flex-col md:flex-row gap-4">
         <form action="{{ route('leads.index') }}" method="GET" class="w-full flex flex-col md:flex-row gap-4 items-center">
