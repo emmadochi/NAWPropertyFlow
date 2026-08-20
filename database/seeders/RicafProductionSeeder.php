@@ -42,7 +42,22 @@ class RicafProductionSeeder extends Seeder
             ]
         );
 
+        // 3. Create Chief Financial Officer / Lead Accountant
+        User::updateOrCreate(
+            ['email' => 'finance@ricafltd.com'],
+            [
+                'name'         => 'Chief Financial Officer',
+                'email'        => 'finance@ricafltd.com',
+                'password'     => Hash::make('FinanceRicaf@2026!'),
+                'role'         => 'accountant',
+                'department'   => 'Finance & Accounts',
+                'phone_number' => '+2348000000001',
+                'status'       => 'active',
+            ]
+        );
+
         $this->command->info('Ricaf Nigeria Limited production environment initialized successfully!');
         $this->command->info('Default Admin: admin@ricafltd.com | Password: AdminRicaf@2026!');
+        $this->command->info('Finance Officer: finance@ricafltd.com | Password: FinanceRicaf@2026!');
     }
 }

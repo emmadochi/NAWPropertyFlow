@@ -246,6 +246,14 @@ Route::middleware([
             Route::patch('hr/staff/onboarding/{task}/toggle', [StaffProfileController::class, 'toggleOnboardingTask'])->name('hr.staff.onboarding.toggle');
         });
 
+        // Accounting & Operating Expenses (Finance Desk)
+        Route::middleware(['auth'])->group(function () {
+            Route::get('accounting/expenses', [\App\Http\Controllers\ExpenseController::class, 'index'])->name('accounting.expenses.index');
+            Route::post('accounting/expenses', [\App\Http\Controllers\ExpenseController::class, 'store'])->name('accounting.expenses.store');
+            Route::patch('accounting/expenses/{expense}/status', [\App\Http\Controllers\ExpenseController::class, 'updateStatus'])->name('accounting.expenses.status');
+            Route::delete('accounting/expenses/{expense}', [\App\Http\Controllers\ExpenseController::class, 'destroy'])->name('accounting.expenses.destroy');
+        });
+
         // Customer Portal
         Route::middleware(['role:customer', 'feature:customer_portal'])->group(function () {
             Route::get('buyer/dashboard', [BuyerDashboardController::class, 'index'])->name('buyer.dashboard');

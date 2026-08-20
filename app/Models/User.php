@@ -93,6 +93,11 @@ class User extends Authenticatable
         return $this->role === 'hr';
     }
 
+    public function isAccountant(): bool
+    {
+        return in_array($this->role, ['accountant', 'finance_manager']);
+    }
+
     public function hasRole(array|string $roles): bool
     {
         if (is_array($roles)) {

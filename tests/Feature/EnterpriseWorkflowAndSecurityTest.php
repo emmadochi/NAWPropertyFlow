@@ -312,4 +312,80 @@ class EnterpriseWorkflowAndSecurityTest extends TestCase
             'badges' => ['leads', 'milestones', 'inspections', 'hr']
         ]);
     }
+
+    /**
+     * TEST 6: Operating Expenses (OPEX) & Accountant Approval Workflow.
+     */
+    public function test_operating_expenses_and_accountant_approval_workflow()
+    {
+        $accountant = User::forceCreate([
+            'name' => 'Chief Accountant',
+            'email' => 'acct_' . Str::random(5) . '@ricafltd.com',
+            'password' => Hash::make('secret'),
+            'role' => 'accountant',
+            'status' => 'active'
+        ]);
+
+        $marketer = User::forceCreate([
+            'name' => 'Sales Officer',
+            'email' => 'sales_' . Str::random(5) . '@ricafltd.com',
+            'password' => Hash::make('secret'),
+            'role' => 'sales_executive',
+            'status' => 'active'
+        ]);
+
+        $property = Property::forceCreate([
+            'name' => 'Hutu Prestige Polo Lake Resort',
+            'property_type' => 'Terrace',
+            'price' => 12000000.00,
+            'location' => 'Airport Road, Abuja'
+        ]);
+
+        // 1. Staff logs an operational expense (e.g. site diesel)
+        $expenseResponse = $this->actingAs($marketer)->post(route('accounting.expenses.store'), [
+            'title' => 'Site Generator Diesel - Hutu Prestige',
+            'category' => 'Site Operations',
+            'amount' => 180000.00,
+            'expense_date' => now()->format('Y-m-d'),
+            'property_id' => $property->id,
+            'payment_method' => 'Bank Transfer',
+            'notes' => '300 litres supplied for site tour.'
+        ]);
+
+        $expenseResponse->assertSessionHas('success');
+        $expense = \App\Models\Expense::latest()->first();
+        $this->assertNotNull($expense);
+        $this->assertEquals('pending', $expense->status);
+        $this->assertEquals(180000.00, $expense->amount);
+
+        // 2. Marketer tries to approve expense -> must fail (403 Forbidden)
+        $unauthorizedApprove = $this->actingAs($marketer)->patch(route('accounting.expenses.status', $expense->id), [
+            'status' => 'approved'
+        ]);
+        $unauthorizedApprove->assertStatus(403);
+
+        // 3. Accountant reviews and approves the expense
+        $accountantApprove = $this->actingAs($accountant)->patch(route('accounting.expenses.status', $expense->id), [
+            'status' => 'approved'
+        ]);
+        $accountantApprove->assertSessionHas('success');
+        $expense->refresh();
+        $this->assertEquals('approved', $expense->status);
+        $this->assertEquals($accountant->id, $expense->approved_by);
+
+        // 4. Accountant marks as paid/disbursed
+        $accountantPay = $this->actingAs($accountant)->patch(route('accounting.expenses.status', $expense->id), [
+            'status' => 'paid'
+        ]);
+        $accountantPay->assertSessionHas('success');
+        $expense->refresh();
+        $this->assertEquals('paid', $expense->status);
+        $this->assertNotNull($expense->paid_at);
+
+        // 5. Accountant views Financial Expenses Ledger & P&L
+        $ledgerView = $this->actingAs($accountant)->get(route('accounting.expenses.index'));
+        $ledgerView->assertStatus(200);
+        $ledgerView->assertSee('Financial Outflows Ledger');
+        $ledgerView->assertSee('Site Generator Diesel');
+    }
 }

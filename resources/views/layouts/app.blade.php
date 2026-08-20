@@ -392,19 +392,25 @@
                         <span>Department Targets</span>
                     </a>
 
-                    @if(in_array(Auth::user()->role, ['super_admin', 'company_admin', 'hr']))
+                    @if(in_array(Auth::user()->role, ['super_admin', 'company_admin', 'hr', 'accountant', 'finance_manager']))
                     <a href="{{ route('payroll.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('payroll.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                         <span>Payroll & Salaries</span>
                     </a>
+                    <a href="{{ route('accounting.expenses.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('accounting.expenses.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                        <span>Expenses &amp; OPEX</span>
+                    </a>
                     @endif
                     @endif
                     @endif
 
                     {{-- 8. ADMINISTRATION --}}
-                    @if(in_array(Auth::user()->role, ['super_admin', 'company_admin', 'hr']))
+                    @if(in_array(Auth::user()->role, ['super_admin', 'company_admin', 'hr', 'accountant', 'finance_manager']))
                     <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Administration</div>
 
                     {{-- Team Settings: all tiers (company_admin / hr only) --}}
