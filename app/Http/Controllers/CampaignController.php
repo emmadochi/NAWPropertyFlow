@@ -79,6 +79,73 @@ class CampaignController extends Controller
             ->with('success', 'Campaign created as draft. Review details below.');
     }
 
+    public function previewAudience(Request $request)
+    {
+        $type = $request->input('type', 'email');
+        $status = $request->input('audience_status');
+        $source = $request->input('audience_source');
+
+        $query = \App\Models\Lead::query()->withoutGlobalScopes();
+        if ($type === 'email') {
+            $query->whereNotNull('email')->where('email', '!=', '');
+        } else {
+            $query->whereNotNull('phone_number')->where('phone_number', '!=', '');
+        }
+
+        if ($status) $query->where('status', $status);
+        if ($source) $query->where('lead_source', $source);
+
+        return response()->json(['count' => $query->count()]);
+    }
+
+    /**
+     * Send an instant test email of the draft campaign to the current logged-in user or specified test email.
+     */
+    public function sendTest(Request $request)
+    {
+        $request->validate([
+            'test_email' => 'required|email',
+            'subject'    => 'required|string',
+            'body'       => 'required|string',
+        ]);
+
+        $testRecipient = $request->input('test_email');
+        $subject       = '[TEST PREVIEW] ' . $request->input('subject');
+        $htmlBody      = $request->input('body');
+
+        // Replace sample tags
+        $placeholders = [
+            '@{{name}}'           => Auth::user()->name,
+            '@{{email}}'          => $testRecipient,
+            '@{{phone}}'          => Auth::user()->phone_number ?? '+234 800 000 0000',
+            '@{{property_name}}'  => 'RICAF Signature Court, Ikoyi',
+            '@{{property_price}}' => '₦185,000,000',
+            '@{{company_name}}'   => \App\Models\CompanySetting::getCached()?->company_name ?? 'RICAF Nigeria Limited',
+            '@{{company_phone}}'  => \App\Models\CompanySetting::getCached()?->phone ?? '+234 800 RICAF CRM',
+            '@{{company_email}}'  => \App\Models\CompanySetting::getCached()?->email ?? 'info@ricafltd.com',
+            '@{{current_date}}'   => now()->format('d M, Y'),
+            '@{{unsubscribe_url}}'=> '#',
+        ];
+        $finalHtml = str_replace(array_keys($placeholders), array_values($placeholders), $htmlBody);
+
+        try {
+            \Illuminate\Support\Facades\Mail::html($finalHtml, function ($message) use ($testRecipient, $subject) {
+                $message->to($testRecipient)
+                        ->subject($subject);
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => "✅ Test email successfully delivered to {$testRecipient}!"
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => "Mail Error: " . $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function show(Campaign $campaign)
     {
         $campaign->load('creator', 'branch');

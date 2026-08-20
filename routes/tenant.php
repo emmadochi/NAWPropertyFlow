@@ -183,6 +183,7 @@ Route::middleware([
             Route::resource('campaigns', CampaignController::class)->except(['edit', 'update']);
             Route::post('campaigns/{campaign}/send', [CampaignController::class, 'send'])->name('campaigns.send');
             Route::post('campaigns/preview-audience', [CampaignController::class, 'previewAudience'])->name('campaigns.preview-audience');
+            Route::post('campaigns/send-test', [CampaignController::class, 'sendTest'])->name('campaigns.send-test');
             Route::resource('drip-sequences', DripSequenceController::class);
             Route::patch('drip-sequences/{drip_sequence}/toggle', [DripSequenceController::class, 'toggle'])->name('drip-sequences.toggle');
             Route::post('drip-sequences/{drip_sequence}/steps', [DripSequenceController::class, 'addStep'])->name('drip-sequences.steps.store');
