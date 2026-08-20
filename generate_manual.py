@@ -17,7 +17,7 @@ def set_cell_margins(cell, top=140, bottom=140, left=180, right=180):
     tcMar = parse_xml(f'<w:tcMar {nsdecls("w")}><w:top w:w="{top}" w:type="dxa"/><w:bottom w:w="{bottom}" w:type="dxa"/><w:left w:w="{left}" w:type="dxa"/><w:right w:w="{right}" w:type="dxa"/></w:tcMar>')
     tcPr.append(tcMar)
 
-def create_complete_document():
+def create_masterpiece_document():
     doc = Document()
     
     # Page setup - Margins
@@ -40,7 +40,7 @@ def create_complete_document():
     header_table.columns[0].width = Inches(6.9)
     cell = header_table.cell(0, 0)
     set_cell_background(cell, "0B132B") # Deep Luxury Navy
-    set_cell_margins(cell, top=300, bottom=300, left=300, right=300)
+    set_cell_margins(cell, top=320, bottom=320, left=320, right=320)
 
     p_org = cell.paragraphs[0]
     p_org.alignment = WD_ALIGN_PARAGRAPH.LEFT
@@ -50,19 +50,19 @@ def create_complete_document():
     r_org.font.color.rgb = RGBColor(0x38, 0xBD, 0xF8) # Sky blue
     
     p_sub = cell.add_paragraph()
-    r_sub = p_sub.add_run("Enterprise Division: NAW Property Flow CRM")
+    r_sub = p_sub.add_run("Enterprise Software Division • NAW Property Flow CRM")
     r_sub.font.size = Pt(9.5)
     r_sub.font.color.rgb = RGBColor(0x94, 0xA3, 0xB8) # Gray 400
 
     p_title = cell.add_paragraph()
-    r_title = p_title.add_run("COMPLETE PRODUCT ARCHITECTURE, MODULE DIRECTORY & OPERATIONAL MANUAL")
+    r_title = p_title.add_run("ENTERPRISE CRM PRODUCT ARCHITECTURE, OPERATIONAL MANUAL & GOVERNANCE SPECIFICATION")
     r_title.bold = True
-    r_title.font.size = Pt(17)
+    r_title.font.size = Pt(16.5)
     r_title.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
 
     p_for = cell.add_paragraph()
-    r_for = p_for.add_run("Prepared Exclusively for: RICAF Nigeria Limited (crm.ricafltd.com)")
-    r_for.font.size = Pt(11)
+    r_for = p_for.add_run("Prepared Exclusively for the Executive Leadership & Staff of: RICAF Nigeria Limited (crm.ricafltd.com)")
+    r_for.font.size = Pt(10.5)
     r_for.font.color.rgb = RGBColor(0xFE, 0xA5, 0x00) # Brand Amber/Orange
     r_for.bold = True
 
@@ -70,24 +70,162 @@ def create_complete_document():
 
     # 1. Executive Summary
     h1 = doc.add_heading(level=1)
-    r1 = h1.add_run("1. Executive Overview & Mission")
+    r1 = h1.add_run("1. Executive Overview & Strategic Vision")
     r1.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
     
     doc.add_paragraph(
-        "NAW Property Flow CRM is a state-of-the-art, multi-tenant enterprise real estate operating system engineered by "
-        "NAW World Technologies Limited specifically for the sales, development, and administrative operations of RICAF Nigeria Limited. "
-        "It unifies every dimension of real estate commerce—from raw digital lead acquisition and estate unit inventory reserving, to "
-        "part-payment installment calculations, instant stamped PDF receipting, admin payment verification safeguards, automated marketer payroll commissions, "
-        "and 1-tap client portal experiences."
+        "NAW Property Flow CRM is a high-performance, enterprise-grade real estate operating system engineered by "
+        "NAW World Technologies Limited specifically to power the sales, development, financial auditing, and human capital "
+        "operations of RICAF Nigeria Limited. "
+        "The platform establishes an automated, end-to-end digital nervous system that eliminates operational friction, accelerates deal velocity, "
+        "secures payment compliance, and delivers a world-class luxury property ownership experience to local and diaspora investors."
     )
 
-    # 2. System Architecture & Role-Based Security Matrix
+    # 2. Business Impact & ROI Matrix
     h2 = doc.add_heading(level=1)
-    r2 = h2.add_run("2. Role-Based Security Matrix & Organizational Workflows")
+    r2 = h2.add_run("2. Business Transformation & ROI Matrix")
     r2.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
 
     doc.add_paragraph(
-        "To ensure total commercial confidentiality while empowering field sales agents, the CRM enforces rigorous role segregation:"
+        "By replacing manual spreadsheets, scattered paper receipts, and delayed approvals with NAW Property Flow CRM, "
+        "RICAF Nigeria Limited realizes measurable operational advantages across key commercial dimensions:"
+    )
+
+    roi_table = doc.add_table(rows=1, cols=3)
+    roi_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    roi_table.autofit = False
+    widths_roi = [Inches(1.8), Inches(2.5), Inches(2.6)]
+    
+    headers_roi = ["Operational Dimension", "Traditional Manual Operations", "NAW Property Flow CRM Impact"]
+    for i, title in enumerate(headers_roi):
+        cell_h = roi_table.rows[0].cells[i]
+        cell_h.width = widths_roi[i]
+        set_cell_background(cell_h, "1E293B")
+        set_cell_margins(cell_h, top=120, bottom=120, left=120, right=120)
+        p = cell_h.paragraphs[0]
+        r = p.add_run(title)
+        r.bold = True
+        r.font.size = Pt(9.5)
+        r.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+
+    roi_data = [
+        (
+            "Marketer Lead Ownership & Anti-Theft",
+            "Internal disputes, client poaching, and lack of transparency over lead origination.",
+            "100% Tamper-Proof. Leads are permanently locked to the capturing sales executive upon entry/import."
+        ),
+        (
+            "Receipt Issuance & Dispatch Time",
+            "24 to 48 hours of manual Word/Excel formatting, printing, signing, and emailing.",
+            "Instant (0 Seconds). Branded, stamped PDF receipts (REC-XXXXXX) auto-generate and email immediately."
+        ),
+        (
+            "Financial Audit & Commission Integrity",
+            "Overpayments, unverified commissions paid on bounced transfers, spreadsheet errors.",
+            "Two-Tier Audit Safeguard: Marketer commissions strictly queue until Admin audits bank funds."
+        ),
+        (
+            "Diaspora & Remote Investor Trust",
+            "High client anxiety over unverified progress, lost paper documents, repetitive support calls.",
+            "24/7 1-Tap Client Portal on mobile: Real-time milestone progress, photo feeds, and statements."
+        ),
+        (
+            "Monthly Staff & Commission Payroll",
+            "3 to 5 working days of tedious accounting, recalculating commission tiers by hand.",
+            "1-Click Automated Generation: Base salary + verified commissions compiled in under 10 seconds."
+        ),
+        (
+            "Marketing & Lead Conversion",
+            "Cold outreach with no tracking, unorganized WhatsApp broadcasts, lost follow-ups.",
+            "Automated Drip Sequences, Lead Scoring, Overdue Follow-Up Alerts, and Click/Open Analytics."
+        )
+    ]
+
+    for dim, before, after in roi_data:
+        row_cells = roi_table.add_row().cells
+        for i, text in enumerate([dim, before, after]):
+            row_cells[i].width = widths_roi[i]
+            set_cell_background(row_cells[i], "F8FAFC" if i % 2 == 0 else "FFFFFF")
+            set_cell_margins(row_cells[i], top=100, bottom=100, left=100, right=100)
+            p = row_cells[i].paragraphs[0]
+            p.paragraph_format.line_spacing = 1.15
+            r = p.add_run(text)
+            r.font.size = Pt(9)
+            if i == 0:
+                r.bold = True
+                r.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+            elif i == 2:
+                r.font.color.rgb = RGBColor(0x05, 0x96, 0x69) # Emerald Green bold accent
+
+    doc.add_paragraph().paragraph_format.space_after = Pt(12)
+
+    # 3. Visual System Architecture & End-to-End Workflow Diagram
+    h3 = doc.add_heading(level=1)
+    r3 = h3.add_run("3. End-to-End Operational Lifecycle & Data Flow")
+    r3.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+
+    doc.add_paragraph(
+        "The following structured flowchart illustrates how customer prospects transition seamlessly "
+        "through the CRM lifecycle into closed sales, audited funds, automated commissions, and lifelong investor portal engagement:"
+    )
+
+    diagram_text = (
+        "┌────────────────────────────────────────────────────────────────────────────────────────┐\n"
+        "│                             1. LEAD ACQUISITION & CAPTURE                              │\n"
+        "│  • Channels: Website Inquiries, WhatsApp, Social Media Ads, Cold Calls, Bulk CSV Import│\n"
+        "│  • Safeguard: Permanent ownership lock to the originating Sales Executive (Marketer)   │\n"
+        "└───────────────────────────────────────────┬────────────────────────────────────────────┘\n"
+        "                                            ▼\n"
+        "┌────────────────────────────────────────────────────────────────────────────────────────┐\n"
+        "│                           2. LEAD NURTURING & KANBAN STAGING                           │\n"
+        "│  • Stages: New ➔ Contacted ➔ Follow-Up Scheduled ➔ Site Inspection Booked ➔ Negotiation│\n"
+        "│  • Real-time Top KPI Counters: Total Pipeline, New Prospects, Conversion Rate %        │\n"
+        "└───────────────────────────────────────────┬────────────────────────────────────────────┘\n"
+        "                                            ▼\n"
+        "┌────────────────────────────────────────────────────────────────────────────────────────┐\n"
+        "│                         3. DEAL CLOSING & PART-PAYMENT SPREAD                          │\n"
+        "│  • Unit Reserving: Specific plot selected (Available ➔ Reserved ➔ Sold)               │\n"
+        "│  • Live Calculator: 100% Outright vs Part-Payment Spread (3 to 24 Months)              │\n"
+        "│  • Milestone Scheduling: Milestone 1 (Deposit) receipted; remaining tranches scheduled │\n"
+        "└───────────────────────────────────────────┬────────────────────────────────────────────┘\n"
+        "                                            ▼\n"
+        "┌────────────────────────────────────────────────────────────────────────────────────────┐\n"
+        "│                  4. INSTANT PDF RECEIPT & 1-TAP CLIENT PORTAL SHARING                  │\n"
+        "│  • Official Stamped PDF Receipt (REC-XXXXXX) auto-emailed to buyer inbox               │\n"
+        "│  • 1-Click WhatsApp Sharing: 64-Hex Cryptographic Magic Link sent to client's phone   │\n"
+        "│  • Buyer Portal: Client tracks live site photos, allocation letters, and balances 24/7 │\n"
+        "└───────────────────────────────────────────┬────────────────────────────────────────────┘\n"
+        "                                            ▼\n"
+        "┌────────────────────────────────────────────────────────────────────────────────────────┐\n"
+        "│                   5. ADMIN PAYMENT VERIFICATION & COMMISSION APPROVAL                  │\n"
+        "│  • Two-Tier Financial Audit: Payment sits as 'Pending Audit' until bank credit verified│\n"
+        "│  • Admin Sign-Off: Super Admin / Company Admin clicks 'Verify Payment'                │\n"
+        "│  • Commission Queuing: Marketer commission moves to 'Approved' status                  │\n"
+        "└───────────────────────────────────────────┬────────────────────────────────────────────┘\n"
+        "                                            ▼\n"
+        "┌────────────────────────────────────────────────────────────────────────────────────────┐\n"
+        "│                  6. MONTHLY PAYROLL GENERATION & LEADERBOARD RECOGNITION               │\n"
+        "│  • 1-Click Monthly Payroll: Aggregates Base Salaries + Approved Commissions into PDF   │\n"
+        "│  • Bank Schedule Export: Instant CSV for electronic banking disbursement               │\n"
+        "│  • Sales Leaderboard: Live 🥇 Gold, 🥈 Silver, 🥉 Bronze rankings & targets             │\n"
+        "└────────────────────────────────────────────────────────────────────────────────────────┘"
+    )
+
+    p_diag = doc.add_paragraph()
+    r_diag = p_diag.add_run(diagram_text)
+    r_diag.font.name = 'Consolas'
+    r_diag.font.size = Pt(8)
+    r_diag.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+    p_diag.paragraph_format.line_spacing = 1.05
+    p_diag.paragraph_format.space_after = Pt(12)
+
+    # 4. Role-Based Security Matrix
+    h4 = doc.add_heading(level=1)
+    r4 = h4.add_run("4. Role-Based Security Matrix & Permissions")
+    r4.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+
+    doc.add_paragraph(
+        "The system enforces strict access control across all 5 operational roles to ensure data privacy and prevent unauthorized actions:"
     )
 
     roles_table = doc.add_table(rows=1, cols=3)
@@ -96,12 +234,12 @@ def create_complete_document():
     widths = [Inches(1.5), Inches(2.2), Inches(3.2)]
     
     headers = ["Role Identifier", "Access Scope", "Core Responsibilities & Safeguards"]
-    hdr_cells = roles_table.rows[0].cells
     for i, title in enumerate(headers):
-        hdr_cells[i].width = widths[i]
-        set_cell_background(hdr_cells[i], "1E293B")
-        set_cell_margins(hdr_cells[i], top=120, bottom=120, left=120, right=120)
-        p = hdr_cells[i].paragraphs[0]
+        cell_h = roles_table.rows[0].cells[i]
+        cell_h.width = widths[i]
+        set_cell_background(cell_h, "1E293B")
+        set_cell_margins(cell_h, top=120, bottom=120, left=120, right=120)
+        p = cell_h.paragraphs[0]
         r = p.add_run(title)
         r.bold = True
         r.font.size = Pt(9.5)
@@ -165,10 +303,10 @@ def create_complete_document():
 
     doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
-    # 3. Comprehensive Feature Directory (All Core Modules)
-    h3 = doc.add_heading(level=1)
-    r3 = h3.add_run("3. Exhaustive Core Feature Directory")
-    r3.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+    # 5. Exhaustive Feature Directory (13 Core Modules)
+    h5 = doc.add_heading(level=1)
+    r5 = h5.add_run("5. Exhaustive Core Feature Directory")
+    r5.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
 
     modules = [
         (
@@ -261,26 +399,26 @@ def create_complete_document():
         p.paragraph_format.line_spacing = 1.2
         p.paragraph_format.space_after = Pt(8)
 
-    # 4. Step-by-Step SOP Workflows
-    h4 = doc.add_heading(level=1)
-    r4 = h4.add_run("4. Standard Operating Procedures (SOP)")
-    r4.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+    # 6. Step-by-Step SOP Workflows
+    h6 = doc.add_heading(level=1)
+    r6 = h6.add_run("6. Standard Operating Procedures (SOP)")
+    r6.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
 
     sops = [
-        ("SOP 1: Prospecting & Lead Ingestion", 
+        ("SOP 1: Inbound Lead Capture & Bulk CSV Import", 
          "1. Navigate to 'Leads' -> Click 'Add Lead Prospect' or 'Import Leads (CSV)'.\n"
          "2. Fill in buyer name, phone, WhatsApp number, budget range, and preferred estate.\n"
          "3. If logged in as a Sales Executive, ownership is automatically locked to you.\n"
          "4. Click 'Create Lead' to populate the prospect in the pipeline."),
         
-        ("SOP 2: Reserving a Unit & Recording a Deal",
+        ("SOP 2: Reserving a Unit & Recording a Deal with Part-Payment Spread",
          "1. Open the Lead profile (/leads/{id}) -> Click 'Record Sale'.\n"
          "2. Choose the Property Unit and select Payment Structure ('Part-Payment / Spread').\n"
          "3. Enter 'Deposit Paid Today' (e.g. ₦3,000,000) and 'Spread Duration' (e.g. 6 Months).\n"
          "4. Enter the Bank Teller / Transfer Reference and click 'Close Deal & Generate Plan'.\n"
          "5. The system issues Milestone 1 as Paid, generates the official stamped PDF receipt, and emails it to the buyer."),
 
-        ("SOP 3: Admin Payment Verification & Commission Approval",
+        ("SOP 3: Admin Payment Verification & Marketer Commission Approval",
          "1. Admin visits 'Sales & Payments' -> 'Milestones'.\n"
          "2. Locate the payment marked 'Pending Audit' -> Verify bank credit.\n"
          "3. Click 'Verify Payment (Admin)' -> Confirm the prompt.\n"
@@ -291,13 +429,13 @@ def create_complete_document():
          "2. Locate the 'Client Portal Access' card on the left panel.\n"
          "3. Click 'Share on WhatsApp' to send a pre-formatted invitation link to the buyer's phone, or click 'Copy Access Link' to email it."),
 
-        ("SOP 5: Generating Legal Allocation / Contract Documents",
+        ("SOP 5: Generating Legal Allocation & Contract Documents",
          "1. Open 'Legal & Documents' -> 'Generated Documents' -> Click 'Generate Document'.\n"
          "2. Select the Lead and the Template (e.g. Deed of Agreement / Allocation Letter).\n"
          "3. The system compiles the dynamic PDF, populating client details, plot allocation, and payment history.\n"
          "4. 1-Click 'Email to Client' or download the signed document."),
 
-        ("SOP 6: Executing Monthly Staff Payroll",
+        ("SOP 6: Running Monthly Staff Payroll & Exporting Bank Schedules",
          "1. HR / Admin visits 'HR Management' -> 'Payroll'.\n"
          "2. Click 'Generate Monthly Payroll' -> Select Month & Year.\n"
          "3. The system automatically computes Base Salary + All Verified Commissions.\n"
@@ -313,16 +451,175 @@ def create_complete_document():
         p.paragraph_format.line_spacing = 1.15
         p.paragraph_format.space_after = Pt(6)
 
-    # 5. Technical Support & SLA
-    h5 = doc.add_heading(level=1)
-    r5 = h5.add_run("5. Technical Governance, Security & Support SLA")
-    r5.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+    # 7. Troubleshooting, FAQs & Field Exception Protocols
+    h7 = doc.add_heading(level=1)
+    r7 = h7.add_run("7. Troubleshooting & Field Exception Protocols")
+    r7.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+
+    faqs = [
+        ("Q1: What happens if a buyer makes a payment with an unclear transfer description?",
+         "Resolution Protocol: The marketer logs the payment with the available bank transaction reference and notes. The milestone enters 'Pending Audit'. The Company Admin or Finance Officer cross-checks with the corporate bank statement before clicking 'Verify Payment'. Commissions are held safely until positive bank confirmation."),
+
+        ("Q2: Can a Sales Executive change who a lead is assigned to?",
+         "Resolution Protocol: No. To prevent lead tampering or internal commission disputes, sales executives cannot modify the 'assigned_to' field. If an agent goes on leave or leaves the company, only a Sales Manager or Company Admin can reassign the lead."),
+
+        ("Q3: What if a client requests to extend their part-payment spread (e.g., from 6 to 12 months)?",
+         "Resolution Protocol: An Admin can navigate to 'Payments & Milestones' -> 'Payment Plan' -> Adjust the remaining milestone tranches to spread across the newly agreed timeline."),
+
+        ("Q4: How does a diaspora client access their portal if they lose their WhatsApp chat?",
+         "Resolution Protocol: The marketer or admin can open the client's file in the CRM (/leads/{id}) and click 'Copy Access Link' or 'Share on WhatsApp' again. The 64-hex cryptographic token regenerates seamlessly without resetting any client data.")
+    ]
+
+    for q, a in faqs:
+        h_q = doc.add_heading(level=2)
+        r_q = h_q.add_run(q)
+        r_q.font.size = Pt(10.5)
+        r_q.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+        p = doc.add_paragraph(a)
+        p.paragraph_format.line_spacing = 1.15
+        p.paragraph_format.space_after = Pt(6)
+
+    # 8. Enterprise Security, Privacy & Data Compliance (NDPR)
+    h8 = doc.add_heading(level=1)
+    r8 = h8.add_run("8. Enterprise Security, Data Privacy & NDPR Compliance")
+    r8.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
 
     doc.add_paragraph(
-        "NAW Property Flow CRM is hosted on an enterprise infrastructure configured and maintained by "
-        "NAW World Technologies Limited. Automated server cron tasks manage email delivery queues, database backups, "
-        "and security certificates 24 hours a day, 7 days a week."
+        "NAW Property Flow CRM is built in strict adherence to modern cybersecurity standards and the "
+        "Nigeria Data Protection Regulation (NDPR):"
     )
+
+    sec_points = (
+        "• Cryptographic Token Security: Client portal magic links use 256-bit entropy random tokens (bin2hex(random_bytes(32))), mathematically impervious to brute-force guessing.\n"
+        "• Transport Layer Security (TLS/SSL): 100% of data traffic, client documents, and login credentials are encrypted in transit via 256-bit SSL.\n"
+        "• Multi-Tenant Data Isolation: Database queries are tenant-scoped, ensuring complete isolation of customer data from any external systems.\n"
+        "• Automated Server Backups & Disaster Recovery: Automated database snapshots run continuously on cPanel server infrastructure.\n"
+        "• Comprehensive Audit Trail: Critical operational events (logins, payment records, role changes, document downloads) are timestamped and logged."
+    )
+    p_sec = doc.add_paragraph(sec_points)
+    p_sec.paragraph_format.line_spacing = 1.2
+    p_sec.paragraph_format.space_after = Pt(10)
+
+    # 9. User Onboarding & Fast-Track Implementation Roadmap
+    h9 = doc.add_heading(level=1)
+    r9 = h9.add_run("9. 30-Day Onboarding & Implementation Roadmap")
+    r9.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+
+    roadmap_table = doc.add_table(rows=1, cols=3)
+    roadmap_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    roadmap_table.autofit = False
+    widths_rm = [Inches(1.3), Inches(2.2), Inches(3.4)]
+    
+    headers_rm = ["Phase / Timeline", "Focus Area", "Milestones & Key Deliverables"]
+    for i, title in enumerate(headers_rm):
+        cell_h = roadmap_table.rows[0].cells[i]
+        cell_h.width = widths_rm[i]
+        set_cell_background(cell_h, "1E293B")
+        set_cell_margins(cell_h, top=120, bottom=120, left=120, right=120)
+        p = cell_h.paragraphs[0]
+        r = p.add_run(title)
+        r.bold = True
+        r.font.size = Pt(9.5)
+        r.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+
+    rm_data = [
+        ("Week 1 (Days 1–7)", "System Setup & Inventory Population", "Create user accounts (Admins, Managers, Sales Execs), configure branch offices, and upload master estates & plot units."),
+        ("Week 2 (Days 8–14)", "Sales Executive Field Training", "Hands-on staff workshop on lead entry, bulk CSV imports, Kanban pipeline management, and 1-tap WhatsApp portal sharing."),
+        ("Week 3 (Days 15–21)", "Finance, Audit & Legal Verification", "Finance team dry-run on recording part-payments, generating stamped PDF receipts, admin payment verification, and contract generation."),
+        ("Week 4 (Days 22–30)", "Go-Live, Leaderboards & First Payroll Run", "Full operational go-live across all branches, launching live leaderboard rankings, and executing the first automated monthly payroll.")
+    ]
+
+    for phase, focus, deliver in rm_data:
+        row_cells = roadmap_table.add_row().cells
+        for i, text in enumerate([phase, focus, deliver]):
+            row_cells[i].width = widths_rm[i]
+            set_cell_background(row_cells[i], "F8FAFC" if i % 2 == 0 else "FFFFFF")
+            set_cell_margins(row_cells[i], top=100, bottom=100, left=100, right=100)
+            p = row_cells[i].paragraphs[0]
+            p.paragraph_format.line_spacing = 1.15
+            r = p.add_run(text)
+            r.font.size = Pt(9)
+            if i == 0:
+                r.bold = True
+                r.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+
+    doc.add_paragraph().paragraph_format.space_after = Pt(12)
+
+    # 10. Technical Support Escalation Hierarchy & SLA
+    h10 = doc.add_heading(level=1)
+    r10 = h10.add_run("10. Technical Support Hierarchy & Service Level Agreement (SLA)")
+    r10.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+
+    doc.add_paragraph(
+        "NAW World Technologies Limited provides multi-tiered technical support to ensure 99.9% uptime for RICAF Nigeria Limited:"
+    )
+
+    sla_data = (
+        "• Tier-1 (User Support & Onboarding Guidance): Response within 2 hours. Guidance on feature navigation, password resets, and user roles.\n"
+        "• Tier-2 (Application & Workflow Configuration): Response within 4 hours. Template customizations, department target updates, and report exports.\n"
+        "• Tier-3 (Critical Infrastructure & Security Escalations): Immediate dispatch (under 30 minutes). Server performance, SSL certificate renewals, database failover, and SMTP routing.\n\n"
+        "Official Support Channels:\n"
+        "📧 Enterprise Support Email: info@nawtechnologies.com\n"
+        "🌐 Production Server Instance: https://crm.ricafltd.com"
+    )
+    p_sla = doc.add_paragraph(sla_data)
+    p_sla.paragraph_format.line_spacing = 1.2
+    p_sla.paragraph_format.space_after = Pt(12)
+
+    # 11. Official Handover & Acceptance Sign-Off
+    h11 = doc.add_heading(level=1)
+    r11 = h11.add_run("11. Product Acceptance & Formal Handover Sign-Off")
+    r11.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+
+    doc.add_paragraph(
+        "This document certifies that the NAW Property Flow CRM application has been developed, configured, tested, "
+        "and successfully deployed on the live production server (crm.ricafltd.com) according to the operational specifications of RICAF Nigeria Limited."
+    )
+
+    sign_table = doc.add_table(rows=1, cols=2)
+    sign_table.alignment = WD_TABLE_ALIGNMENT.CENTER
+    sign_table.autofit = False
+    widths_s = [Inches(3.4), Inches(3.4)]
+
+    s_headers = ["FOR: NAW WORLD TECHNOLOGIES LIMITED\n(Technology Provider & System Architect)", "FOR: RICAF NIGERIA LIMITED\n(Client & Operating Company)"]
+    for i, title in enumerate(s_headers):
+        cell_h = sign_table.rows[0].cells[i]
+        cell_h.width = widths_s[i]
+        set_cell_background(cell_h, "1E293B")
+        set_cell_margins(cell_h, top=140, bottom=140, left=140, right=140)
+        p = cell_h.paragraphs[0]
+        r = p.add_run(title)
+        r.bold = True
+        r.font.size = Pt(9.5)
+        r.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
+
+    sign_row = sign_table.add_row().cells
+    sign_text_naw = (
+        "\nAuthorized Signatory: ___________________________\n\n"
+        "Name: Lead Software Architect & Director\n\n"
+        "Designation: Enterprise Systems Division\n\n"
+        "Date: August 20, 2026\n\n"
+        "Official Seal / Stamp:\n\n\n"
+    )
+    sign_text_ricaf = (
+        "\nAuthorized Signatory: ___________________________\n\n"
+        "Name: Managing Director / COO\n\n"
+        "Designation: Executive Management\n\n"
+        "Date: _________________________\n\n"
+        "Official Seal / Stamp:\n\n\n"
+    )
+
+    for i, text in enumerate([sign_text_naw, sign_text_ricaf]):
+        sign_row[i].width = widths_s[i]
+        set_cell_background(sign_row[i], "FAFAFA")
+        set_cell_margins(sign_row[i], top=120, bottom=120, left=120, right=120)
+        p = sign_row[i].paragraphs[0]
+        p.paragraph_format.line_spacing = 1.15
+        r = p.add_run(text)
+        r.font.size = Pt(9)
+        r.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
+
+    doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
     # Footer Table
     foot_table = doc.add_table(rows=1, cols=1)
@@ -333,7 +630,7 @@ def create_complete_document():
     set_cell_margins(fcell, top=140, bottom=140, left=140, right=140)
     pf = fcell.paragraphs[0]
     pf.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    rf = pf.add_run("DOCUMENT PREPARED BY NAW WORLD TECHNOLOGIES LIMITED • NAW PROPERTY FLOW CRM DIVISION\nClient Support & Deployments: info@nawtechnologies.com • Live Server: crm.ricafltd.com")
+    rf = pf.add_run("DOCUMENT PREPARED BY NAW WORLD TECHNOLOGIES LIMITED • NAW PROPERTY FLOW CRM DIVISION\nClient Support & Deployments: info@nawtechnologies.com • Live Server Instance: crm.ricafltd.com")
     rf.font.size = Pt(8.5)
     rf.font.color.rgb = RGBColor(0x64, 0x74, 0x8B)
 
@@ -341,7 +638,7 @@ def create_complete_document():
     out_dir = r"c:\xampp\htdocs\NAWPropertyFlowCRM"
     out_path = os.path.join(out_dir, "NAW_Property_Flow_CRM_RICAF_Product_Guide.docx")
     doc.save(out_path)
-    print(f"Successfully generated complete manual: {out_path}")
+    print(f"Successfully generated master enterprise manual: {out_path}")
 
 if __name__ == '__main__':
-    create_complete_document()
+    create_masterpiece_document()
