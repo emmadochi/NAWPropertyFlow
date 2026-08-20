@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Hutu Prestige Polo Lake Resort - Interactive Estate Map')
+@section('title', 'Interactive Estate Map & Virtual Tour')
 
 @section('content')
 <style>
@@ -28,9 +28,9 @@
         border-radius: 24px;
         overflow: hidden;
         margin-top: 1.5rem;
-        padding: 3rem 2rem;
+        padding: 2.5rem 2rem;
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
         gap: 1.5rem;
         box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
     }
@@ -42,7 +42,7 @@
         padding: 1.5rem 1rem;
         text-align: center;
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         position: relative;
     }
 
@@ -69,7 +69,7 @@
     }
 
     .unit-number {
-        font-size: 1.25rem;
+        font-size: 1.15rem;
         font-weight: 800;
         letter-spacing: -0.025em;
     }
@@ -79,6 +79,13 @@
         font-weight: 700;
         color: #cbd5e1;
         margin-top: 0.25rem;
+    }
+
+    .unit-price {
+        font-size: 0.8rem;
+        font-weight: 800;
+        color: #F37021;
+        margin-top: 0.35rem;
     }
 
     .unit-status {
@@ -212,49 +219,114 @@
     .btn-whatsapp:hover { opacity: 0.9; }
 </style>
 
+@php
+    $selectedPropertyId = request('property_id', $properties->first()?->id ?? null);
+    $selectedProperty = $properties->firstWhere('id', $selectedPropertyId) ?? $properties->first();
+@endphp
+
 <div class="tour-container">
-    {{-- Header Banner --}}
-    <div class="text-center max-w-2xl mx-auto space-y-2 mb-4">
-        <span class="px-3 py-1 text-[10px] font-extrabold uppercase tracking-widest bg-brand-500/10 text-brand-500 border border-brand-500/30 rounded-full inline-block">
-            Africa's First Polo &amp; Golf Resort • FCDA Approved
+    {{-- Header Banner & Estate Dropdown Selector --}}
+    <div class="w-full max-w-4xl mx-auto text-center space-y-4 mb-4">
+        <span class="px-3.5 py-1 text-[10px] font-extrabold uppercase tracking-widest bg-brand-500/10 text-brand-500 border border-brand-500/30 rounded-full inline-block">
+            Interactive Plot Layout Map • Virtual Estate Navigator
         </span>
-        <h1 class="text-3xl md:text-4xl font-black text-brand-500 tracking-tight">Hutu Prestige Polo Lake Resort</h1>
-        <p class="text-xs md:text-sm text-gray-400 font-medium">
-            Along Airport Road, Beside Centenary City, Abuja • Interactive Plot Layout Map
+        
+        <h1 class="text-3xl md:text-4xl font-black text-brand-500 tracking-tight">
+            {{ $selectedProperty ? $selectedProperty->name : 'Hutu Prestige Polo Lake Resort' }}
+        </h1>
+        
+        <p class="text-xs md:text-sm text-gray-400 font-medium max-w-xl mx-auto">
+            {{ $selectedProperty ? $selectedProperty->location : 'Along Airport Road, Beside Centenary City, Abuja' }}
         </p>
+
+        {{-- Dynamic Estate Dropdown Filter Bar --}}
+        <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3">
+            <div class="flex items-center space-x-2 bg-slate-900/90 border border-brand-500/30 px-4 py-2 rounded-2xl shadow-xl">
+                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider flex items-center space-x-1">
+                    <span>🏡</span>
+                    <span>Select Estate / Phase:</span>
+                </span>
+                
+                <form action="" method="GET" class="inline">
+                    <select name="property_id" onchange="this.form.submit()" class="bg-slate-800 border border-slate-700 text-white rounded-xl px-3 py-1.5 text-xs font-bold focus:border-brand-500 focus:ring-1 focus:ring-brand-500 focus:outline-none cursor-pointer">
+                        @foreach($properties as $prop)
+                            <option value="{{ $prop->id }}" {{ $selectedPropertyId == $prop->id ? 'selected' : '' }}>
+                                {{ $prop->name }} (₦{{ number_format($prop->price) }})
+                            </option>
+                        @endforeach
+                    </select>
+                </form>
+            </div>
+
+            @if($selectedProperty)
+            <div class="flex items-center space-x-2 text-xs">
+                <span class="px-2.5 py-1 rounded-xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">
+                    {{ $selectedProperty->units->where('status', 'available')->count() }} Available
+                </span>
+                <span class="px-2.5 py-1 rounded-xl bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold">
+                    {{ $selectedProperty->units->where('status', 'reserved')->count() }} Reserved
+                </span>
+                <span class="px-2.5 py-1 rounded-xl bg-rose-500/10 text-rose-400 border border-rose-500/20 font-bold">
+                    {{ $selectedProperty->units->where('status', 'sold')->count() }} Sold
+                </span>
+            </div>
+            @endif
+        </div>
     </div>
 
-    {{-- Interactive Estate Map --}}
+    {{-- Interactive Estate Map Layout --}}
     <div class="estate-map-wrapper">
-        @php
-            $plots = [
-                ['num' => 'A-01', 'size' => '150 SQM', 'type' => '3 Bed Terrace', 'price' => 12000000, 'status' => 'available'],
-                ['num' => 'A-02', 'size' => '150 SQM', 'type' => '3 Bed Terrace', 'price' => 12000000, 'status' => 'available'],
-                ['num' => 'A-03', 'size' => '150 SQM', 'type' => '3 Bed Terrace', 'price' => 12000000, 'status' => 'available'],
-                ['num' => 'A-04', 'size' => '150 SQM', 'type' => '3 Bed Terrace', 'price' => 12000000, 'status' => 'available'],
-                ['num' => 'A-05', 'size' => '150 SQM', 'type' => '3 Bed Terrace', 'price' => 12000000, 'status' => 'sold'],
-                
-                ['num' => 'B-01', 'size' => '250 SQM', 'type' => '4 Bed Terrace', 'price' => 20000000, 'status' => 'available'],
-                ['num' => 'B-02', 'size' => '250 SQM', 'type' => '4 Bed Terrace', 'price' => 20000000, 'status' => 'reserved'],
-                ['num' => 'B-03', 'size' => '250 SQM', 'type' => '4 Bed Terrace', 'price' => 20000000, 'status' => 'available'],
-                ['num' => 'B-04', 'size' => '250 SQM', 'type' => '4 Bed Terrace', 'price' => 20000000, 'status' => 'available'],
-                ['num' => 'B-05', 'size' => '250 SQM', 'type' => '4 Bed Terrace', 'price' => 20000000, 'status' => 'sold'],
+        @if($selectedProperty && $selectedProperty->units->isNotEmpty())
+            @foreach($selectedProperty->units as $unit)
+                <div class="unit-plot {{ $unit->status }}" 
+                     onclick="openPlotModal(
+                         '{{ $unit->unit_number }}', 
+                         '{{ $unit->size_sqm ? $unit->size_sqm . ' SQM' : ($selectedProperty->property_type ?? 'Standard Plot') }}', 
+                         '{{ $unit->unit_type ?: $selectedProperty->property_type }}', 
+                         '{{ number_format($unit->price, 2) }}', 
+                         '{{ $unit->status }}',
+                         '{{ addslashes($selectedProperty->name) }}',
+                         '{{ addslashes($selectedProperty->location) }}'
+                     )">
+                    <div class="unit-number">{{ $unit->unit_number }}</div>
+                    <div class="unit-size">{{ $unit->size_sqm ? $unit->size_sqm . ' SQM' : ($unit->unit_type ?: 'Plot Unit') }}</div>
+                    <div class="unit-price">₦{{ number_format($unit->price) }}</div>
+                    <div class="unit-status">{{ ucfirst($unit->status === 'sold' ? 'Sold Out' : $unit->status) }}</div>
+                </div>
+            @endforeach
+        @else
+            {{-- Fallback default mockup units if no units seeded yet --}}
+            @php
+                $mockPlots = [
+                    ['num' => 'Plot 01 - Block A', 'size' => '150 SQM', 'type' => '3 Bed Terrace', 'price' => 12000000, 'status' => 'available'],
+                    ['num' => 'Plot 02 - Block A', 'size' => '150 SQM', 'type' => '3 Bed Terrace', 'price' => 12000000, 'status' => 'available'],
+                    ['num' => 'Plot 03 - Block A', 'size' => '150 SQM', 'type' => '3 Bed Terrace', 'price' => 12000000, 'status' => 'available'],
+                    ['num' => 'Plot 04 - Block A', 'size' => '150 SQM', 'type' => '3 Bed Terrace', 'price' => 12000000, 'status' => 'reserved'],
+                    ['num' => 'Plot 05 - Block A', 'size' => '150 SQM', 'type' => '3 Bed Terrace', 'price' => 12000000, 'status' => 'sold'],
+                    
+                    ['num' => 'Plot 01 - Block B', 'size' => '250 SQM', 'type' => '4 Bed Terrace', 'price' => 20000000, 'status' => 'available'],
+                    ['num' => 'Plot 02 - Block B', 'size' => '250 SQM', 'type' => '4 Bed Terrace', 'price' => 20000000, 'status' => 'available'],
+                    ['num' => 'Plot 03 - Block B', 'size' => '250 SQM', 'type' => '4 Bed Terrace', 'price' => 20000000, 'status' => 'reserved'],
+                    ['num' => 'Plot 04 - Block B', 'size' => '250 SQM', 'type' => '4 Bed Terrace', 'price' => 20000000, 'status' => 'available'],
+                    ['num' => 'Plot 05 - Block B', 'size' => '250 SQM', 'type' => '4 Bed Terrace', 'price' => 20000000, 'status' => 'sold'],
 
-                ['num' => 'C-01', 'size' => '400 SQM', 'type' => '5 Bed Detached', 'price' => 32000000, 'status' => 'available'],
-                ['num' => 'C-02', 'size' => '400 SQM', 'type' => '5 Bed Detached', 'price' => 32000000, 'status' => 'reserved'],
-                ['num' => 'C-03', 'size' => '400 SQM', 'type' => '5 Bed Detached', 'price' => 32000000, 'status' => 'available'],
-                ['num' => 'C-04', 'size' => '400 SQM', 'type' => '5 Bed Detached', 'price' => 32000000, 'status' => 'available'],
-                ['num' => 'C-05', 'size' => '400 SQM', 'type' => '5 Bed Detached', 'price' => 32000000, 'status' => 'sold'],
-            ];
-        @endphp
-
-        @foreach($plots as $p)
-            <div class="unit-plot {{ $p['status'] }}" onclick="openPlotModal('{{ $p['num'] }}', '{{ $p['size'] }}', '{{ $p['type'] }}', '{{ number_format($p['price'], 2) }}', '{{ $p['status'] }}')">
-                <div class="unit-number">{{ $p['num'] }}</div>
-                <div class="unit-size">{{ $p['size'] }}</div>
-                <div class="unit-status">{{ ucfirst($p['status'] === 'sold' ? 'Sold Out' : $p['status']) }}</div>
-            </div>
-        @endforeach
+                    ['num' => 'Plot 01 - Block C', 'size' => '400 SQM', 'type' => '5 Bed Detached', 'price' => 32000000, 'status' => 'available'],
+                    ['num' => 'Plot 02 - Block C', 'size' => '400 SQM', 'type' => '5 Bed Detached', 'price' => 32000000, 'status' => 'available'],
+                    ['num' => 'Plot 03 - Block C', 'size' => '400 SQM', 'type' => '5 Bed Detached', 'price' => 32000000, 'status' => 'reserved'],
+                    ['num' => 'Plot 04 - Block C', 'size' => '400 SQM', 'type' => '5 Bed Detached', 'price' => 32000000, 'status' => 'available'],
+                    ['num' => 'Plot 05 - Block C', 'size' => '400 SQM', 'type' => '5 Bed Detached', 'price' => 32000000, 'status' => 'sold'],
+                ];
+            @endphp
+            @foreach($mockPlots as $p)
+                <div class="unit-plot {{ $p['status'] }}" 
+                     onclick="openPlotModal('{{ $p['num'] }}', '{{ $p['size'] }}', '{{ $p['type'] }}', '{{ number_format($p['price'], 2) }}', '{{ $p['status'] }}', 'Hutu Prestige Polo Lake Resort', 'Along Airport Road, Beside Centenary City, Abuja')">
+                    <div class="unit-number">{{ $p['num'] }}</div>
+                    <div class="unit-size">{{ $p['size'] }}</div>
+                    <div class="unit-price">₦{{ number_format($p['price']) }}</div>
+                    <div class="unit-status">{{ ucfirst($p['status'] === 'sold' ? 'Sold Out' : $p['status']) }}</div>
+                </div>
+            @endforeach
+        @endif
     </div>
 </div>
 
@@ -266,8 +338,8 @@
             <div>
                 <div class="modal-image">
                     <span class="text-4xl mb-2">🏡</span>
-                    <h5 class="text-sm font-extrabold text-white" id="modalUnitTitle">Hutu Prestige Polo Lake Resort</h5>
-                    <p class="text-[11px] text-gray-400 mt-1">Along Airport Road, Beside Centenary City, Abuja</p>
+                    <h5 class="text-sm font-extrabold text-white" id="modalEstateName">Hutu Prestige Polo Lake Resort</h5>
+                    <p class="text-[11px] text-gray-400 mt-1" id="modalEstateLocation">Along Airport Road, Beside Centenary City, Abuja</p>
                     <span class="mt-3 px-2 py-0.5 rounded-full text-[9px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
                         ✓ FCDA Approved
                     </span>
@@ -279,7 +351,7 @@
                 </div>
             </div>
             <div class="modal-details">
-                <h3 id="modalUnitName">Plot A-01</h3>
+                <h3 id="modalUnitName">Plot 01 - Block A</h3>
                 <div class="detail-row">
                     <span class="text-gray-400">Building Type</span>
                     <span id="modalType" class="font-bold text-white">3 Bedroom Terrace Duplex</span>
@@ -301,7 +373,7 @@
                     <a href="{{ route('leads.index') }}" class="btn-orange">
                         Reserve &amp; Assign to Lead
                     </a>
-                    <a href="https://wa.me/?text=Hello%20RICAF%20team%2C%20I%20am%20interested%20in%20reserving%20a%20unit%20at%20Hutu%20Prestige%20Polo%20Lake%20Resort%20Abuja." target="_blank" class="btn-whatsapp">
+                    <a id="modalWhatsAppBtn" href="https://wa.me/?text=Hello%20RICAF%20team%2C%20I%20am%20interested%20in%20reserving%20a%20unit%20at%20Hutu%20Prestige%20Polo%20Lake%20Resort%20Abuja." target="_blank" class="btn-whatsapp">
                         Share on WhatsApp
                     </a>
                 </div>
@@ -311,11 +383,14 @@
 </div>
 
 <script>
-    function openPlotModal(num, size, type, price, status) {
-        document.getElementById('modalUnitName').innerText = 'Plot ' + num;
+    function openPlotModal(num, size, type, price, status, estateName, estateLocation) {
+        document.getElementById('modalUnitName').innerText = num;
         document.getElementById('modalSize').innerText = size;
         document.getElementById('modalType').innerText = type;
         document.getElementById('modalPrice').innerText = '₦' + price;
+        
+        if (estateName) document.getElementById('modalEstateName').innerText = estateName;
+        if (estateLocation) document.getElementById('modalEstateLocation').innerText = estateLocation;
         
         const statusEl = document.getElementById('modalStatusText');
         if (status === 'available') {
@@ -328,6 +403,9 @@
             statusEl.innerText = 'Sold Out';
             statusEl.style.color = '#ef4444';
         }
+
+        const waText = encodeURIComponent(`Hello RICAF team, I am interested in reserving ${num} (${type} - ${size}) at ${estateName || 'Hutu Prestige Polo Lake Resort'} for ₦${price}.`);
+        document.getElementById('modalWhatsAppBtn').href = `https://wa.me/?text=${waText}`;
 
         document.getElementById('unitModal').classList.add('active');
     }

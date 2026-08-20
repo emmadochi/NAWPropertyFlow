@@ -81,9 +81,13 @@ Route::middleware([
         Route::post('/change-password', [AuthController::class, 'changePassword'])->name('password.change');
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         
-        // Virtual Tour (Buckcrest Havens Prototype)
+        // Virtual Tour & Interactive Estate Map
         Route::get('/virtual-tour', function () {
-            return view('virtual-tour');
+            $properties = \App\Models\Property::with(['units' => function($q) {
+                $q->orderBy('unit_number', 'asc');
+            }])->orderBy('name', 'asc')->get();
+
+            return view('virtual-tour', compact('properties'));
         })->name('virtual-tour');
 
 
