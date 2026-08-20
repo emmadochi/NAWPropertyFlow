@@ -147,11 +147,90 @@ class PaymentService
     }
 
     /**
-     * Auto-calculate and create commissions for a sale.
+     * Mark a milestone payment as Verified by an Admin (super_admin / company_admin).
+     * Automatically calculates & approves the Marketer's commission queued for the monthly payroll run.
+     */
+    public function verifyMilestonePayment(PaymentMilestone $milestone, int $adminId): PaymentMilestone
+    {
+        return DB::transaction(function () use ($milestone, $adminId) {
+            $milestone->verified_at = Carbon::now();
+            $milestone->verified_by = $adminId;
+            $milestone->save();
+
+            $sale = $milestone->paymentPlan->sale;
+            $lead = $sale->lead;
+
+            // Recalculate & approve commissions for this sale based on verified paid amount
+            $this->calculateAndApproveCommissions($sale, $adminId);
+
+            // Log activity
+            $this->leadService->logActivity(
+                $lead->id,
+                $adminId,
+                'Payment Verified & Commission Queued',
+                "Admin verified payment of ₦" . number_format($milestone->amount_paid, 2) . " for '{$milestone->label}'. Marketer commission approved for monthly payroll."
+            );
+
+            return $milestone;
+        });
+    }
+
+    /**
+     * Calculate and approve sales commissions for verified sales transactions.
+     */
+    public function calculateAndApproveCommissions(Sale $sale, ?int $approvedBy = null): void
+    {
+        $officerRate = config('commission.sales_officer_rate', 5.0);
+        $managerRate = config('commission.manager_override_rate', 1.5);
+
+        // Calculate verified amount paid across all verified milestones
+        $verifiedAmountPaid = $sale->paymentPlan?->milestones()
+            ->whereNotNull('verified_at')
+            ->sum('amount_paid') ?? $sale->deal_value;
+
+        // 1. Sales Officer / Marketer Commission
+        if ($sale->sales_officer_id) {
+            $officer = User::find($sale->sales_officer_id);
+            $rate = ($officer && !is_null($officer->commission_rate)) ? $officer->commission_rate : $officerRate;
+            $amount = ($verifiedAmountPaid * $rate) / 100;
+            
+            $commission = Commission::firstOrNew([
+                'sale_id' => $sale->id,
+                'user_id' => $sale->sales_officer_id,
+                'commission_type' => 'sales_officer',
+            ]);
+
+            $commission->rate_percent = $rate;
+            $commission->calculated_amount = $amount;
+            $commission->status = 'approved';
+            $commission->approved_by = $approvedBy ?? $commission->approved_by ?? Auth::id();
+            $commission->save();
+        }
+
+        // 2. Sales Manager Override Commission
+        $manager = User::where('role', 'sales_manager')->first();
+        if ($manager) {
+            $managerAmount = ($verifiedAmountPaid * $managerRate) / 100;
+            
+            $managerCommission = Commission::firstOrNew([
+                'sale_id' => $sale->id,
+                'user_id' => $manager->id,
+                'commission_type' => 'manager_override',
+            ]);
+
+            $managerCommission->rate_percent = $managerRate;
+            $managerCommission->calculated_amount = $managerAmount;
+            $managerCommission->status = 'approved';
+            $managerCommission->approved_by = $approvedBy ?? $managerCommission->approved_by ?? Auth::id();
+            $managerCommission->save();
+        }
+    }
+
+    /**
+     * Auto-calculate and create commissions for a sale (called upon deal closing).
      */
     public function calculateCommissions(Sale $sale): void
     {
-        // Get rates from config
         $officerRate = config('commission.sales_officer_rate', 5.0);
         $managerRate = config('commission.manager_override_rate', 1.5);
 
@@ -161,7 +240,6 @@ class PaymentService
             $rate = ($officer && !is_null($officer->commission_rate)) ? $officer->commission_rate : $officerRate;
             $amount = ($sale->deal_value * $rate) / 100;
             
-            // Avoid duplicate commissions for the same sale
             Commission::firstOrCreate([
                 'sale_id' => $sale->id,
                 'user_id' => $sale->sales_officer_id,

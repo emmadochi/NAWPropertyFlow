@@ -73,6 +73,25 @@ class PaymentController extends Controller
     }
 
     /**
+     * Mark milestone payment as Verified (super_admin / company_admin only).
+     */
+    public function verifyPayment(Request $request, PaymentMilestone $milestone)
+    {
+        $user = auth()->user();
+        if (!$user->isSuperAdmin() && !$user->isCompanyAdmin()) {
+            abort(403, 'Only Company Admins or Super Admins can verify client milestone payments.');
+        }
+
+        if ($milestone->amount_paid <= 0) {
+            return back()->with('error', 'Cannot verify a milestone that has zero amount paid.');
+        }
+
+        $this->paymentService->verifyMilestonePayment($milestone, $user->id);
+
+        return back()->with('success', 'Milestone payment verified! Marketer commission calculated & queued for monthly payroll.');
+    }
+
+    /**
      * Generate & stream receipt PDF.
      */
     public function downloadReceipt(PaymentMilestone $milestone)

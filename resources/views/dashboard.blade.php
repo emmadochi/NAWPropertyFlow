@@ -267,12 +267,21 @@
             </span>
         </div>
 
-        <!-- Card: Closed Revenue -->
+        <!-- Card: Closed Revenue / Personal Commissions -->
         <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center justify-between">
             <div>
-                <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Revenue</span>
-                <h3 class="text-2xl font-extrabold text-emerald-600 mt-1">₦{{ number_format($metrics['total_revenue'], 2) }}</h3>
-                <span class="text-xs text-emerald-600 block mt-1 font-semibold">{{ $metrics['closed_deals'] }} Deals Won ({{ $metrics['conversion_rate'] }}%)</span>
+                @if(Auth::user()->role === 'sales_executive')
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">My Closed Sales</span>
+                    <h3 class="text-2xl font-extrabold text-emerald-600 mt-1">₦{{ number_format($metrics['total_revenue'], 2) }}</h3>
+                    @php
+                        $myCommissions = \App\Models\Commission::where('user_id', Auth::id())->whereIn('status', ['approved', 'paid'])->sum('calculated_amount');
+                    @endphp
+                    <span class="text-xs text-brand-600 block mt-1 font-bold">₦{{ number_format($myCommissions, 2) }} Earned Commissions</span>
+                @else
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Revenue</span>
+                    <h3 class="text-2xl font-extrabold text-emerald-600 mt-1">₦{{ number_format($metrics['total_revenue'], 2) }}</h3>
+                    <span class="text-xs text-emerald-600 block mt-1 font-semibold">{{ $metrics['closed_deals'] }} Deals Won ({{ $metrics['conversion_rate'] }}%)</span>
+                @endif
             </div>
             <span class="p-4 bg-emerald-50 text-emerald-500 rounded-2xl">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

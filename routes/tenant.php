@@ -142,6 +142,7 @@ Route::middleware([
         Route::post('sales/{sale}/payment-plan', [PaymentController::class, 'storePlan'])->name('payments.store-plan');
         Route::get('payments/{paymentPlan}/milestones', [PaymentController::class, 'showPlan'])->name('payments.show-plan');
         Route::post('payments/milestones/{milestone}/payments', [PaymentController::class, 'recordPayment'])->name('payments.record-payment');
+        Route::post('payments/milestones/{milestone}/verify', [PaymentController::class, 'verifyPayment'])->name('payments.verify-payment');
         Route::get('payments/milestones/{milestone}/receipt', [PaymentController::class, 'downloadReceipt'])->name('payments.download-receipt');
 
         // Team Management

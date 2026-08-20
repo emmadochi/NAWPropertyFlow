@@ -98,23 +98,38 @@
                             ₦{{ number_format($milestone->amount_paid, 2) }}
                         </td>
                         <td class="px-6 py-4 text-center">
-                            @if($milestone->status === 'paid')
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
-                                    Paid
-                                </span>
-                            @elseif($milestone->status === 'partial')
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
-                                    Partial
-                                </span>
-                            @elseif($milestone->status === 'overdue')
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800">
-                                    Overdue
-                                </span>
-                            @else
-                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
-                                    Pending
-                                </span>
-                            @endif
+                            <div class="flex flex-col items-center space-y-1">
+                                @if($milestone->status === 'paid')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+                                        Paid
+                                    </span>
+                                @elseif($milestone->status === 'partial')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-800">
+                                        Partial
+                                    </span>
+                                @elseif($milestone->status === 'overdue')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-rose-100 text-rose-800">
+                                        Overdue
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-gray-100 text-gray-600">
+                                        Pending
+                                    </span>
+                                @endif
+
+                                @if($milestone->amount_paid > 0)
+                                    @if($milestone->verified_at)
+                                        <span class="inline-flex items-center space-x-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200" title="Verified by {{ $milestone->verifier?->name ?? 'Admin' }} on {{ $milestone->verified_at->format('M d, Y') }}">
+                                            <svg class="w-3 h-3 text-emerald-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path></svg>
+                                            <span>Verified</span>
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center space-x-1 text-[10px] font-bold text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
+                                            <span>Pending Audit</span>
+                                        </span>
+                                    @endif
+                                @endif
+                            </div>
                         </td>
                         <td class="px-6 py-4 text-sm text-right space-x-2">
                             @if($milestone->amount_paid > 0 && $milestone->receipt_path)
@@ -124,6 +139,17 @@
                                 </svg>
                                 <span>Receipt</span>
                             </a>
+                            @endif
+
+                            {{-- Admin Verification Action --}}
+                            @if(in_array(Auth::user()->role, ['super_admin', 'company_admin']) && $milestone->amount_paid > 0 && !$milestone->verified_at)
+                            <form action="{{ route('payments.verify-payment', $milestone->id) }}" method="POST" class="inline" onsubmit="return confirm('Verify this payment of ₦{{ number_format($milestone->amount_paid, 2) }}? This will approve marketer commissions for payroll.')">
+                                @csrf
+                                <button type="submit" class="inline-flex items-center px-2.5 py-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 font-bold text-xs rounded-lg transition-colors shadow-sm">
+                                    <svg class="w-3.5 h-3.5 mr-1" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path></svg>
+                                    <span>Verify Payment</span>
+                                </button>
+                            </form>
                             @endif
 
                             @if($milestone->status !== 'paid')
