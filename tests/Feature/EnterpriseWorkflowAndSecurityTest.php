@@ -388,4 +388,68 @@ class EnterpriseWorkflowAndSecurityTest extends TestCase
         $ledgerView->assertSee('Financial Outflows Ledger');
         $ledgerView->assertSee('Site Generator Diesel');
     }
+
+    /**
+     * TEST 7: Dynamic Custom Role Creation & Granular Permissions RBAC Security.
+     */
+    public function test_dynamic_role_creation_and_granular_permissions_rbac()
+    {
+        // 1. Seed standard permissions & roles
+        $seeder = new \Database\Seeders\PermissionSeeder();
+        $seeder->run();
+
+        $superAdmin = User::where('role', 'super_admin')->first();
+        if (!$superAdmin) {
+            $superAdmin = User::forceCreate([
+                'name' => 'Root MD',
+                'email' => 'md_rbac@ricafltd.com',
+                'password' => Hash::make('secret'),
+                'role' => 'super_admin',
+                'status' => 'active'
+            ]);
+        }
+
+        // 2. Super Admin visits Roles & Permissions Control Center
+        $rolesIndexResponse = $this->actingAs($superAdmin)->get(route('settings.roles.index'));
+        $rolesIndexResponse->assertStatus(200);
+        $rolesIndexResponse->assertSee('Roles &amp; Granular Permissions', false);
+
+        // 3. Super Admin dynamically creates a custom role: "Site Quality Surveyor"
+        $createRoleResponse = $this->actingAs($superAdmin)->post(route('settings.roles.store'), [
+            'name' => 'Site Quality Surveyor',
+            'description' => 'Inspects estate construction milestones and logs diesel expenses.',
+            'permissions' => [
+                'properties.view',
+                'units.manage',
+                'finance.log_expenses'
+            ]
+        ]);
+        $createRoleResponse->assertSessionHas('success');
+
+        $surveyorRole = \App\Models\Role::where('name', 'Site Quality Surveyor')->first();
+        $this->assertNotNull($surveyorRole);
+        $this->assertTrue($surveyorRole->hasPermission('properties.view'));
+        $this->assertTrue($surveyorRole->hasPermission('units.manage'));
+        $this->assertTrue($surveyorRole->hasPermission('finance.log_expenses'));
+        $this->assertFalse($surveyorRole->hasPermission('finance.verify_payments')); // Must NOT have payment verification
+
+        // 4. Assign staff member to this new custom role
+        $surveyorUser = User::forceCreate([
+            'name' => 'Engr. Kenneth Adeleke',
+            'email' => 'kenneth_' . Str::random(5) . '@ricafltd.com',
+            'password' => Hash::make('secret'),
+            'role' => $surveyorRole->slug,
+            'role_id' => $surveyorRole->id,
+            'status' => 'active'
+        ]);
+
+        $this->assertTrue($surveyorUser->hasPermission('properties.view'));
+        $this->assertTrue($surveyorUser->hasPermission('units.manage'));
+        $this->assertFalse($surveyorUser->hasPermission('finance.verify_payments'));
+        $this->assertFalse($surveyorUser->hasPermission('leads.delete'));
+
+        // 5. Non-admin cannot modify or delete custom roles -> 403 Forbidden
+        $unauthorizedRoleEdit = $this->actingAs($surveyorUser)->get(route('settings.roles.index'));
+        $unauthorizedRoleEdit->assertStatus(403);
+    }
 }

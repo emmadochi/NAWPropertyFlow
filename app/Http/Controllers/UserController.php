@@ -15,10 +15,11 @@ class UserController extends Controller
      */
     public function index()
     {
-        $users       = User::with(['branch', 'departmentRelation'])->orderBy('name', 'asc')->get();
+        $users       = User::with(['branch', 'departmentRelation', 'roleRelation'])->orderBy('name', 'asc')->get();
         $branches    = \App\Models\Branch::orderBy('name', 'asc')->get();
         $departments = \App\Models\Department::where('is_active', true)->orderBy('name', 'asc')->get();
-        return view('settings.index', compact('users', 'branches', 'departments'));
+        $roles       = \App\Models\Role::orderBy('name', 'asc')->get();
+        return view('settings.index', compact('users', 'branches', 'departments', 'roles'));
     }
 
     /**
@@ -30,7 +31,8 @@ class UserController extends Controller
             'name'            => 'required|string|max:255',
             'email'           => 'required|email|unique:users,email|max:255',
             'password'        => 'required|string|min:6',
-            'role'            => 'required|string|in:company_admin,hr,sales_manager,sales_executive,media_manager,project_manager,accountant,finance_manager',
+            'role'            => 'required|string',
+            'role_id'         => 'nullable|exists:roles,id',
             'department_id'   => 'nullable|exists:departments,id',
             'department'      => 'nullable|string',
             'phone_number'    => 'nullable|string|max:30',
@@ -40,8 +42,17 @@ class UserController extends Controller
 
         // Enforce hierarchy rules
         if (!Auth::user()->hasRole(['super_admin', 'company_admin'])) {
-            if ($validated['role'] === 'company_admin') {
-                return back()->withInput()->withErrors(['role' => 'Only admins can assign the Company Admin role.']);
+            if ($validated['role'] === 'company_admin' || $validated['role'] === 'super_admin') {
+                return back()->withInput()->withErrors(['role' => 'Only administrators can assign executive roles.']);
+            }
+        }
+
+        // Link role_id if matched
+        if (empty($validated['role_id'])) {
+            $matchedRole = \App\Models\Role::where('slug', $validated['role'])->orWhere('name', $validated['role'])->first();
+            if ($matchedRole) {
+                $validated['role_id'] = $matchedRole->id;
+                $validated['role'] = $matchedRole->slug;
             }
         }
 

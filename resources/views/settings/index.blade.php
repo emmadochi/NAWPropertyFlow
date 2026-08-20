@@ -47,7 +47,7 @@
                         </td>
                         <td class="px-6 py-4">
                             <span class="px-2.5 py-1 text-xs font-bold rounded-lg border bg-blue-50 text-blue-600 border-blue-200 uppercase tracking-wider">
-                                {{ str_replace('_', ' ', $u->role) }}
+                                {{ $u->roleRelation ? $u->roleRelation->name : str_replace('_', ' ', $u->role) }}
                             </span>
                         </td>
                         <td class="px-6 py-4 text-gray-700 font-medium">
@@ -115,16 +115,22 @@
                     </div>
                     
                     <div>
-                        <label class="block text-sm font-bold text-gray-700 mb-2">Role (System Access)</label>
+                        <label class="block text-sm font-bold text-gray-700 mb-2">Role (System Access &amp; Permissions)</label>
                         <select name="role" required class="w-full bg-gray-50 border border-gray-200 text-dark-900 text-sm rounded-xl focus:ring-brand-500 focus:border-brand-500 block p-3">
                             <option value="" disabled selected>Select a role...</option>
-                            <option value="sales_executive">Sales Executive (Marketer)</option>
-                            <option value="sales_manager">Sales Manager</option>
-                            <option value="accountant">Accountant / Finance Officer</option>
-                            <option value="hr">Human Resources</option>
-                            <option value="media_manager">Media / Marketing Manager</option>
-                            <option value="project_manager">Project Manager</option>
-                            @if(Auth::user()->isSuperAdmin() || Auth::user()->isCompanyAdmin())
+                            @if(isset($roles) && count($roles) > 0)
+                                @foreach($roles as $r)
+                                    @if($r->slug !== 'super_admin' || Auth::user()->isSuperAdmin())
+                                    <option value="{{ $r->slug }}">{{ $r->name }}</option>
+                                    @endif
+                                @endforeach
+                            @else
+                                <option value="sales_executive">Sales Executive (Marketer)</option>
+                                <option value="sales_manager">Sales Manager</option>
+                                <option value="accountant">Accountant / Finance Officer</option>
+                                <option value="hr">Human Resources</option>
+                                <option value="media_manager">Media / Marketing Manager</option>
+                                <option value="project_manager">Project Manager</option>
                                 <option value="company_admin">Company Admin</option>
                             @endif
                         </select>

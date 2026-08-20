@@ -57,53 +57,124 @@ class User extends Authenticatable
         ];
     }
 
-    // Role helper methods
+    /**
+     * Relationship to dynamic custom Role model.
+     */
+    public function roleRelation()
+    {
+        return $this->belongsTo(Role::class, 'role_id');
+    }
+
+    /**
+     * Check if user has a granular permission.
+     * Supports both dynamic RBAC permissions and seamless fallback to string roles.
+     */
+    public function hasPermission(string $permissionSlug): bool
+    {
+        // 1. Super Admin always bypasses and has full system authorization
+        if ($this->role === 'super_admin' || ($this->roleRelation && $this->roleRelation->slug === 'super_admin')) {
+            return true;
+        }
+
+        // 2. Check dynamic Role permissions if role_id is assigned
+        if ($this->roleRelation) {
+            return $this->roleRelation->hasPermission($permissionSlug);
+        }
+
+        // 3. Backward Compatibility Fallback for legacy un-migrated roles
+        return $this->legacyPermissionFallback($permissionSlug);
+    }
+
+    /**
+     * Fallback mapping for existing string roles during transition.
+     */
+    protected function legacyPermissionFallback(string $slug): bool
+    {
+        if (in_array($this->role, ['super_admin', 'company_admin'])) {
+            return true;
+        }
+
+        $matrix = [
+            'sales_executive' => [
+                'leads.view_own', 'leads.create', 'leads.edit', 'sales.record',
+                'inspections.schedule', 'followups.manage', 'properties.view', 'finance.log_expenses'
+            ],
+            'sales_manager' => [
+                'leads.view_all', 'leads.create', 'leads.edit', 'leads.reassign', 'sales.record',
+                'inspections.view_all', 'inspections.schedule', 'followups.manage', 'properties.view',
+                'finance.log_expenses', 'marketing.view'
+            ],
+            'accountant' => [
+                'finance.view_ledger', 'finance.verify_payments', 'finance.approve_expenses',
+                'finance.disburse_expenses', 'finance.manage_payroll', 'properties.view'
+            ],
+            'finance_manager' => [
+                'finance.view_ledger', 'finance.verify_payments', 'finance.approve_expenses',
+                'finance.disburse_expenses', 'finance.manage_payroll', 'properties.view'
+            ],
+            'hr' => [
+                'hr.view_staff', 'hr.approve_leaves', 'hr.review_submissions', 'hr.manage_targets',
+                'hr.manage_users', 'finance.manage_payroll'
+            ],
+            'media_manager' => [
+                'marketing.view', 'marketing.send_broadcast', 'marketing.manage_drip', 'properties.view'
+            ],
+            'project_manager' => [
+                'properties.view', 'properties.create', 'properties.edit', 'units.manage', 'finance.log_expenses'
+            ],
+        ];
+
+        return in_array($slug, $matrix[$this->role] ?? []);
+    }
+
+    // Role helper methods (Backward Compatible)
     public function isSuperAdmin(): bool
     {
-        return $this->role === 'super_admin';
+        return $this->role === 'super_admin' || ($this->roleRelation && $this->roleRelation->slug === 'super_admin');
     }
 
     public function isCompanyAdmin(): bool
     {
-        return $this->role === 'company_admin';
+        return in_array($this->role, ['super_admin', 'company_admin']) || ($this->roleRelation && in_array($this->roleRelation->slug, ['super_admin', 'company_admin']));
     }
 
     public function isSalesManager(): bool
     {
-        return $this->role === 'sales_manager';
+        return $this->role === 'sales_manager' || ($this->roleRelation && $this->roleRelation->slug === 'sales_manager');
     }
 
     public function isSalesExecutive(): bool
     {
-        return $this->role === 'sales_executive';
+        return $this->role === 'sales_executive' || ($this->roleRelation && $this->roleRelation->slug === 'sales_executive');
     }
 
     public function isMediaManager(): bool
     {
-        return $this->role === 'media_manager';
+        return $this->role === 'media_manager' || ($this->roleRelation && $this->roleRelation->slug === 'media_manager');
     }
 
     public function isProjectManager(): bool
     {
-        return $this->role === 'project_manager';
+        return $this->role === 'project_manager' || ($this->roleRelation && $this->roleRelation->slug === 'project_manager');
     }
 
     public function isHR(): bool
     {
-        return $this->role === 'hr';
+        return $this->role === 'hr' || ($this->roleRelation && $this->roleRelation->slug === 'hr');
     }
 
     public function isAccountant(): bool
     {
-        return in_array($this->role, ['accountant', 'finance_manager']);
+        return in_array($this->role, ['accountant', 'finance_manager']) || ($this->roleRelation && in_array($this->roleRelation->slug, ['accountant', 'finance_manager']));
     }
 
     public function hasRole(array|string $roles): bool
     {
+        $currentRoleSlug = $this->roleRelation ? $this->roleRelation->slug : $this->role;
         if (is_array($roles)) {
-            return in_array($this->role, $roles);
+            return in_array($currentRoleSlug, $roles) || in_array($this->role, $roles);
         }
-        return $this->role === $roles;
+        return $currentRoleSlug === $roles || $this->role === $roles;
     }
 
     // Relationships

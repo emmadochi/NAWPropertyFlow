@@ -252,6 +252,13 @@ Route::middleware([
             Route::post('accounting/expenses', [\App\Http\Controllers\ExpenseController::class, 'store'])->name('accounting.expenses.store');
             Route::patch('accounting/expenses/{expense}/status', [\App\Http\Controllers\ExpenseController::class, 'updateStatus'])->name('accounting.expenses.status');
             Route::delete('accounting/expenses/{expense}', [\App\Http\Controllers\ExpenseController::class, 'destroy'])->name('accounting.expenses.destroy');
+
+            // Dynamic Roles & Granular Permissions Engine (Super Admin / Authorized HR)
+            Route::get('settings/roles-permissions', [\App\Http\Controllers\RolePermissionController::class, 'index'])->name('settings.roles.index');
+            Route::post('settings/roles-permissions', [\App\Http\Controllers\RolePermissionController::class, 'store'])->name('settings.roles.store');
+            Route::get('settings/roles-permissions/{role}/edit', [\App\Http\Controllers\RolePermissionController::class, 'edit'])->name('settings.roles.edit');
+            Route::put('settings/roles-permissions/{role}', [\App\Http\Controllers\RolePermissionController::class, 'update'])->name('settings.roles.update');
+            Route::delete('settings/roles-permissions/{role}', [\App\Http\Controllers\RolePermissionController::class, 'destroy'])->name('settings.roles.destroy');
         });
 
         // Customer Portal
