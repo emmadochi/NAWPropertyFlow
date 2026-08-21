@@ -272,6 +272,7 @@ Route::middleware([
 
         // File Storage
         Route::middleware(['feature:file_manager'])->group(function () {
+            Route::get('api/file-storage/{folder?}', [FileStorageController::class, 'apiDirectory'])->name('file-storage.api.directory');
             Route::get('file-storage/{folder?}', [FileStorageController::class, 'index'])->name('file-storage.index');
             Route::post('file-storage/folders', [FileStorageController::class, 'createFolder'])->name('file-storage.folders.store');
             Route::post('file-storage/folders/{folder}/rename', [FileStorageController::class, 'renameFolder'])->name('file-storage.folders.rename');

@@ -37,16 +37,39 @@ class FileStorageController extends Controller
             ->orderBy('name')
             ->get();
 
-        if (request()->expectsJson() && !request()->header('X-Livewire')) {
-            return response()->json([
-                'currentFolder' => $currentFolder,
-                'breadcrumbs' => $breadcrumbs,
-                'folders' => $folders,
-                'files' => $files,
-            ]);
+        return view('file-storage.index', compact('currentFolder', 'breadcrumbs', 'folders', 'files'));
+    }
+
+    public function apiDirectory($folderId = null)
+    {
+        $currentFolder = null;
+        $breadcrumbs = [];
+
+        if ($folderId) {
+            $currentFolder = Folder::find($folderId);
+            if ($currentFolder) {
+                $temp = $currentFolder;
+                while ($temp) {
+                    array_unshift($breadcrumbs, $temp);
+                    $temp = $temp->parent;
+                }
+            }
         }
 
-        return view('file-storage.index', compact('currentFolder', 'breadcrumbs', 'folders', 'files'));
+        $folders = Folder::where('parent_id', $folderId)
+            ->orderBy('name')
+            ->get();
+
+        $files = File::where('folder_id', $folderId)
+            ->orderBy('name')
+            ->get();
+
+        return response()->json([
+            'currentFolder' => $currentFolder,
+            'breadcrumbs' => $breadcrumbs,
+            'folders' => $folders,
+            'files' => $files,
+        ]);
     }
 
     public function createFolder(Request $request)

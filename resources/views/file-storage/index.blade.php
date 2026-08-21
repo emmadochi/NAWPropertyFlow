@@ -278,13 +278,13 @@ window.fileManager = function() {
 
         async navigateTo(folderId) {
             this.isLoading = true;
-            const url = folderId ? `/file-storage/${folderId}` : '/file-storage';
+            const apiUrl = folderId ? `/api/file-storage/${folderId}` : '/api/file-storage';
+            const pageUrl = folderId ? `/file-storage/${folderId}` : '/file-storage';
             
             try {
-                const response = await fetch(url, {
+                const response = await fetch(apiUrl, {
                     headers: {
-                        'Accept': 'application/json',
-                        'X-Requested-With': 'XMLHttpRequest'
+                        'Accept': 'application/json'
                     }
                 });
                 const data = await response.json();
@@ -295,7 +295,7 @@ window.fileManager = function() {
                 this.currentFolderId = data.currentFolder ? data.currentFolder.id : null;
                 this.currentFolderName = data.currentFolder ? data.currentFolder.name : 'All Documents';
                 
-                window.history.pushState({folderId: this.currentFolderId}, '', url);
+                window.history.pushState({folderId: this.currentFolderId}, '', pageUrl);
             } catch (e) {
                 this.showToast('Failed to load directory.', 'error');
             } finally {
