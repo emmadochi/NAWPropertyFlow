@@ -311,12 +311,8 @@
                     </button>
                 </div>
             </div>
-        </div>
-    </div>
+  </div>
 
-</div>
-
-@push('styles')
 <style>
 .wysiwyg-btn {
     display: inline-flex; align-items: center; justify-content: center;
@@ -330,37 +326,42 @@
 #campaign-editor ul { list-style: disc; padding-left: 1.5em; }
 #campaign-editor ol { list-style: decimal; padding-left: 1.5em; }
 </style>
-@endpush
 
-@push('scripts')
 <script>
 function campaign_exec(cmd, value) {
-    document.getElementById('campaign-editor').focus();
+    const editor = document.getElementById('campaign-editor');
+    if (editor) editor.focus();
     document.execCommand(cmd, false, value || null);
     campaign_sync();
 }
 function campaign_sync() {
-    const html = document.getElementById('campaign-editor').innerHTML;
-    document.getElementById('campaign-body-input').value = html;
+    const editor = document.getElementById('campaign-editor');
+    const input = document.getElementById('campaign-body-input');
+    if (editor && input) {
+        input.value = editor.innerHTML;
+    }
 }
 function campaign_sync_from_source(html) {
-    document.getElementById('campaign-editor').innerHTML = html;
-    document.getElementById('campaign-body-input').value = html;
+    const editor = document.getElementById('campaign-editor');
+    const input = document.getElementById('campaign-body-input');
+    if (editor) editor.innerHTML = html;
+    if (input) input.value = html;
 }
 function campaign_toggle_source(btn) {
     const editor = document.getElementById('campaign-editor');
     const source = document.getElementById('campaign-editor-source');
+    if (!editor || !source) return;
     const isSource = !source.classList.contains('hidden');
     if (isSource) {
         editor.innerHTML = source.value;
         source.classList.add('hidden');
         editor.classList.remove('hidden');
-        btn.classList.remove('bg-purple-100');
+        if (btn) btn.classList.remove('bg-purple-100');
     } else {
         source.value = editor.innerHTML;
         editor.classList.add('hidden');
         source.classList.remove('hidden');
-        btn.classList.add('bg-purple-100');
+        if (btn) btn.classList.add('bg-purple-100');
     }
 }
 function campaign_insert_link() {
@@ -368,11 +369,16 @@ function campaign_insert_link() {
     if (url) campaign_exec('createLink', url);
 }
 
-document.getElementById('campaign-create-form').addEventListener('submit', function() {
-    campaign_sync();
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('campaign-create-form');
+    if (form) {
+        form.addEventListener('submit', function() {
+            campaign_sync();
+        });
+    }
 });
 
-function campaignCreator() {
+window.campaignCreator = function() {
     return {
         type: 'email',
         campaignName: '',
@@ -394,13 +400,13 @@ function campaignCreator() {
             this.$watch('type', () => this.updatePreview());
             this.updatePreview();
             this.$nextTick(() => {
-                this.loadTemplate('launch'); // default load luxury launch template
+                this.loadTemplate('launch');
             });
         },
 
         loadTemplate(key) {
             this.activeTemplate = key;
-            this.type = 'email'; // Ensure switched to rich email format
+            this.type = 'email';
             const company = '{{ \App\Models\CompanySetting::getCached()?->company_name ?? "RICAF Nigeria Limited" }}';
             const phone = '{{ \App\Models\CompanySetting::getCached()?->phone ?? "+234 800 RICAF CRM" }}';
 
@@ -516,6 +522,8 @@ function campaignCreator() {
         <p style="font-size: 13px; color: #475569;">You can also access your real-time payment schedule and property documents anytime on your Client Portal.</p>
     </div>
 </div>`;
+            }
+
             this.$nextTick(() => {
                 const editor = document.getElementById('campaign-editor');
                 const source = document.getElementById('campaign-editor-source');
@@ -527,7 +535,6 @@ function campaignCreator() {
                 
                 campaign_sync();
 
-                // Smoothly scroll down towards the editor on small screens
                 const editorWrap = document.getElementById('campaign-editor-wrap');
                 if (editorWrap && window.innerWidth < 768) {
                     editorWrap.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -538,19 +545,21 @@ function campaignCreator() {
         insertCampaignToken(token) {
             if (this.type === 'email') {
                 const editor = document.getElementById('campaign-editor');
-                editor.focus();
-                const sel = window.getSelection();
-                if (sel.rangeCount) {
-                    const range = sel.getRangeAt(0);
-                    range.deleteContents();
-                    const node = document.createTextNode(token);
-                    range.insertNode(node);
-                    range.setStartAfter(node);
-                    range.setEndAfter(node);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-                } else {
-                    editor.innerHTML += token;
+                if (editor) {
+                    editor.focus();
+                    const sel = window.getSelection();
+                    if (sel && sel.rangeCount) {
+                        const range = sel.getRangeAt(0);
+                        range.deleteContents();
+                        const node = document.createTextNode(token);
+                        range.insertNode(node);
+                        range.setStartAfter(node);
+                        range.setEndAfter(node);
+                        sel.removeAllRanges();
+                        sel.addRange(range);
+                    } else {
+                        editor.innerHTML += token;
+                    }
                 }
                 campaign_sync();
             } else {
@@ -559,7 +568,9 @@ function campaignCreator() {
         },
 
         renderPreviewContent() {
-            const html = document.getElementById('campaign-body-input').value || document.getElementById('campaign-editor').innerHTML;
+            const bodyInput = document.getElementById('campaign-body-input');
+            const editor = document.getElementById('campaign-editor');
+            const html = (bodyInput ? bodyInput.value : '') || (editor ? editor.innerHTML : '');
             return html
                 .replace(/@{{name}}/g, 'Alhaji Ibrahim Musa')
                 .replace(/@{{email}}/g, 'ibrahim@example.com')
@@ -574,6 +585,7 @@ function campaignCreator() {
             campaign_sync();
 
             try {
+                const bodyInput = document.getElementById('campaign-body-input');
                 const res = await fetch('{{ route("campaigns.send-test") }}', {
                     method: 'POST',
                     headers: {
@@ -583,7 +595,7 @@ function campaignCreator() {
                     body: JSON.stringify({
                         test_email: this.testRecipient,
                         subject: this.subject || 'RICAF Newsletter Preview',
-                        body: document.getElementById('campaign-body-input').value
+                        body: bodyInput ? bodyInput.value : ''
                     })
                 });
                 const data = await res.json();
@@ -615,8 +627,7 @@ function campaignCreator() {
             .then(data => { this.previewCount = data.count; })
             .catch(() => { this.previewCount = '0'; });
         }
-    }
-}
+    };
+};
 </script>
-@endpush
 @endsection
