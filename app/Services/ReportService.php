@@ -115,7 +115,7 @@ class ReportService
               ->where('target_year', Carbon::now()->year)
               ->get();
 
-            $mediaStorageCount = \App\Models\FileStorage::count();
+            $mediaStorageCount = \App\Models\File::count();
 
             $mediaData = [
                 'media_storage_count' => $mediaStorageCount,
