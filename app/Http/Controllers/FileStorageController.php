@@ -167,9 +167,10 @@ class FileStorageController extends Controller
             abort(404, 'Physical file not found on storage.');
         }
 
-        $path = storage_path('app/' . $file->path);
-        return response()->file($path, [
-            'Content-Type' => $file->mime_type,
+        $fullPath = Storage::disk('local')->path($file->path);
+        
+        return response()->file($fullPath, [
+            'Content-Type' => $file->mime_type ?? 'application/octet-stream',
             'Content-Disposition' => 'inline; filename="' . $file->original_name . '"'
         ]);
     }
