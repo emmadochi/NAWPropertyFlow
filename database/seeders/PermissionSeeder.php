@@ -71,19 +71,168 @@ class PermissionSeeder extends Seeder
             Permission::updateOrCreate(['slug' => $perm['slug']], $perm);
         }
 
-        // Define Standard Core System Roles
+        // 1. Seed Official 8 RICAF Departments
+        $departments = [
+            ['name' => 'Admin', 'description' => 'Executive governance, human resources, company compliance, and customer service.'],
+            ['name' => 'Marketing & Sales', 'description' => 'Client acquisition, promotional campaigns, leads pipeline, and deal closures.'],
+            ['name' => 'Media and Creative', 'description' => 'Video production, drone shoots, promotional photography, and creative branding.'],
+            ['name' => 'Accounting', 'description' => 'Revenue auditing, client proof of payments, OPEX claims, and payroll management.'],
+            ['name' => 'Procurement', 'description' => 'Vendor sourcing, estate building materials quotation, and inventory logistics.'],
+            ['name' => 'Legal', 'description' => 'Contract deed drafting, title vetting, statutory regulatory documentation, and compliance.'],
+            ['name' => 'Project Management', 'description' => 'Architectural master plans, site engineering, and estate construction milestones.'],
+            ['name' => 'Logistics', 'description' => 'Vehicle dispatch, property inspection tours logistics, and transport fleet maintenance.'],
+        ];
+
+        foreach ($departments as $deptData) {
+            \App\Models\Department::updateOrCreate(
+                ['name' => $deptData['name']],
+                [
+                    'description' => $deptData['description'],
+                    'is_active' => true,
+                ]
+            );
+        }
+
+        // 2. Define Official RICAF System Roles
         $rolesConfig = [
             'super_admin' => [
                 'name' => 'Super Administrator (Managing Director)',
-                'description' => 'Root enterprise administrator with unrestricted global access to all CRM functions.',
+                'description' => 'Root enterprise executive with unrestricted global access across all departments.',
                 'is_system' => true,
                 'permissions' => Permission::pluck('slug')->toArray(),
             ],
             'company_admin' => [
                 'name' => 'Company Administrator',
-                'description' => 'Executive administrator capable of managing team operations, inventory, and finances.',
+                'description' => 'Executive administrator managing daily operations, staff directory, and financial approvals.',
                 'is_system' => true,
                 'permissions' => Permission::pluck('slug')->toArray(),
+            ],
+            'hr' => [
+                'name' => 'Human Resource',
+                'description' => 'Manages staff profiles, onboarding, daily attendance KPI logs, and leave approvals.',
+                'is_system' => false,
+                'permissions' => [
+                    'hr.view_staff', 'hr.approve_leaves', 'hr.review_submissions', 'hr.manage_targets', 'hr.manage_users',
+                    'finance.manage_payroll'
+                ],
+            ],
+            'marketing' => [
+                'name' => 'Marketing',
+                'description' => 'Coordinates promotional campaigns, broadcasts, automated email/SMS drips, and lead acquisition.',
+                'is_system' => false,
+                'permissions' => [
+                    'properties.view',
+                    'marketing.view', 'marketing.send_broadcast', 'marketing.manage_drip',
+                    'media.view_assets', 'finance.log_expenses'
+                ],
+            ],
+            'sales_executive' => [
+                'name' => 'Sales Executive',
+                'description' => 'Front-line real estate sales officer managing assigned prospects, site tours, and deal closings.',
+                'is_system' => false,
+                'permissions' => [
+                    'properties.view',
+                    'leads.view_own', 'leads.create', 'leads.edit', 'sales.record',
+                    'inspections.schedule', 'followups.manage',
+                    'finance.log_expenses'
+                ],
+            ],
+            'customer_service_rep' => [
+                'name' => 'Customer Service Representative',
+                'description' => 'Handles incoming prospect inquiries, general customer queries, and lead routing.',
+                'is_system' => false,
+                'permissions' => [
+                    'properties.view',
+                    'leads.view_all', 'leads.create', 'leads.edit', 'followups.manage',
+                    'inspections.view_all'
+                ],
+            ],
+            'telecommunications' => [
+                'name' => 'Telecommunications',
+                'description' => 'Outbound telemarketing, cold call outreach, client follow-up calls, and phone appointments.',
+                'is_system' => false,
+                'permissions' => [
+                    'properties.view',
+                    'leads.view_own', 'leads.create', 'leads.edit', 'followups.manage'
+                ],
+            ],
+            'media_manager' => [
+                'name' => 'Media Officer / Manager',
+                'description' => 'Produces drone site shoots, estate videos, promotional flyers, reels, and digital assets.',
+                'is_system' => false,
+                'permissions' => [
+                    'properties.view',
+                    'media.view_assets', 'media.manage_production',
+                    'marketing.view', 'finance.log_expenses'
+                ],
+            ],
+            'business_development_manager' => [
+                'name' => 'Business Development Officer / Manager',
+                'description' => 'Drives high-value corporate deals, joint venture partnerships, and strategic real estate expansions.',
+                'is_system' => false,
+                'permissions' => [
+                    'properties.view', 'units.manage',
+                    'leads.view_all', 'leads.create', 'leads.edit', 'leads.reassign', 'sales.record',
+                    'inspections.view_all', 'inspections.schedule', 'followups.manage',
+                    'marketing.view', 'finance.log_expenses'
+                ],
+            ],
+            'accountant' => [
+                'name' => 'Chief Financial Officer / Accountant',
+                'description' => 'Audits incoming client payments, approves OPEX claims, and oversees financial ledgers & payroll.',
+                'is_system' => false,
+                'permissions' => [
+                    'properties.view',
+                    'finance.view_ledger', 'finance.verify_payments', 'finance.log_expenses',
+                    'finance.approve_expenses', 'finance.disburse_expenses', 'finance.manage_payroll',
+                    'hr.view_staff'
+                ],
+            ],
+            'architect' => [
+                'name' => 'Architect',
+                'description' => 'Designs estate layouts, architectural 3D building renderings, and plot master plan allocations.',
+                'is_system' => false,
+                'permissions' => [
+                    'properties.view', 'properties.edit', 'units.manage',
+                    'media.view_assets', 'finance.log_expenses'
+                ],
+            ],
+            'site_engineer' => [
+                'name' => 'Site Engineer',
+                'description' => 'Supervises physical construction milestones, plot beacons, site inspections, and site diesel logs.',
+                'is_system' => false,
+                'permissions' => [
+                    'properties.view', 'properties.edit', 'units.manage',
+                    'inspections.schedule', 'inspections.view_all',
+                    'finance.log_expenses'
+                ],
+            ],
+            'legal_personnel' => [
+                'name' => 'Legal Personnel',
+                'description' => 'Vets land titles, drafts Contract of Sale & Deed of Assignment agreements, and manages legal compliance.',
+                'is_system' => false,
+                'permissions' => [
+                    'properties.view', 'leads.view_all', 'sales.record',
+                    'finance.log_expenses'
+                ],
+            ],
+            'procurement_officer' => [
+                'name' => 'Procurement Officer',
+                'description' => 'Sources estate construction materials, negotiates vendor purchase orders, and audits inventory supplies.',
+                'is_system' => false,
+                'permissions' => [
+                    'properties.view', 'units.manage',
+                    'finance.log_expenses'
+                ],
+            ],
+            'driver' => [
+                'name' => 'Driver / Logistics Personnel',
+                'description' => 'Drives client inspection site tours, maintains company vehicles, and logs fuel receipts.',
+                'is_system' => false,
+                'permissions' => [
+                    'inspections.view_all',
+                    'finance.log_expenses'
+                ],
             ],
             'sales_manager' => [
                 'name' => 'Head of Sales / Sales Manager',
@@ -94,48 +243,6 @@ class PermissionSeeder extends Seeder
                     'leads.view_all', 'leads.create', 'leads.edit', 'leads.reassign', 'sales.record',
                     'inspections.view_all', 'inspections.schedule', 'followups.manage',
                     'finance.log_expenses', 'marketing.view', 'hr.view_staff'
-                ],
-            ],
-            'sales_executive' => [
-                'name' => 'Sales Executive (Marketer)',
-                'description' => 'Front-line real estate sales officer managing assigned clients, tours, and deal closings.',
-                'is_system' => false,
-                'permissions' => [
-                    'properties.view',
-                    'leads.view_own', 'leads.create', 'leads.edit', 'sales.record',
-                    'inspections.schedule', 'followups.manage',
-                    'finance.log_expenses'
-                ],
-            ],
-            'accountant' => [
-                'name' => 'Chief Financial Officer / Accountant',
-                'description' => 'Audits incoming client payments, approves expense claims, and manages payroll & P&L.',
-                'is_system' => false,
-                'permissions' => [
-                    'properties.view',
-                    'finance.view_ledger', 'finance.verify_payments', 'finance.log_expenses',
-                    'finance.approve_expenses', 'finance.disburse_expenses', 'finance.manage_payroll',
-                    'hr.view_staff'
-                ],
-            ],
-            'hr' => [
-                'name' => 'Human Resources Manager',
-                'description' => 'Manages staff profiles, onboarding, daily work submissions, leave approvals, and payroll.',
-                'is_system' => false,
-                'permissions' => [
-                    'hr.view_staff', 'hr.approve_leaves', 'hr.review_submissions', 'hr.manage_targets', 'hr.manage_users',
-                    'finance.manage_payroll'
-                ],
-            ],
-            'media_manager' => [
-                'name' => 'Media & Marketing Lead',
-                'description' => 'Oversees media production assets, drone shoots, promotional flyers, campaigns, and drip sequences.',
-                'is_system' => false,
-                'permissions' => [
-                    'properties.view',
-                    'media.view_assets', 'media.manage_production',
-                    'marketing.view', 'marketing.send_broadcast', 'marketing.manage_drip',
-                    'finance.log_expenses'
                 ],
             ],
             'project_manager' => [

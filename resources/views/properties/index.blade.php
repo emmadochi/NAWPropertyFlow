@@ -47,8 +47,21 @@
         <div class="bg-white rounded-3xl border border-gray-150 shadow-sm overflow-hidden flex flex-col hover:border-gray-300 hover:shadow-md transition-all duration-300">
             <!-- Property Cover Image -->
             <div class="h-48 bg-gray-100 relative overflow-hidden flex items-center justify-center">
-                @if(!empty($property->images) && isset($property->images[0]))
-                <img src="{{ asset('storage/' . $property->images[0]) }}" alt="{{ $property->name }}" class="w-full h-full object-cover">
+                @php
+                    $coverImg = null;
+                    if (!empty($property->images) && is_array($property->images) && count($property->images) > 0) {
+                        $rawPath = $property->images[0];
+                        if (str_starts_with($rawPath, 'http')) {
+                            $coverImg = $rawPath;
+                        } elseif (str_starts_with($rawPath, 'storage/')) {
+                            $coverImg = asset($rawPath);
+                        } else {
+                            $coverImg = asset('storage/' . $rawPath);
+                        }
+                    }
+                @endphp
+                @if($coverImg)
+                <img src="{{ $coverImg }}" alt="{{ $property->name }}" class="w-full h-full object-cover" onerror="this.onerror=null; this.parentElement.innerHTML='<span class=\'p-4 bg-brand-50 text-brand-500 rounded-full\'><svg class=\'w-10 h-10\' fill=\'none\' stroke=\'currentColor\' viewBox=\'0 0 24 24\'><path stroke-linecap=\'round\' stroke-linejoin=\'round\' stroke-width=\'2\' d=\'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6\'></path></svg></span>';">
                 @else
                 <!-- Elegant SVG Placeholder -->
                 <span class="p-4 bg-brand-50 text-brand-500 rounded-full">
@@ -232,8 +245,21 @@
                                         <input type="text" name="amenities[]" value="{{ !empty($property->amenities) ? implode(', ', $property->amenities) : '' }}" class="w-full px-3 py-2 border rounded-lg text-xs bg-white" placeholder="Pool, Gym, Security, Water Treatment">
                                     </div>
                                     <div>
-                                        <label class="block text-[10px] font-bold text-gray-500 uppercase">Add Cover Images</label>
+                                        <label class="block text-[10px] font-bold text-gray-500 uppercase">Cover Images</label>
+                                        @if(!empty($property->images) && is_array($property->images))
+                                        <div class="flex flex-wrap gap-2 mb-2 pt-1">
+                                            @foreach($property->images as $img)
+                                                @php
+                                                    $previewUrl = str_starts_with($img, 'http') ? $img : (str_starts_with($img, 'storage/') ? asset($img) : asset('storage/' . $img));
+                                                @endphp
+                                                <div class="relative w-12 h-12 rounded-lg overflow-hidden border border-gray-200">
+                                                    <img src="{{ $previewUrl }}" class="w-full h-full object-cover">
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        @endif
                                         <input type="file" name="images[]" multiple class="w-full text-xs text-gray-500 cursor-pointer">
+                                        <span class="text-[10px] text-gray-400 block mt-0.5">Upload new images to append or replace cover.</span>
                                     </div>
                                     <div class="flex justify-end space-x-2 pt-2">
                                         <button type="button" @click="editPropOpen = false" class="text-xs font-bold text-gray-500 hover:text-gray-700">Cancel</button>

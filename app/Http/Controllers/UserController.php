@@ -117,7 +117,8 @@ class UserController extends Controller
         }
 
         $validated = $request->validate([
-            'role' => 'required|string|in:company_admin,hr,sales_manager,sales_executive,media_manager,project_manager,accountant,finance_manager',
+            'role' => 'required|string',
+            'role_id' => 'nullable|exists:roles,id',
             'department_id' => 'nullable|exists:departments,id',
             'department'    => 'nullable|string',
             'status' => 'required|string|in:active,inactive',
@@ -125,6 +126,15 @@ class UserController extends Controller
             'commission_rate' => 'nullable|numeric|min:0|max:100',
             'branch_id' => 'nullable|exists:branches,id',
         ]);
+
+        // Link role_id if matched
+        if (empty($validated['role_id'])) {
+            $matchedRole = \App\Models\Role::where('slug', $validated['role'])->orWhere('name', $validated['role'])->first();
+            if ($matchedRole) {
+                $validated['role_id'] = $matchedRole->id;
+                $validated['role'] = $matchedRole->slug;
+            }
+        }
 
         // Enforce hierarchy rules
         if (!Auth::user()->hasRole(['super_admin', 'company_admin'])) {
