@@ -450,9 +450,9 @@ window.campaignCreator = function() {
                 this.subject = '📈 Nigeria Property Investor Digest: Market Insights & Available Allocations';
                 tpl = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
-    <div style="background: #0f172a; padding: 25px; text-align: center; border-radius: 16px 16px 0 0;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 800;">${company}</h1>
-        <p style="color: #94a3b8; margin: 5px 0 0 0; font-size: 12px;">Monthly Real Estate Intelligence &amp; Opportunities</p>
+    <div style="background: linear-gradient(135deg, #F37021 0%, #ea580c 100%); padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">${company}</h1>
+        <p style="color: #ffedd5; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Monthly Real Estate Intelligence &amp; Opportunities</p>
     </div>
     <div style="padding: 30px 25px; background: #ffffff; border: 1px solid #f1f5f9; border-top: none;">
         <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 0;">Market Insight for @{{name}}</h2>
@@ -460,18 +460,19 @@ window.campaignCreator = function() {
         
         <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; margin-top: 25px;">Featured Available Listings</h3>
         
-        <div style="border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; margin: 15px 0;">
-            <span style="background: #dbeafe; color: #1e40af; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 6px;">Hot Listing</span>
+        <div style="border: 1px solid #fed7aa; background: #fffaf5; border-radius: 12px; padding: 15px; margin: 15px 0;">
+            <span style="background: #ffedd5; color: #c2410c; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 6px;">Hot Listing</span>
             <h4 style="margin: 8px 0 4px 0; font-size: 15px; color: #0f172a;">Prime 500sqm Residential Plot</h4>
             <p style="margin: 0; font-size: 13px; color: #64748b;">Title: Governor's Consent • Flexible 6-month payment plan.</p>
         </div>
 
         <div style="text-align: center; margin: 25px 0 10px 0;">
-            <a href="tel:${phone}" style="background: #0f172a; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 10px; font-weight: bold; font-size: 13px; display: inline-block;">Speak to an Investment Advisor</a>
+            <a href="tel:${phone}" style="background: #F37021; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 13px; display: inline-block; box-shadow: 0 4px 12px rgba(243, 112, 33, 0.3);">Speak to an Investment Advisor</a>
         </div>
     </div>
-    <div style="background: #f8fafc; padding: 15px; text-align: center; font-size: 11px; color: #94a3b8; border-radius: 0 0 16px 16px;">
+    <div style="background: #f8fafc; padding: 15px; text-align: center; font-size: 11px; color: #94a3b8; border-radius: 0 0 16px 16px; border: 1px solid #f1f5f9; border-top: none;">
         <p style="margin: 0;">${company} • Real Estate Portfolio Management</p>
+        <p style="margin: 4px 0 0 0;">Need assistance? Call ${phone} or reply directly to this email.</p>
     </div>
 </div>`;
             } else if (key === 'promo') {
@@ -479,23 +480,27 @@ window.campaignCreator = function() {
                 this.subject = '🔥 72-Hour Flash Sale: Own Prime Land with Zero Development Fees';
                 tpl = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
-    <div style="background: #dc2626; padding: 25px; text-align: center; border-radius: 16px 16px 0 0;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800;">⚡ 72-HOUR FLASH SALE</h1>
-        <p style="color: #fee2e2; margin: 5px 0 0 0; font-size: 13px; font-weight: bold;">Exclusive Price Reductions on Selected Units</p>
+    <div style="background: linear-gradient(135deg, #F37021 0%, #ea580c 100%); padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">${company}</h1>
+        <p style="color: #ffedd5; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">⚡ 72-Hour Flash Sale &amp; Exclusive Price Reductions</p>
     </div>
     <div style="padding: 30px 25px; background: #ffffff; border: 1px solid #f1f5f9; border-top: none;">
         <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 0;">Hello @{{name}},</h2>
         <p style="font-size: 13px; color: #475569;">For the next 72 hours, ${company} is offering an unprecedented discount on our flagship estates with <strong>instant deed allocation upon 30% downpayment</strong>.</p>
         
-        <div style="background: #fef2f2; border: 1px dashed #ef4444; border-radius: 12px; padding: 15px; text-align: center; margin: 20px 0;">
-            <p style="margin: 0; font-size: 12px; color: #991b1b; text-transform: uppercase; font-weight: bold;">Promo Code</p>
-            <p style="margin: 5px 0; font-size: 22px; font-weight: 900; color: #dc2626; letter-spacing: 2px;">RICAF-PROMO15</p>
-            <p style="margin: 0; font-size: 11px; color: #b91c1c;">Mention this promo code when speaking to our sales manager.</p>
+        <div style="background: #fff7ed; border: 1px dashed #F37021; border-radius: 12px; padding: 15px; text-align: center; margin: 20px 0;">
+            <p style="margin: 0; font-size: 12px; color: #9a3412; text-transform: uppercase; font-weight: bold;">Promo Code</p>
+            <p style="margin: 5px 0; font-size: 22px; font-weight: 900; color: #ea580c; letter-spacing: 2px;">RICAF-PROMO15</p>
+            <p style="margin: 0; font-size: 11px; color: #c2410c;">Mention this promo code when speaking to our sales manager.</p>
         </div>
 
         <div style="text-align: center; margin: 25px 0 10px 0;">
-            <a href="https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=Hello,%20I%20am%20interested%20in%20the%20RICAF%20Flash%20Promo" style="background: #22c55e; color: #ffffff; text-decoration: none; padding: 13px 26px; border-radius: 12px; font-weight: bold; font-size: 13px; display: inline-block;">💬 Claim on WhatsApp</a>
+            <a href="https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=Hello,%20I%20am%20interested%20in%20the%20RICAF%20Flash%20Promo" style="background: #22c55e; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 13px; display: inline-block; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);">💬 Claim on WhatsApp</a>
         </div>
+    </div>
+    <div style="background: #f8fafc; padding: 15px; text-align: center; font-size: 11px; color: #94a3b8; border-radius: 0 0 16px 16px; border: 1px solid #f1f5f9; border-top: none;">
+        <p style="margin: 0;">${company} • Luxury Real Estate &amp; Developments</p>
+        <p style="margin: 4px 0 0 0;">Need assistance? Call ${phone} or reply directly to this email.</p>
     </div>
 </div>`;
             } else if (key === 'progress') {
@@ -503,23 +508,31 @@ window.campaignCreator = function() {
                 this.subject = '📸 Construction Progress Update: Road Grading & Infrastructure on Schedule';
                 tpl = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
-    <div style="background: #1e293b; padding: 25px; text-align: center; border-radius: 16px 16px 0 0;">
-        <h1 style="color: #ffffff; margin: 0; font-size: 22px; font-weight: 800;">${company}</h1>
-        <p style="color: #cbd5e1; margin: 5px 0 0 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Development Milestone Update</p>
+    <div style="background: linear-gradient(135deg, #F37021 0%, #ea580c 100%); padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0;">
+        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">${company}</h1>
+        <p style="color: #ffedd5; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Development Milestone Update</p>
     </div>
     <div style="padding: 30px 25px; background: #ffffff; border: 1px solid #f1f5f9; border-top: none;">
         <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 0;">Dear Valued Buyer (@{{name}}),</h2>
         <p style="font-size: 13px; color: #475569;">We are delighted to share the latest on-site milestone report for our ongoing projects. Quality control and delivery timelines remain our highest priority.</p>
         
-        <div style="background: #f8fafc; border-radius: 12px; padding: 15px; margin: 20px 0; border: 1px solid #e2e8f0;">
+        <div style="background: #fff7ed; border-radius: 12px; padding: 15px; margin: 20px 0; border: 1px solid #fed7aa;">
             <p style="margin: 0 0 5px 0; font-size: 13px; font-weight: bold; color: #0f172a;">Site Progress: <strong>75% Completed</strong></p>
-            <div style="width: 100%; background: #e2e8f0; height: 10px; border-radius: 5px; overflow: hidden;">
+            <div style="width: 100%; background: #fed7aa; height: 10px; border-radius: 5px; overflow: hidden;">
                 <div style="background: #F37021; width: 75%; height: 100%;"></div>
             </div>
-            <p style="margin: 10px 0 0 0; font-size: 12px; color: #64748b;">Perimeter fencing and drainage systems finalized. Electrification underway.</p>
+            <p style="margin: 10px 0 0 0; font-size: 12px; color: #9a3412;">Perimeter fencing and drainage systems finalized. Electrification underway.</p>
         </div>
 
         <p style="font-size: 13px; color: #475569;">You can also access your real-time payment schedule and property documents anytime on your Client Portal.</p>
+        
+        <div style="text-align: center; margin: 25px 0 10px 0;">
+            <a href="tel:${phone}" style="background: #F37021; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 13px; display: inline-block; box-shadow: 0 4px 12px rgba(243, 112, 33, 0.3);">Contact Project Engineer</a>
+        </div>
+    </div>
+    <div style="background: #f8fafc; padding: 15px; text-align: center; font-size: 11px; color: #94a3b8; border-radius: 0 0 16px 16px; border: 1px solid #f1f5f9; border-top: none;">
+        <p style="margin: 0;">${company} • Construction &amp; Development Department</p>
+        <p style="margin: 4px 0 0 0;">Need assistance? Call ${phone} or reply directly to this email.</p>
     </div>
 </div>`;
             }
