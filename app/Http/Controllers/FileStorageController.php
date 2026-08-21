@@ -37,7 +37,7 @@ class FileStorageController extends Controller
             ->orderBy('name')
             ->get();
 
-        if (request()->ajax()) {
+        if (request()->expectsJson() && !request()->header('X-Livewire')) {
             return response()->json([
                 'currentFolder' => $currentFolder,
                 'breadcrumbs' => $breadcrumbs,
