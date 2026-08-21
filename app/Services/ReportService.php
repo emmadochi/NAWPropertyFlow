@@ -16,22 +16,97 @@ class ReportService
     /**
      * Gather dashboard metrics and charts datasets.
      */
+    /**
+     * Gather dashboard metrics and charts datasets.
+     */
     public function getDashboardData(?int $officerId = null, ?string $startDate = null, ?string $endDate = null, ?string $branchId = null): array
     {
-        $isMediaManager = \Illuminate\Support\Facades\Auth::check() && \Illuminate\Support\Facades\Auth::user()->isMediaManager();
+        $user = \Illuminate\Support\Facades\Auth::user();
 
-        if ($isMediaManager) {
-            $campaignQuery = \App\Models\Campaign::query();
+        // 1. HR Modular Dataset
+        $hrData = [];
+        if ($user && ($user->hasPermission('hr.view_staff') || $user->hasPermission('hr.manage_targets') || $user->isCompanyAdmin())) {
+            $totalStaff = User::where('status', 'active')->where('role', '!=', 'customer')->count();
+            $pendingLeaves = \App\Models\LeaveRequest::where('status', 'pending')->count();
+            $pendingLeavesList = \App\Models\LeaveRequest::with('user')->where('status', 'pending')->latest()->limit(5)->get();
             
+            $today = Carbon::today();
+            $todaySubmissions = \App\Models\StaffMetricSubmission::whereDate('created_at', $today)->count();
+            $recentSubmissions = \App\Models\StaffMetricSubmission::with(['user', 'department'])->latest()->limit(5)->get();
+
+            $pendingOnboardings = \App\Models\OnboardingTask::where('is_completed', false)->count();
+
+            $deptHeadcount = DB::table('users')
+                ->leftJoin('departments', 'users.department_id', '=', 'departments.id')
+                ->where('users.status', 'active')
+                ->where('users.role', '!=', 'customer')
+                ->selectRaw('COALESCE(departments.name, users.department, "Unassigned") as department_name, count(users.id) as count')
+                ->groupBy('department_name')
+                ->orderBy('count', 'desc')
+                ->get();
+
+            $hrData = [
+                'total_staff' => $totalStaff,
+                'pending_leaves_count' => $pendingLeaves,
+                'pending_leaves' => $pendingLeavesList,
+                'today_submissions_count' => $todaySubmissions,
+                'recent_submissions' => $recentSubmissions,
+                'pending_onboardings_count' => $pendingOnboardings,
+                'dept_headcount' => $deptHeadcount,
+            ];
+        }
+
+        // 2. Finance Modular Dataset
+        $financeData = [];
+        if ($user && ($user->hasPermission('finance.view_ledger') || $user->hasPermission('finance.approve_expenses') || $user->isCompanyAdmin())) {
+            $thisMonthInflows = Sale::where('status', 'Closed Won')
+                ->whereMonth('deal_closed_at', Carbon::now()->month)
+                ->whereYear('deal_closed_at', Carbon::now()->year)
+                ->sum('deal_value');
+
+            $pendingPopCount = \App\Models\PaymentMilestone::where('status', 'pending_verification')->count();
+            $pendingPops = \App\Models\PaymentMilestone::with(['sale.lead', 'sale.property'])
+                ->where('status', 'pending_verification')
+                ->latest()
+                ->limit(5)
+                ->get();
+
+            $pendingExpensesCount = \App\Models\Expense::where('status', 'pending')->count();
+            $pendingExpenses = \App\Models\Expense::with(['user', 'property'])
+                ->where('status', 'pending')
+                ->latest()
+                ->limit(5)
+                ->get();
+
+            $thisMonthExpenses = \App\Models\Expense::whereIn('status', ['approved', 'paid'])
+                ->whereMonth('expense_date', Carbon::now()->month)
+                ->whereYear('expense_date', Carbon::now()->year)
+                ->sum('amount');
+
+            $netProfit = $thisMonthInflows - $thisMonthExpenses;
+
+            $financeData = [
+                'monthly_inflows' => $thisMonthInflows,
+                'pending_pop_count' => $pendingPopCount,
+                'pending_pops' => $pendingPops,
+                'pending_expenses_count' => $pendingExpensesCount,
+                'pending_expenses' => $pendingExpenses,
+                'monthly_expenses' => $thisMonthExpenses,
+                'net_profit' => $netProfit,
+            ];
+        }
+
+        // 3. Media & Marketing Modular Dataset
+        $mediaData = [];
+        $marketingData = [];
+        if ($user && ($user->hasPermission('media.view_assets') || $user->hasPermission('media.manage_production') || $user->hasPermission('marketing.view') || $user->isCompanyAdmin())) {
+            $campaignQuery = \App\Models\Campaign::query();
             $totalCampaigns = (clone $campaignQuery)->count();
             $totalEmailsSent = (clone $campaignQuery)->sum('sent_count');
-            
             $totalOpens = (clone $campaignQuery)->sum('opened_count');
             $avgOpenRate = $totalEmailsSent > 0 ? round(($totalOpens / $totalEmailsSent) * 100, 1) : 0;
-            
             $totalClicks = (clone $campaignQuery)->sum('clicked_count');
             $avgClickRate = $totalEmailsSent > 0 ? round(($totalClicks / $totalEmailsSent) * 100, 1) : 0;
-            
             $recentCampaigns = (clone $campaignQuery)->orderBy('created_at', 'desc')->limit(5)->get();
 
             $mediaTargets = \App\Models\DepartmentTarget::whereHas('department', function($q) {
@@ -40,22 +115,19 @@ class ReportService
               ->where('target_year', Carbon::now()->year)
               ->get();
 
-            $sourcePerformance = Lead::selectRaw('lead_source, count(id) as count')
-                ->groupBy('lead_source')
-                ->orderBy('count', 'desc')
-                ->get();
-                
-            return [
-                'is_media_dashboard' => true,
-                'metrics' => [
-                    'total_campaigns' => $totalCampaigns,
-                    'total_emails_sent' => $totalEmailsSent,
-                    'avg_open_rate' => $avgOpenRate,
-                    'avg_click_rate' => $avgClickRate,
-                ],
-                'source_performance' => $sourcePerformance,
-                'recent_campaigns' => $recentCampaigns,
+            $mediaStorageCount = \App\Models\FileStorage::count();
+
+            $mediaData = [
+                'media_storage_count' => $mediaStorageCount,
                 'media_targets' => $mediaTargets,
+            ];
+
+            $marketingData = [
+                'total_campaigns' => $totalCampaigns,
+                'total_emails_sent' => $totalEmailsSent,
+                'avg_open_rate' => $avgOpenRate,
+                'avg_click_rate' => $avgClickRate,
+                'recent_campaigns' => $recentCampaigns,
             ];
         }
 
@@ -109,23 +181,44 @@ class ReportService
         $totalRevenue = (clone $saleQuery)->where('status', 'Closed Won')->sum('deal_value');
 
         // 2. Leads by Month (last 6 months)
-        $leadsByMonth = (clone $leadQuery)
-            ->selectRaw('count(id) as count, DATE_FORMAT(created_at, "%b %Y") as month_name, YEAR(created_at) as yr, MONTH(created_at) as mo')
+        $driver = DB::connection()->getDriverName();
+        $dateExpr = $driver === 'sqlite' ? "strftime('%Y-%m', created_at)" : 'DATE_FORMAT(created_at, "%Y-%m")';
+        $closedExpr = $driver === 'sqlite' ? "strftime('%Y-%m', deal_closed_at)" : 'DATE_FORMAT(deal_closed_at, "%Y-%m")';
+
+        $leadsByMonthRaw = (clone $leadQuery)
+            ->selectRaw("count(id) as count, {$dateExpr} as ym")
             ->where('created_at', '>=', Carbon::now()->subMonths(5)->startOfMonth())
-            ->groupBy('yr', 'mo', 'month_name')
-            ->orderBy('yr', 'asc')
-            ->orderBy('mo', 'asc')
+            ->groupBy('ym')
+            ->orderBy('ym', 'asc')
             ->get();
 
+        $leadsByMonth = $leadsByMonthRaw->map(function ($item) {
+            $date = Carbon::createFromFormat('Y-m', $item->ym);
+            return (object) [
+                'count' => $item->count,
+                'month_name' => $date ? $date->format('M Y') : $item->ym,
+                'ym' => $item->ym,
+            ];
+        });
+
         // 3. Sales by Month (last 6 months)
-        $salesByMonth = (clone $saleQuery)
-            ->selectRaw('sum(deal_value) as total, count(id) as count, DATE_FORMAT(deal_closed_at, "%b %Y") as month_name, YEAR(deal_closed_at) as yr, MONTH(deal_closed_at) as mo')
+        $salesByMonthRaw = (clone $saleQuery)
+            ->selectRaw("sum(deal_value) as total, count(id) as count, {$closedExpr} as ym")
             ->where('deal_closed_at', '>=', Carbon::now()->subMonths(5)->startOfMonth())
             ->where('status', 'Closed Won')
-            ->groupBy('yr', 'mo', 'month_name')
-            ->orderBy('yr', 'asc')
-            ->orderBy('mo', 'asc')
+            ->groupBy('ym')
+            ->orderBy('ym', 'asc')
             ->get();
+
+        $salesByMonth = $salesByMonthRaw->map(function ($item) {
+            $date = Carbon::createFromFormat('Y-m', $item->ym);
+            return (object) [
+                'total' => $item->total,
+                'count' => $item->count,
+                'month_name' => $date ? $date->format('M Y') : $item->ym,
+                'ym' => $item->ym,
+            ];
+        });
 
         // 4. Lead Source Performance
         $sourcePerformance = (clone $leadQuery)
@@ -158,6 +251,10 @@ class ReportService
                 'total_revenue' => $totalRevenue,
                 'conversion_rate' => $totalLeads > 0 ? round(($closedDeals / $totalLeads) * 100, 1) : 0,
             ],
+            'hr_data' => $hrData,
+            'finance_data' => $financeData,
+            'media_data' => $mediaData,
+            'marketing_data' => $marketingData,
             'leads_by_month' => $leadsByMonth,
             'sales_by_month' => $salesByMonth,
             'source_performance' => $sourcePerformance,

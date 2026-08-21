@@ -52,12 +52,16 @@ class PermissionSeeder extends Seeder
             ['module' => 'Human Resources', 'name' => 'Manage Department Targets', 'slug' => 'hr.manage_targets', 'description' => 'Set and monitor monthly department quota and goals.'],
             ['module' => 'Human Resources', 'name' => 'Manage User Accounts', 'slug' => 'hr.manage_users', 'description' => 'Create staff logins and manage onboardings.'],
 
-            // 6. Marketing & Broadcasts Module
-            ['module' => 'Marketing & Campaigns', 'name' => 'View Marketing Campaigns', 'slug' => 'marketing.view', 'description' => 'View campaign performance and recipient metrics.'],
-            ['module' => 'Marketing & Campaigns', 'name' => 'Create & Dispatch Broadcasts', 'slug' => 'marketing.send_broadcast', 'description' => 'Send email newsletters and SMS/WhatsApp blasts.'],
+            // 6. Media & Creative Production Module
+            ['module' => 'Media & Creative Assets', 'name' => 'View Media Assets & Storage', 'slug' => 'media.view_assets', 'description' => 'Browse property drone shoots, videos, photos & brochures.'],
+            ['module' => 'Media & Creative Assets', 'name' => 'Manage Media Production Quota', 'slug' => 'media.manage_production', 'description' => 'Track video shoot quotas, edited reels, and delivery calendars.'],
+
+            // 7. Marketing & Lead Acquisition Module
+            ['module' => 'Marketing & Campaigns', 'name' => 'View Marketing Campaigns & ROI', 'slug' => 'marketing.view', 'description' => 'View campaign performance, deliverability, and lead acquisition sources.'],
+            ['module' => 'Marketing & Campaigns', 'name' => 'Create & Dispatch Broadcasts', 'slug' => 'marketing.send_broadcast', 'description' => 'Send email newsletters and SMS/WhatsApp blasts to prospects.'],
             ['module' => 'Marketing & Campaigns', 'name' => 'Manage Automated Drip Sequences', 'slug' => 'marketing.manage_drip', 'description' => 'Configure automated lead nurturing drip sequences.'],
 
-            // 7. System & Administration Module
+            // 8. System & Administration Module
             ['module' => 'System & Administration', 'name' => 'Manage Custom Roles & Permissions', 'slug' => 'system.manage_roles', 'description' => 'Create custom roles and configure modular capabilities.'],
             ['module' => 'System & Administration', 'name' => 'View Audit Activity Logs', 'slug' => 'system.view_audit_logs', 'description' => 'Inspect complete immutable system activity history.'],
             ['module' => 'System & Administration', 'name' => 'Manage Company Settings', 'slug' => 'system.manage_settings', 'description' => 'Configure company logo, letterheads, branches & tier.'],
@@ -124,11 +128,12 @@ class PermissionSeeder extends Seeder
                 ],
             ],
             'media_manager' => [
-                'name' => 'Media & Marketing Manager',
-                'description' => 'Designs and dispatches newsletters, promotional flyers, broadcasts, and automated drip sequences.',
+                'name' => 'Media & Marketing Lead',
+                'description' => 'Oversees media production assets, drone shoots, promotional flyers, campaigns, and drip sequences.',
                 'is_system' => false,
                 'permissions' => [
                     'properties.view',
+                    'media.view_assets', 'media.manage_production',
                     'marketing.view', 'marketing.send_broadcast', 'marketing.manage_drip',
                     'finance.log_expenses'
                 ],

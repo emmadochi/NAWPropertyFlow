@@ -108,11 +108,11 @@ class BuyerDashboardController extends Controller
      */
     public function submitProofOfPayment(Request $request, PaymentMilestone $milestone)
     {
-        $buyerEmail = Auth::user()->email;
+        $user = Auth::user();
         $lead = $milestone->paymentPlan->sale->lead;
 
-        // Security check: ensure milestone belongs to this buyer
-        if ($lead->email !== $buyerEmail && Auth::user()->role === 'customer') {
+        // Security check: ensure milestone belongs to this buyer if customer
+        if ($user->role === 'customer' && strtolower($lead->email) !== strtolower($user->email)) {
             abort(403, 'Unauthorized action.');
         }
 

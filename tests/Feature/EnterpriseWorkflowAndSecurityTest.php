@@ -452,4 +452,65 @@ class EnterpriseWorkflowAndSecurityTest extends TestCase
         $unauthorizedRoleEdit = $this->actingAs($surveyorUser)->get(route('settings.roles.index'));
         $unauthorizedRoleEdit->assertStatus(403);
     }
+
+    /**
+     * TEST 8: Capability-Driven Modular Dashboard and Immutable Super Admin Security.
+     */
+    public function test_modular_dashboard_renders_role_specific_widgets_and_super_admin_is_immutable()
+    {
+        $this->seed(\Database\Seeders\PermissionSeeder::class);
+
+        // 1. Setup HR Manager User
+        $hrRole = \App\Models\Role::where('slug', 'hr')->first();
+        $hrUser = User::forceCreate([
+            'name' => 'Adanna HR',
+            'email' => 'hr_' . Str::random(5) . '@ricafltd.com',
+            'password' => Hash::make('secret'),
+            'role' => 'hr',
+            'role_id' => $hrRole ? $hrRole->id : null,
+            'status' => 'active'
+        ]);
+
+        // 2. Setup Accountant User
+        $accountantRole = \App\Models\Role::where('slug', 'accountant')->first();
+        $accountantUser = User::forceCreate([
+            'name' => 'Paul Finance',
+            'email' => 'finance_' . Str::random(5) . '@ricafltd.com',
+            'password' => Hash::make('secret'),
+            'role' => 'accountant',
+            'role_id' => $accountantRole ? $accountantRole->id : null,
+            'status' => 'active'
+        ]);
+
+        // 3. Setup Super Admin User
+        $superAdmin = User::forceCreate([
+            'name' => 'MD Executive',
+            'email' => 'super_admin_' . Str::random(5) . '@ricafltd.com',
+            'password' => Hash::make('secret'),
+            'role' => 'super_admin',
+            'status' => 'active'
+        ]);
+
+        // 4. Assert HR User visits Dashboard: sees HR management widgets, does NOT see sales leads total
+        $hrDashboardResponse = $this->actingAs($hrUser)->get(route('dashboard'));
+        $hrDashboardResponse->assertStatus(200);
+        $hrDashboardResponse->assertSee('Human Resources Dashboard');
+        $hrDashboardResponse->assertSee('Active Staff');
+        $hrDashboardResponse->assertSee('Pending Leaves');
+        $hrDashboardResponse->assertDontSee('Total Leads');
+
+        // 5. Assert Accountant visits Dashboard: sees Financial & Accounting widgets
+        $financeDashboardResponse = $this->actingAs($accountantUser)->get(route('dashboard'));
+        $financeDashboardResponse->assertStatus(200);
+        $financeDashboardResponse->assertSee('Financial &amp; Accounting Dashboard', false);
+        $financeDashboardResponse->assertSee('Monthly Inflows');
+        $financeDashboardResponse->assertSee('Pending POPs');
+        $financeDashboardResponse->assertDontSee('Total Leads');
+
+        // 6. Security Assertion: HR attempts to delete Super Admin -> Blocked with Error
+        $deleteSuperAdminAttempt = $this->actingAs($hrUser)->delete(route('settings.users.destroy', $superAdmin->id));
+        $deleteSuperAdminAttempt->assertSessionHasErrors('error');
+        $this->assertDatabaseHas('users', ['id' => $superAdmin->id]);
+    }
 }
+
