@@ -225,15 +225,14 @@
 
 </div>
 
-@push('scripts')
 <script>
-function fileManager() {
+window.fileManager = function() {
     return {
-        folders: [],
-        files: [],
-        breadcrumbs: [],
-        currentFolderId: null,
-        currentFolderName: 'All Documents',
+        folders: @json($folders),
+        files: @json($files),
+        breadcrumbs: @json($breadcrumbs),
+        currentFolderId: @json($currentFolder ? $currentFolder->id : null),
+        currentFolderName: @json($currentFolder ? $currentFolder->name : 'All Documents'),
         
         showNewFolderModal: false,
         newFolderName: '',
@@ -250,12 +249,7 @@ function fileManager() {
         toastType: 'success',
 
         init() {
-            // Initial data load from blade compile parameters
-            this.folders = @json($folders);
-            this.files = @json($files);
-            this.breadcrumbs = @json($breadcrumbs);
-            this.currentFolderId = @json($currentFolder ? $currentFolder->id : null);
-            this.currentFolderName = @json($currentFolder ? $currentFolder->name : 'All Documents');
+            // Already initialized with server state
         },
 
         showToast(msg, type = 'success') {
@@ -267,14 +261,15 @@ function fileManager() {
         },
 
         getFileBg(ext) {
+            if (!ext) return 'bg-indigo-50';
             ext = ext.toLowerCase();
-            if (['png', 'jpg', 'jpeg', 'gif'].includes(ext)) return 'bg-emerald-50';
+            if (['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(ext)) return 'bg-emerald-50';
             if (ext === 'pdf') return 'bg-rose-50';
             return 'bg-indigo-50';
         },
 
         formatSize(bytes) {
-            if (bytes === 0) return '0 Bytes';
+            if (!bytes || bytes === 0) return '0 Bytes';
             const k = 1024;
             const sizes = ['Bytes', 'KB', 'MB', 'GB'];
             const i = Math.floor(Math.log(bytes) / Math.log(k));
@@ -299,7 +294,6 @@ function fileManager() {
                 this.currentFolderId = data.currentFolder ? data.currentFolder.id : null;
                 this.currentFolderName = data.currentFolder ? data.currentFolder.name : 'All Documents';
                 
-                // Push status to history so back button works nicely
                 window.history.pushState({folderId: this.currentFolderId}, '', url);
             } catch (e) {
                 this.showToast('Failed to load directory.', 'error');
@@ -332,7 +326,6 @@ function fileManager() {
                 const data = await response.json();
                 if (data.success) {
                     this.showNewFolderModal = false;
-                    // Add folder directly to UI array
                     this.folders.push(data.folder);
                     this.folders.sort((a, b) => a.name.localeCompare(b.name));
                     this.showToast('Folder created successfully!');
@@ -373,40 +366,27 @@ function fileManager() {
                 const data = await response.json();
                 if (data.success) {
                     this.showRenameModal = false;
-                    
-                    // Update model array directly
                     if (this.renameItemType === 'folder') {
                         const idx = this.folders.findIndex(f => f.id === this.renameItemId);
-                        if (idx !== -1) {
-                            this.folders[idx].name = data.folder.name;
-                            this.folders.sort((a, b) => a.name.localeCompare(b.name));
-                        }
+                        if (idx !== -1) this.folders[idx].name = this.renameItemName;
                     } else {
                         const idx = this.files.findIndex(f => f.id === this.renameItemId);
-                        if (idx !== -1) {
-                            this.files[idx].original_name = data.file.original_name;
-                            this.files[idx].name = data.file.name;
-                            this.files.sort((a, b) => a.original_name.localeCompare(b.original_name));
-                        }
+                        if (idx !== -1) this.files[idx].name = this.renameItemName;
                     }
-                    this.showToast('Item renamed successfully!');
+                    this.showToast('Renamed successfully!');
                 } else {
-                    this.showToast('Error renaming item.', 'error');
+                    this.showToast(data.message || 'Error renaming item.', 'error');
                 }
             } catch (e) {
                 this.showToast('Something went wrong.', 'error');
             }
         },
 
-        async deleteItem(type, id) {
-            if (!confirm(`Are you sure you want to delete this ${type}? This action cannot be undone.`)) return;
-
-            const url = type === 'folder'
-                ? `/file-storage/folders/${id}`
-                : `/file-storage/files/${id}`;
+        async deleteFolder(id) {
+            if (!confirm('Are you sure you want to delete this folder and its sub-items?')) return;
 
             try {
-                const response = await fetch(url, {
+                const response = await fetch(`/file-storage/folders/${id}`, {
                     method: 'DELETE',
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
@@ -415,14 +395,33 @@ function fileManager() {
 
                 const data = await response.json();
                 if (data.success) {
-                    if (type === 'folder') {
-                        this.folders = this.folders.filter(f => f.id !== id);
-                    } else {
-                        this.files = this.files.filter(f => f.id !== id);
-                    }
-                    this.showToast(`${type.charAt(0).toUpperCase() + type.slice(1)} deleted successfully.`);
+                    this.folders = this.folders.filter(f => f.id !== id);
+                    this.showToast('Folder deleted.');
                 } else {
-                    this.showToast(`Error deleting ${type}.`, 'error');
+                    this.showToast(data.message || 'Error deleting folder.', 'error');
+                }
+            } catch (e) {
+                this.showToast('Something went wrong.', 'error');
+            }
+        },
+
+        async deleteFile(id) {
+            if (!confirm('Are you sure you want to delete this file?')) return;
+
+            try {
+                const response = await fetch(`/file-storage/files/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    this.files = this.files.filter(f => f.id !== id);
+                    this.showToast('File deleted.');
+                } else {
+                    this.showToast(data.message || 'Error deleting file.', 'error');
                 }
             } catch (e) {
                 this.showToast('Something went wrong.', 'error');
@@ -432,16 +431,12 @@ function fileManager() {
         handleDrop(e) {
             this.isDragging = false;
             const files = e.dataTransfer.files;
-            if (files.length > 0) {
-                this.uploadMultipleFiles(files);
-            }
+            if (files.length > 0) this.uploadMultipleFiles(files);
         },
 
         handleFileSelect(e) {
             const files = e.target.files;
-            if (files.length > 0) {
-                this.uploadMultipleFiles(files);
-            }
+            if (files.length > 0) this.uploadMultipleFiles(files);
         },
 
         async uploadMultipleFiles(files) {
@@ -454,9 +449,7 @@ function fileManager() {
             for (let i = 0; i < total; i++) {
                 const formData = new FormData();
                 formData.append('file', files[i]);
-                if (this.currentFolderId) {
-                    formData.append('folder_id', this.currentFolderId);
-                }
+                if (this.currentFolderId) formData.append('folder_id', this.currentFolderId);
 
                 try {
                     const response = await fetch('{{ route("file-storage.files.store") }}', {
@@ -471,7 +464,6 @@ function fileManager() {
                     if (data.success) {
                         uploaded++;
                         this.uploadProgress = Math.round((uploaded / total) * 100);
-                        // Add newly uploaded file directly to DOM array
                         this.files.push(data.file);
                         this.files.sort((a, b) => a.original_name.localeCompare(b.original_name));
                     } else {
@@ -487,8 +479,7 @@ function fileManager() {
                 this.showToast(`Uploaded ${uploaded} file(s) successfully!`);
             }
         }
-    }
-}
+    };
+};
 </script>
-@endpush
 @endsection
