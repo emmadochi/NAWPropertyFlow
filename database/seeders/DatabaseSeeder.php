@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             PermissionSeeder::class,
             PropertySeeder::class,
             LeadSeeder::class,
+            PayrollSeeder::class,
         ]);
     }
 }
