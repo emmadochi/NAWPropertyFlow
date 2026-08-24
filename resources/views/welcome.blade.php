@@ -551,7 +551,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
                 
-                <!-- 1. Agency Starter (₦20,000/mo or ₦200,000/yr) -->
+                <!-- 1. Agency Starter (₦25,000/mo or ₦250,000/yr) -->
                 <div class="glass-card p-8 rounded-3xl flex flex-col justify-between border border-slate-800">
                     <div>
                         <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Agency Starter</span>
@@ -559,14 +559,14 @@
                         <div class="mt-3 mb-1">
                             <template x-if="billingCycle === 'monthly'">
                                 <div>
-                                    <h3 class="text-3xl font-extrabold text-white font-display">₦20,000 <span class="text-xs text-slate-400 font-normal">/ month</span></h3>
-                                    <div class="text-[11px] text-slate-400 mt-1">Billed monthly (₦240,000/yr)</div>
+                                    <h3 class="text-3xl font-extrabold text-white font-display">₦25,000 <span class="text-xs text-slate-400 font-normal">/ month</span></h3>
+                                    <div class="text-[11px] text-slate-400 mt-1">Billed monthly (₦300,000/yr)</div>
                                 </div>
                             </template>
                             <template x-if="billingCycle === 'annual'">
                                 <div>
-                                    <h3 class="text-3xl font-extrabold text-emerald-400 font-display">₦200,000 <span class="text-xs text-slate-400 font-normal">/ year</span></h3>
-                                    <div class="text-[11px] text-emerald-400 mt-1 font-semibold">⚡ Save ₦40,000 (Pay for 10 months only)</div>
+                                    <h3 class="text-3xl font-extrabold text-emerald-400 font-display">₦250,000 <span class="text-xs text-slate-400 font-normal">/ year</span></h3>
+                                    <div class="text-[11px] text-emerald-400 mt-1 font-semibold">⚡ Save ₦50,000 (Pay for 10 months only)</div>
                                 </div>
                             </template>
                         </div>
@@ -581,12 +581,12 @@
                             <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> WhatsApp Lead Direct Connect</li>
                         </ul>
                     </div>
-                    <button @click="openDemoModal(billingCycle === 'annual' ? 'Agency Starter (Annual ₦200k/yr)' : 'Agency Starter (Monthly ₦20k/mo)')" class="w-full py-3 rounded-xl glass-card hover:bg-white/10 text-xs font-bold text-white uppercase border border-slate-700 cursor-pointer">
+                    <button @click="openDemoModal(billingCycle === 'annual' ? 'Agency Starter (Annual ₦250k/yr)' : 'Agency Starter (Monthly ₦25k/mo)')" class="w-full py-3 rounded-xl glass-card hover:bg-white/10 text-xs font-bold text-white uppercase border border-slate-700 cursor-pointer">
                         Get Started
                     </button>
                 </div>
 
-                <!-- 2. Growth Developer (₦30,000/mo or ₦300,000/yr) - Featured -->
+                <!-- 2. Growth Developer (₦35,000/mo or ₦350,000/yr) - Featured -->
                 <div class="glass-card p-8 rounded-3xl flex flex-col justify-between border-2 border-amber-500/60 relative bg-slate-900/95 shadow-2xl">
                     <div class="absolute -top-3.5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 text-[10px] font-extrabold uppercase px-4 py-1 rounded-full tracking-widest shadow-md whitespace-nowrap">
                         ⭐ Most Popular in Abuja & Lagos
@@ -597,14 +597,14 @@
                         <div class="mt-3 mb-1">
                             <template x-if="billingCycle === 'monthly'">
                                 <div>
-                                    <h3 class="text-3xl font-extrabold text-white font-display">₦30,000 <span class="text-xs text-slate-400 font-normal">/ month</span></h3>
-                                    <div class="text-[11px] text-slate-400 mt-1">Billed monthly (₦360,000/yr)</div>
+                                    <h3 class="text-3xl font-extrabold text-white font-display">₦35,000 <span class="text-xs text-slate-400 font-normal">/ month</span></h3>
+                                    <div class="text-[11px] text-slate-400 mt-1">Billed monthly (₦420,000/yr)</div>
                                 </div>
                             </template>
                             <template x-if="billingCycle === 'annual'">
                                 <div>
-                                    <h3 class="text-3xl font-extrabold text-amber-400 font-display">₦300,000 <span class="text-xs text-slate-400 font-normal">/ year</span></h3>
-                                    <div class="text-[11px] text-emerald-400 mt-1 font-semibold">⚡ Save ₦60,000 (Pay for 10 months only)</div>
+                                    <h3 class="text-3xl font-extrabold text-amber-400 font-display">₦350,000 <span class="text-xs text-slate-400 font-normal">/ year</span></h3>
+                                    <div class="text-[11px] text-emerald-400 mt-1 font-semibold">⚡ Save ₦70,000 (Pay for 10 months only)</div>
                                 </div>
                             </template>
                         </div>
@@ -620,7 +620,7 @@
                             <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Anti-Double Allocation Safeguard</li>
                         </ul>
                     </div>
-                    <button @click="openDemoModal(billingCycle === 'annual' ? 'Growth Developer (Annual ₦300k/yr)' : 'Growth Developer (Monthly ₦30k/mo)')" class="w-full btn-primary-demo py-3.5 rounded-xl text-xs uppercase tracking-wider font-extrabold cursor-pointer">
+                    <button @click="openDemoModal(billingCycle === 'annual' ? 'Growth Developer (Annual ₦350k/yr)' : 'Growth Developer (Monthly ₦35k/mo)')" class="w-full btn-primary-demo py-3.5 rounded-xl text-xs uppercase tracking-wider font-extrabold cursor-pointer">
                         Start Growth Trial
                     </button>
                 </div>
@@ -769,8 +769,8 @@
                     <div>
                         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Selected Package / Program</label>
                         <select x-model="demoPackage" class="modal-input">
-                            <option value="Growth Developer (₦30k/mo or ₦300k/yr)">🏢 Growth Developer Plan (₦30,000/mo or ₦300k/yr)</option>
-                            <option value="Agency Starter (₦20k/mo or ₦200k/yr)">🏢 Agency Starter Plan (₦20,000/mo or ₦200k/yr)</option>
+                            <option value="Growth Developer (₦35k/mo or ₦350k/yr)">🏢 Growth Developer Plan (₦35,000/mo or ₦350k/yr)</option>
+                            <option value="Agency Starter (₦25k/mo or ₦250k/yr)">🏢 Agency Starter Plan (₦25,000/mo or ₦250k/yr)</option>
                             <option value="Enterprise Custom Edition">🏢 Full Enterprise Custom Edition (Dedicated Setup)</option>
                             <option value="Affiliate / Channel Partner Registration">🌟 Channel Partner Program (Earn 15% Monthly)</option>
                         </select>
@@ -795,7 +795,7 @@
                 mobileMenuOpen: false,
                 demoModalOpen: false,
                 billingCycle: 'monthly',
-                demoPackage: 'Growth Developer (₦30k/mo or ₦300k/yr)',
+                demoPackage: 'Growth Developer (₦35k/mo or ₦350k/yr)',
                 clientName: '',
                 clientCompany: '',
                 clientPhone: '',
