@@ -22,13 +22,10 @@ class StaffProfileController extends Controller
         $from  = now()->startOfMonth();
         $to    = now()->endOfMonth();
 
-        $stats         = $this->performanceService->userStats($user, $from, $to);
-        $certifications = StaffCertification::where('user_id', $user->id)->latest()->get();
-        $disciplinary  = DisciplinaryRecord::where('user_id', $user->id)->latest()->get();
-        $reviews       = PerformanceReview::where('user_id', $user->id)->latest()->get();
-        $onboardingTasks = \App\Models\OnboardingTask::where('user_id', $user->id)->orderBy('id')->get();
+        $salaryStructure = \App\Models\SalaryStructure::where('user_id', $user->id)->first();
+        $payslips      = \App\Models\Payslip::where('user_id', $user->id)->with('payrollBatch', 'deductions')->latest()->get();
 
-        return view('hr.staff.show', compact('user', 'stats', 'certifications', 'disciplinary', 'reviews', 'onboardingTasks'));
+        return view('hr.staff.show', compact('user', 'stats', 'certifications', 'disciplinary', 'reviews', 'onboardingTasks', 'salaryStructure', 'payslips'));
     }
 
     /* ─── Certifications ──────────────────────────────────────────── */
