@@ -28,6 +28,7 @@
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
     <style>
+        [x-cloak] { display: none !important; }
         * { box-sizing: border-box; }
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -611,6 +612,8 @@
          DIRECT WHATSAPP & DEMO BOOKING MODAL
     ========================================================================== -->
     <div x-show="demoModalOpen" 
+         x-cloak
+         style="display: none;"
          class="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto"
          x-transition:enter="transition ease-out duration-300"
          x-transition:enter-start="opacity-0 scale-95"
