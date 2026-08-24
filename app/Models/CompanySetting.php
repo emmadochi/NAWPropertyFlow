@@ -85,11 +85,11 @@ class CompanySetting extends Model
      */
     public function hasFeature(string $feature): bool
     {
-        $tier = $this->package_tier ?? 'starter';
+        $tier = $this->package_tier ?? 'enterprise';
         
-        // Ensure tier exists in our config, fallback to starter
+        // Ensure tier exists in our config, fallback to enterprise
         if (!array_key_exists($tier, self::TIER_FEATURES)) {
-            $tier = 'starter';
+            $tier = 'enterprise';
         }
 
         return in_array($feature, self::TIER_FEATURES[$tier]);

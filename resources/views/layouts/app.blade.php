@@ -125,15 +125,19 @@
 
     @php
         $__companySetting = \App\Models\CompanySetting::getCached();
-        $__tierLabels = ['starter' => 'Starter', 'professional' => 'Professional', 'enterprise' => 'Enterprise'];
-        $__tierColors = [
-            'starter'      => 'bg-gray-100 text-gray-600',
-            'professional' => 'bg-blue-100 text-blue-700',
-            'enterprise'   => 'bg-amber-100 text-amber-700',
+        $__tierLabels = [
+            'starter'      => 'Starter Plan',
+            'professional' => 'Growth Suite',
+            'enterprise'   => 'Enterprise Edition',
         ];
-        $__currentTier = $__companySetting?->package_tier ?? 'starter';
+        $__tierColors = [
+            'starter'      => 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400',
+            'professional' => 'bg-blue-100 dark:bg-blue-950/60 text-blue-700 dark:text-blue-400 border border-blue-500/20',
+            'enterprise'   => 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/30 font-extrabold',
+        ];
+        $__currentTier = $__companySetting?->package_tier ?? 'enterprise';
         $__tierLabel   = $__tierLabels[$__currentTier] ?? ucfirst($__currentTier);
-        $__tierClass   = $__tierColors[$__currentTier] ?? 'bg-gray-100 text-gray-600';
+        $__tierClass   = $__tierColors[$__currentTier] ?? 'bg-amber-500/10 text-amber-600 border border-amber-500/30 font-extrabold';
     @endphp
 
     <!-- Mobile Header -->
@@ -194,8 +198,9 @@
                             <p class="font-extrabold text-sm text-dark-900 dark:text-white leading-tight truncate">
                                 {{ $__companySetting?->company_name ?? config('app.name') }}
                             </p>
-                            <span class="inline-flex items-center mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider {{ $__tierClass }}">
-                                {{ $__tierLabel }} Plan
+                            <span class="inline-flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider {{ $__tierClass }}">
+                                <span class="text-amber-500">👑</span>
+                                <span>{{ $__tierLabel }}</span>
                             </span>
                         </div>
                     </div>
