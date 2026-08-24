@@ -111,43 +111,43 @@
     ========================================================================== -->
     <header class="fixed top-0 left-0 right-0 z-50 glass-nav">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
+            <div class="flex items-center justify-between h-20 gap-4">
                 
-                <!-- Logo -->
-                <a href="{{ url('/') }}" class="flex items-center space-x-3 group">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-amber-500/25 group-hover:scale-105 transition-transform">
+                <!-- Logo (No Wrap) -->
+                <a href="{{ url('/') }}" class="flex items-center space-x-3 group flex-shrink-0">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-amber-500/25 group-hover:scale-105 transition-transform flex-shrink-0">
                         <svg class="w-6 h-6 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                         </svg>
                     </div>
-                    <div>
-                        <div class="font-extrabold text-xl tracking-tight text-white font-display flex items-center gap-1.5">
+                    <div class="flex flex-col">
+                        <div class="font-extrabold text-lg sm:text-xl tracking-tight text-white font-display flex items-center gap-1.5 whitespace-nowrap">
                             <span>NAW</span>
                             <span class="text-amber-400">PropertyFlow</span>
                         </div>
-                        <div class="text-[10px] uppercase font-bold tracking-widest text-slate-400">Enterprise Real Estate ERP</div>
+                        <span class="text-[9px] uppercase font-bold tracking-widest text-slate-400 whitespace-nowrap">Enterprise Real Estate ERP</span>
                     </div>
                 </a>
 
-                <!-- Desktop Menu Links -->
-                <nav class="hidden md:flex items-center space-x-8">
-                    <a href="#features" class="text-sm font-semibold text-slate-300 hover:text-amber-400 transition-colors">Core Features</a>
-                    <a href="#plot-engine" class="text-sm font-semibold text-slate-300 hover:text-amber-400 transition-colors">Plot Allocation Engine</a>
-                    <a href="#roi-calculator" class="text-sm font-semibold text-slate-300 hover:text-amber-400 transition-colors flex items-center gap-1">
+                <!-- Desktop Menu Links (Clean, No-Wrap) -->
+                <nav class="hidden lg:flex items-center space-x-6 xl:space-x-8">
+                    <a href="#features" class="text-xs xl:text-sm font-semibold text-slate-300 hover:text-amber-400 transition-colors whitespace-nowrap">Features</a>
+                    <a href="#plot-engine" class="text-xs xl:text-sm font-semibold text-slate-300 hover:text-amber-400 transition-colors whitespace-nowrap">Plot Engine</a>
+                    <a href="#roi-calculator" class="text-xs xl:text-sm font-semibold text-slate-300 hover:text-amber-400 transition-colors flex items-center gap-1.5 whitespace-nowrap">
                         <span>ROI Calculator</span>
-                        <span class="px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">New</span>
+                        <span class="px-1.5 py-0.2 rounded text-[9px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">New</span>
                     </a>
-                    <a href="#pricing" class="text-sm font-semibold text-slate-300 hover:text-amber-400 transition-colors">Pricing</a>
-                    <a href="#contact" class="text-sm font-semibold text-slate-300 hover:text-amber-400 transition-colors">Contact</a>
+                    <a href="#pricing" class="text-xs xl:text-sm font-semibold text-slate-300 hover:text-amber-400 transition-colors whitespace-nowrap">Pricing</a>
+                    <a href="#contact" class="text-xs xl:text-sm font-semibold text-slate-300 hover:text-amber-400 transition-colors whitespace-nowrap">Contact</a>
                 </nav>
 
                 <!-- Right Action / CTA Buttons -->
-                <div class="hidden lg:flex items-center space-x-4">
-                    <a href="https://demo.nawpropertyflow.com.ng" class="btn-primary-demo px-5 py-2.5 rounded-full text-xs uppercase tracking-wider flex items-center gap-2">
+                <div class="hidden md:flex items-center space-x-3 flex-shrink-0">
+                    <a href="https://demo.nawpropertyflow.com.ng" class="btn-primary-demo px-5 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider flex items-center gap-1.5 whitespace-nowrap shadow-lg">
                         <span>🚀 Launch Live Demo</span>
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                     </a>
-                    <a href="{{ route('system.login') }}" class="text-xs font-bold text-slate-400 hover:text-white transition-colors px-2 py-1">
+                    <a href="{{ route('system.login') }}" class="text-xs font-bold text-slate-400 hover:text-white transition-colors px-2 py-1 whitespace-nowrap">
                         System Login
                     </a>
                 </div>
