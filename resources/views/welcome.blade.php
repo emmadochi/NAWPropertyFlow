@@ -150,6 +150,37 @@
             border-color: #FEA500 !important;
             box-shadow: 0 0 0 3px rgba(254, 165, 0, 0.2) !important;
         }
+        /* High-Visibility Floating Button with Radiant Gold Glow */
+        @keyframes floatPulse {
+            0%, 100% {
+                transform: translateY(0px);
+                box-shadow: 0 10px 25px -3px rgba(254, 165, 0, 0.65), 0 0 20px rgba(254, 165, 0, 0.45);
+            }
+            50% {
+                transform: translateY(-4px);
+                box-shadow: 0 16px 32px -3px rgba(254, 165, 0, 0.85), 0 0 30px rgba(254, 165, 0, 0.65);
+            }
+        }
+        .floating-cta-btn {
+            background: linear-gradient(135deg, #FEA500 0%, #FFB733 40%, #E59800 100%) !important;
+            color: #030B17 !important;
+            font-weight: 800 !important;
+            border: 2px solid #FFFBEB !important;
+            border-radius: 9999px !important;
+            padding: 0.85rem 1.4rem !important;
+            box-shadow: 0 10px 25px -3px rgba(254, 165, 0, 0.7) !important;
+            animation: floatPulse 3s ease-in-out infinite;
+            cursor: pointer !important;
+            transition: all 0.2s ease !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.6rem !important;
+            z-index: 50 !important;
+        }
+        .floating-cta-btn:hover {
+            transform: scale(1.05) translateY(-2px) !important;
+            background: linear-gradient(135deg, #FFC107 0%, #FFD54F 100%) !important;
+        }
     </style>
 </head>
 <body x-data="landingApp()">
@@ -961,16 +992,21 @@
             </div>
         </div>
 
-        <!-- Floating Trigger Button -->
-        <button @click="floatingContactOpen = !floatingContactOpen" 
-                class="flex items-center space-x-2.5 px-4 py-3 rounded-full glass-card hover:border-amber-400 text-white font-bold text-xs shadow-2xl border border-amber-500/50 bg-slate-900/90 group transition-all transform hover:-translate-y-0.5 cursor-pointer">
-            <span class="relative flex h-2.5 w-2.5">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-            </span>
-            <span class="font-semibold text-slate-200 group-hover:text-amber-400 transition-colors whitespace-nowrap">Speak with Property Specialist</span>
-            <span class="text-sm">💬</span>
-        </button>
+        <!-- Floating High-Visibility Trigger Button -->
+        <div class="relative">
+            <!-- Small Popover Notice Pill -->
+            <div class="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-emerald-500 text-slate-950 text-[9px] font-extrabold tracking-wider uppercase shadow-lg flex items-center gap-1">
+                <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
+                <span>Abuja Desk Live</span>
+            </div>
+
+            <button @click="floatingContactOpen = !floatingContactOpen" 
+                    class="floating-cta-btn">
+                <span class="text-base">💬</span>
+                <span class="font-extrabold text-xs tracking-tight text-slate-950 whitespace-nowrap">Speak with Property Specialist</span>
+                <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
+            </button>
+        </div>
 
     </div>
 
