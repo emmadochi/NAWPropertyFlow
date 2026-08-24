@@ -480,6 +480,196 @@
 
 
     <!-- =========================================================================
+         CONVERSION POWERHOUSE 1: SPREADSHEETS VS NAW PROPERTYFLOW MATRIX
+    ========================================================================== -->
+    <section class="py-20 relative bg-slate-950/80 border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-xs font-extrabold uppercase tracking-widest text-rose-400">Stop Financial & Operational Leakage</span>
+                <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-2 font-display">Manual Spreadsheets vs NAW CRM</h2>
+                <p class="text-sm sm:text-base text-slate-400 mt-3">Why top Nigerian real estate developers are ditching Google Sheets and Excel for NAW PropertyFlow.</p>
+            </div>
+
+            <div class="glass-card rounded-3xl overflow-hidden border border-slate-800 max-w-5xl mx-auto">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs sm:text-sm">
+                        <thead>
+                            <tr class="border-b border-slate-800 bg-slate-900/90 text-slate-300">
+                                <th class="p-4 sm:p-6 font-bold uppercase tracking-wider text-xs">Real Estate Workflow</th>
+                                <th class="p-4 sm:p-6 font-bold uppercase tracking-wider text-xs text-rose-400 bg-rose-950/20">❌ Excel / Google Sheets</th>
+                                <th class="p-4 sm:p-6 font-bold uppercase tracking-wider text-xs text-amber-400 bg-amber-950/20">⚡ NAW PropertyFlow ERP</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-800/60 text-slate-300">
+                            <tr>
+                                <td class="p-4 sm:p-6 font-bold text-white">Plot Allocation & Inventory</td>
+                                <td class="p-4 sm:p-6 text-slate-400 bg-rose-950/10">High risk of catastrophic double-allocation between agents.</td>
+                                <td class="p-4 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">100% Locked reserve engine with real-time estate inventory visualizer.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 sm:p-6 font-bold text-white">Milestone Installment Collections</td>
+                                <td class="p-4 sm:p-6 text-slate-400 bg-rose-950/10">Manual reminders often forgotten; delayed cash flow and bad debts.</td>
+                                <td class="p-4 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">Automated 3–24 month schedules with WhatsApp & SMS due alerts.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 sm:p-6 font-bold text-white">Realtor Commission Splits</td>
+                                <td class="p-4 sm:p-6 text-slate-400 bg-rose-950/10">Manual calculations lead to mistrust, arguments, and lost top brokers.</td>
+                                <td class="p-4 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">Instant transparent ledger with multi-tier affiliate and agent split tracking.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 sm:p-6 font-bold text-white">Deed of Assignment & Title Letters</td>
+                                <td class="p-4 sm:p-6 text-slate-400 bg-rose-950/10">Days of manual typing in Microsoft Word with typo risks.</td>
+                                <td class="p-4 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">1-Click Legal Document Factory auto-filled with client and plot data.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 sm:p-6 font-bold text-white">Diaspora Investor Experience</td>
+                                <td class="p-4 sm:p-6 text-slate-400 bg-rose-950/10">Sending WhatsApp photos that get lost; skepticism from overseas buyers.</td>
+                                <td class="p-4 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">Dedicated 24/7 client portal with site construction video logs & receipts.</td>
+                            </tr>
+                            <tr>
+                                <td class="p-4 sm:p-6 font-bold text-white">Staff Accountability & Daily Logs</td>
+                                <td class="p-4 sm:p-6 text-slate-400 bg-rose-950/10">No tracking of daily agent phone calls, site inspections, or tasks.</td>
+                                <td class="p-4 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">Daily work review submissions, HR KPI metrics, and integrated Naira payroll.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- =========================================================================
+         CONVERSION POWERHOUSE 2: FAST 3-STEP ONBOARDING (24-HOUR GUARANTEE)
+    ========================================================================== -->
+    <section class="py-20 relative border-t border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-xs font-extrabold uppercase tracking-widest text-emerald-400">Frictionless Transition</span>
+                <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-2 font-display">Go Live in Less Than 24 Hours</h2>
+                <p class="text-sm sm:text-base text-slate-400 mt-3">Our Abuja enterprise support team handles your migration from day one.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                
+                <!-- Step 1 -->
+                <div class="glass-card p-8 rounded-3xl relative border border-slate-800 text-center">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-500 text-slate-950 font-extrabold text-lg flex items-center justify-center mx-auto mb-6 shadow-lg shadow-amber-500/20 font-display">
+                        1
+                    </div>
+                    <h3 class="text-xl font-bold text-white font-display mb-2">Upload Estate Layouts</h3>
+                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">Send us your existing Excel sheet or estate survey plan. We map your units, sizes, and price tiers for free.</p>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="glass-card p-8 rounded-3xl relative border border-slate-800 text-center">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-500 text-white font-extrabold text-lg flex items-center justify-center mx-auto mb-6 shadow-lg shadow-blue-500/20 font-display">
+                        2
+                    </div>
+                    <h3 class="text-xl font-bold text-white font-display mb-2">Onboard Your Team</h3>
+                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">Invite your Sales Manager, Realtors, HR, and Accountants with role-based access permissions.</p>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="glass-card p-8 rounded-3xl relative border border-slate-800 text-center">
+                    <div class="w-12 h-12 rounded-2xl bg-emerald-500 text-slate-950 font-extrabold text-lg flex items-center justify-center mx-auto mb-6 shadow-lg shadow-emerald-500/20 font-display">
+                        3
+                    </div>
+                    <h3 class="text-xl font-bold text-white font-display mb-2">Autopilot Operations</h3>
+                    <p class="text-xs sm:text-sm text-slate-400 leading-relaxed">Collect milestone installments on time, issue instant deeds, and prevent double allocations with 100% peace of mind.</p>
+                </div>
+
+            </div>
+
+            <div class="text-center mt-12">
+                <a href="https://demo.nawpropertyflow.com.ng" class="btn-primary-demo inline-block px-8 py-4 rounded-full text-xs uppercase tracking-wider font-extrabold shadow-xl">
+                    ⚡ Test Drive The 8 Roles on Live Demo →
+                </a>
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- =========================================================================
+         CONVERSION POWERHOUSE 3: FREQUENTLY ASKED QUESTIONS (FAQS)
+    ========================================================================== -->
+    <section class="py-20 relative bg-slate-950/60 border-t border-slate-900">
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+            
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <span class="text-xs font-extrabold uppercase tracking-widest text-amber-400">Clear Answers</span>
+                <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-2 font-display">Frequently Asked Questions</h2>
+                <p class="text-sm sm:text-base text-slate-400 mt-3">Everything you need to know about adopting NAW PropertyFlow for your firm.</p>
+            </div>
+
+            <div class="space-y-4" x-data="{ activeFaq: null }">
+                
+                <!-- FAQ 1 -->
+                <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
+                    <button @click="activeFaq = (activeFaq === 1 ? null : 1)" class="w-full p-5 text-left flex justify-between items-center text-sm sm:text-base font-bold text-white cursor-pointer">
+                        <span>Can we import our existing leads and plots from Excel?</span>
+                        <span class="text-amber-400 text-lg font-bold" x-text="activeFaq === 1 ? '−' : '+'">+</span>
+                    </button>
+                    <div x-show="activeFaq === 1" x-transition class="px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-800/60 pt-4">
+                        Yes, absolutely! Our dedicated Abuja onboarding team provides free data migration. You simply hand over your existing Excel sheets or CSV files, and we securely import all your estates, plots, client history, and active installment payment schedules within 24 hours.
+                    </div>
+                </div>
+
+                <!-- FAQ 2 -->
+                <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
+                    <button @click="activeFaq = (activeFaq === 2 ? null : 2)" class="w-full p-5 text-left flex justify-between items-center text-sm sm:text-base font-bold text-white cursor-pointer">
+                        <span>Do you provide physical, on-site staff training in Abuja or Lagos?</span>
+                        <span class="text-amber-400 text-lg font-bold" x-text="activeFaq === 2 ? '−' : '+'">+</span>
+                    </button>
+                    <div x-show="activeFaq === 2" x-transition class="px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-800/60 pt-4">
+                        Yes. For developer teams in Abuja (Jabi, Guzape, Katampe, Maitama, Central Area) and Lagos, our technical training specialists will conduct hands-on training sessions with your Sales Executives, Accountants, HR officers, and front desk staff to ensure seamless adoption.
+                    </div>
+                </div>
+
+                <!-- FAQ 3 -->
+                <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
+                    <button @click="activeFaq = (activeFaq === 3 ? null : 3)" class="w-full p-5 text-left flex justify-between items-center text-sm sm:text-base font-bold text-white cursor-pointer">
+                        <span>Can our diaspora investors in the UK, USA, and Canada access their portal easily?</span>
+                        <span class="text-amber-400 text-lg font-bold" x-text="activeFaq === 3 ? '−' : '+'">+</span>
+                    </button>
+                    <div x-show="activeFaq === 3" x-transition class="px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-800/60 pt-4">
+                        Yes. Overseas clients receive a private, secure link or 1-click token requiring zero complex setup. They can log in 24/7 to review site foundation photos, drone inspection clips, verified installment receipts, and download their provisional Deed of Assignment directly.
+                    </div>
+                </div>
+
+                <!-- FAQ 4 -->
+                <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
+                    <button @click="activeFaq = (activeFaq === 4 ? null : 4)" class="w-full p-5 text-left flex justify-between items-center text-sm sm:text-base font-bold text-white cursor-pointer">
+                        <span>Is our company and client financial data completely isolated and secure?</span>
+                        <span class="text-amber-400 text-lg font-bold" x-text="activeFaq === 4 ? '−' : '+'">+</span>
+                    </button>
+                    <div x-show="activeFaq === 4" x-transition class="px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-800/60 pt-4">
+                        100%. NAW PropertyFlow runs on an enterprise multi-tenant architecture with 256-bit SSL encryption. Your company's leads, property inventory, sales figures, and staff payroll are strictly segregated and inaccessible to any other tenant. Automated daily backups ensure zero data loss.
+                    </div>
+                </div>
+
+                <!-- FAQ 5 -->
+                <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
+                    <button @click="activeFaq = (activeFaq === 5 ? null : 5)" class="w-full p-5 text-left flex justify-between items-center text-sm sm:text-base font-bold text-white cursor-pointer">
+                        <span>How does the 15% Channel Partner / Affiliate commission work?</span>
+                        <span class="text-amber-400 text-lg font-bold" x-text="activeFaq === 5 ? '−' : '+'">+</span>
+                    </button>
+                    <div x-show="activeFaq === 5" x-transition class="px-5 pb-5 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-800/60 pt-4">
+                        When you register as an affiliate partner and introduce a real estate developer or brokerage that subscribes to NAW PropertyFlow, you earn 15% recurring commission every single month for the entire lifetime of that customer's active subscription, paid straight to your Nigerian bank account.
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </section>
+
+
+    <!-- =========================================================================
          AFFILIATE & PARTNER PROGRAM (Earn 15% Monthly)
     ========================================================================== -->
     <section id="affiliates" class="py-20 relative">
