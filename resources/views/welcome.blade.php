@@ -480,73 +480,129 @@
 
 
     <!-- =========================================================================
-         PILOT PRICING PACKAGES
+         PILOT PRICING PACKAGES (Monthly / Discounted Annual)
     ========================================================================== -->
     <section id="pricing" class="py-20 bg-slate-950/60 border-t border-slate-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             
-            <div class="text-center max-w-3xl mx-auto mb-16">
-                <span class="text-xs font-extrabold uppercase tracking-widest text-amber-400">Transparent Pricing</span>
-                <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-2 font-display">Pilot Packages for Every Stage</h2>
-                <p class="text-sm sm:text-base text-slate-400 mt-3">All plans include Nigerian Naira billing, dedicated local onboarding in Abuja/Lagos, and automated cloud backups.</p>
+            <div class="text-center max-w-3xl mx-auto mb-10">
+                <span class="text-xs font-extrabold uppercase tracking-widest text-amber-400">Transparent & Affordable Pricing</span>
+                <h2 class="text-3xl sm:text-5xl font-extrabold text-white mt-2 font-display">Plans Built for Every Nigerian Real Estate Team</h2>
+                <p class="text-sm sm:text-base text-slate-400 mt-3">Transparent Nigerian Naira billing, dedicated local onboarding in Abuja & Lagos, and automated cloud backups.</p>
+
+                <!-- Billing Cycle Toggle Switch -->
+                <div class="mt-8 inline-flex items-center p-1.5 rounded-full bg-slate-900 border border-slate-800">
+                    <button @click="billingCycle = 'monthly'" 
+                            :class="billingCycle === 'monthly' ? 'bg-amber-500 text-slate-950 font-extrabold shadow-md' : 'text-slate-400 hover:text-white font-semibold'"
+                            class="px-5 py-2 rounded-full text-xs transition-all uppercase tracking-wider cursor-pointer">
+                        Monthly Billing
+                    </button>
+                    <button @click="billingCycle = 'annual'" 
+                            :class="billingCycle === 'annual' ? 'bg-amber-500 text-slate-950 font-extrabold shadow-md' : 'text-slate-400 hover:text-white font-semibold'"
+                            class="px-5 py-2 rounded-full text-xs transition-all uppercase tracking-wider flex items-center gap-1.5 cursor-pointer">
+                        <span>Annual Billing</span>
+                        <span class="px-2 py-0.5 rounded-full text-[9px] font-extrabold bg-emerald-500 text-slate-950">Save 17% (2 Mo Free)</span>
+                    </button>
+                </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto items-stretch">
                 
-                <!-- Starter Agency -->
+                <!-- 1. Agency Starter (₦20,000/mo or ₦200,000/yr) -->
                 <div class="glass-card p-8 rounded-3xl flex flex-col justify-between border border-slate-800">
                     <div>
                         <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Agency Starter</span>
-                        <h3 class="text-2xl font-bold text-white font-display mt-2">₦75,000 <span class="text-xs text-slate-400 font-normal">/ month</span></h3>
-                        <p class="text-xs text-slate-400 mt-2 mb-6">For emerging real estate brokerages and sales agencies.</p>
-                        <ul class="space-y-3 text-xs text-slate-300 mb-8">
+                        
+                        <div class="mt-3 mb-1">
+                            <template x-if="billingCycle === 'monthly'">
+                                <div>
+                                    <h3 class="text-3xl font-extrabold text-white font-display">₦20,000 <span class="text-xs text-slate-400 font-normal">/ month</span></h3>
+                                    <div class="text-[11px] text-slate-400 mt-1">Billed monthly (₦240,000/yr)</div>
+                                </div>
+                            </template>
+                            <template x-if="billingCycle === 'annual'">
+                                <div>
+                                    <h3 class="text-3xl font-extrabold text-emerald-400 font-display">₦200,000 <span class="text-xs text-slate-400 font-normal">/ year</span></h3>
+                                    <div class="text-[11px] text-emerald-400 mt-1 font-semibold">⚡ Save ₦40,000 (Pay for 10 months only)</div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <p class="text-xs text-slate-400 mt-3 mb-6">For emerging real estate brokerages, marketing teams, and sales agencies.</p>
+                        
+                        <ul class="space-y-3 text-xs text-slate-300 mb-8 border-t border-slate-800/80 pt-6">
                             <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Up to 5 Staff User Accounts</li>
-                            <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Unlimited Lead Pipeline Tracking</li>
-                            <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Realtor Commission Splits</li>
-                            <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Inspection Scheduling Calendar</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Unlimited Lead Pipeline CRM</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Multi-Tier Realtor Commission Splits</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Site Inspection Calendar & Follow-Ups</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> WhatsApp Lead Direct Connect</li>
                         </ul>
                     </div>
-                    <button @click="openDemoModal('Starter Agency (₦75k/mo)')" class="w-full py-3 rounded-xl glass-card hover:bg-white/10 text-xs font-bold text-white uppercase border border-slate-700 cursor-pointer">
+                    <button @click="openDemoModal(billingCycle === 'annual' ? 'Agency Starter (Annual ₦200k/yr)' : 'Agency Starter (Monthly ₦20k/mo)')" class="w-full py-3 rounded-xl glass-card hover:bg-white/10 text-xs font-bold text-white uppercase border border-slate-700 cursor-pointer">
                         Get Started
                     </button>
                 </div>
 
-                <!-- Growth Developer (Featured) -->
-                <div class="glass-card p-8 rounded-3xl flex flex-col justify-between border-2 border-amber-500/60 relative bg-slate-900/90 shadow-2xl">
-                    <div class="absolute -top-3.5 left-1/2 transform -translate-x-1/2 bg-amber-500 text-slate-950 text-[10px] font-extrabold uppercase px-3 py-1 rounded-full tracking-widest shadow-md">
-                        Most Popular in Abuja
+                <!-- 2. Growth Developer (₦30,000/mo or ₦300,000/yr) - Featured -->
+                <div class="glass-card p-8 rounded-3xl flex flex-col justify-between border-2 border-amber-500/60 relative bg-slate-900/95 shadow-2xl">
+                    <div class="absolute -top-3.5 left-1/2 transform -translate-x-1/2 bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 text-[10px] font-extrabold uppercase px-4 py-1 rounded-full tracking-widest shadow-md whitespace-nowrap">
+                        ⭐ Most Popular in Abuja & Lagos
                     </div>
                     <div>
                         <span class="text-xs font-bold text-amber-400 uppercase tracking-widest">Growth Developer</span>
-                        <h3 class="text-3xl font-extrabold text-white font-display mt-2">₦195,000 <span class="text-xs text-slate-400 font-normal">/ month</span></h3>
-                        <p class="text-xs text-slate-300 mt-2 mb-6">For active developers with multiple ongoing schemes.</p>
-                        <ul class="space-y-3 text-xs text-slate-200 mb-8">
+                        
+                        <div class="mt-3 mb-1">
+                            <template x-if="billingCycle === 'monthly'">
+                                <div>
+                                    <h3 class="text-3xl font-extrabold text-white font-display">₦30,000 <span class="text-xs text-slate-400 font-normal">/ month</span></h3>
+                                    <div class="text-[11px] text-slate-400 mt-1">Billed monthly (₦360,000/yr)</div>
+                                </div>
+                            </template>
+                            <template x-if="billingCycle === 'annual'">
+                                <div>
+                                    <h3 class="text-3xl font-extrabold text-amber-400 font-display">₦300,000 <span class="text-xs text-slate-400 font-normal">/ year</span></h3>
+                                    <div class="text-[11px] text-emerald-400 mt-1 font-semibold">⚡ Save ₦60,000 (Pay for 10 months only)</div>
+                                </div>
+                            </template>
+                        </div>
+
+                        <p class="text-xs text-slate-300 mt-3 mb-6">For active property developers managing multiple ongoing residential schemes.</p>
+                        
+                        <ul class="space-y-3 text-xs text-slate-200 mb-8 border-t border-slate-800/80 pt-6">
                             <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Up to 20 Staff Accounts</li>
-                            <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Interactive Plot Allocation Engine</li>
-                            <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Automated Milestone Installment Tracking</li>
-                            <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> 1-Click Deed & Legal Document Factory</li>
-                            <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Diaspora Buyer Portal</li>
+                            <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Interactive Plot Allocation & Reserve Locks</li>
+                            <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Automated 3–24 Mo. Milestone Installment Billing</li>
+                            <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> 1-Click Deed of Assignment & Receipt Factory</li>
+                            <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Diaspora Buyer Portal (UK/USA/Canada Tracking)</li>
+                            <li class="flex items-center gap-2"><span class="text-amber-400 font-bold">✓</span> Anti-Double Allocation Safeguard</li>
                         </ul>
                     </div>
-                    <button @click="openDemoModal('Growth Developer (₦195k/mo)')" class="w-full btn-primary-demo py-3.5 rounded-xl text-xs uppercase tracking-wider font-extrabold cursor-pointer">
+                    <button @click="openDemoModal(billingCycle === 'annual' ? 'Growth Developer (Annual ₦300k/yr)' : 'Growth Developer (Monthly ₦30k/mo)')" class="w-full btn-primary-demo py-3.5 rounded-xl text-xs uppercase tracking-wider font-extrabold cursor-pointer">
                         Start Growth Trial
                     </button>
                 </div>
 
-                <!-- Enterprise Edition -->
+                <!-- 3. Full Enterprise (Custom / Annual) -->
                 <div class="glass-card p-8 rounded-3xl flex flex-col justify-between border border-slate-800">
                     <div>
                         <span class="text-xs font-bold text-slate-400 uppercase tracking-widest">Full Enterprise</span>
-                        <h3 class="text-2xl font-bold text-white font-display mt-2">Custom <span class="text-xs text-slate-400 font-normal">/ annual</span></h3>
-                        <p class="text-xs text-slate-400 mt-2 mb-6">Complete ERP suite with on-premise or dedicated cloud hosting.</p>
-                        <ul class="space-y-3 text-xs text-slate-300 mb-8">
+                        
+                        <div class="mt-3 mb-1">
+                            <h3 class="text-3xl font-extrabold text-white font-display">Custom <span class="text-xs text-slate-400 font-normal">/ annual</span></h3>
+                            <div class="text-[11px] text-slate-400 mt-1">Dedicated cloud or private server setup</div>
+                        </div>
+
+                        <p class="text-xs text-slate-400 mt-3 mb-6">Complete enterprise ERP suite with white-labeling, custom features, and on-premise training.</p>
+                        
+                        <ul class="space-y-3 text-xs text-slate-300 mb-8 border-t border-slate-800/80 pt-6">
                             <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Unlimited Staff & Multi-Branch Support</li>
-                            <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Full HR, Payroll & Daily Work Reviews</li>
-                            <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Custom Brand Domain & White-Labeling</li>
-                            <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Dedicated Account Manager & On-Site Training</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Full Nigerian HR, Payroll & Daily Work Reports</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Custom Brand Domain & Complete White-Labeling</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Dedicated Account Manager & On-Site Staff Training</li>
+                            <li class="flex items-center gap-2"><span class="text-emerald-400 font-bold">✓</span> Custom API Integrations (Banks & Payment Gateways)</li>
                         </ul>
                     </div>
-                    <button @click="openDemoModal('Abuja Enterprise Edition')" class="w-full py-3 rounded-xl glass-card hover:bg-white/10 text-xs font-bold text-white uppercase border border-slate-700 cursor-pointer">
+                    <button @click="openDemoModal('Enterprise Custom Edition')" class="w-full py-3 rounded-xl glass-card hover:bg-white/10 text-xs font-bold text-white uppercase border border-slate-700 cursor-pointer">
                         Contact Enterprise Sales
                     </button>
                 </div>
@@ -672,10 +728,10 @@
                         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Selected Package / Program</label>
                         <select x-model="demoPackage"
                                 class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all">
+                            <option value="Growth Developer (₦30k/mo or ₦300k/yr)">🏢 Growth Developer Plan (₦30,000/mo or ₦300k/yr)</option>
+                            <option value="Agency Starter (₦20k/mo or ₦200k/yr)">🏢 Agency Starter Plan (₦20,000/mo or ₦200k/yr)</option>
+                            <option value="Enterprise Custom Edition">🏢 Full Enterprise Custom Edition (Dedicated Setup)</option>
                             <option value="Affiliate / Channel Partner Registration">🌟 Channel Partner Program (Earn 15% Monthly)</option>
-                            <option value="Abuja Enterprise Edition">🏢 Developer Demo: Enterprise Edition (Full Suite)</option>
-                            <option value="Growth Developer (₦195k/mo)">🏢 Developer Demo: Growth Plan (₦195,000/mo)</option>
-                            <option value="Starter Agency (₦75k/mo)">🏢 Agency Demo: Starter Plan (₦75,000/mo)</option>
                         </select>
                     </div>
                 </div>
@@ -697,7 +753,8 @@
             return {
                 mobileMenuOpen: false,
                 demoModalOpen: false,
-                demoPackage: 'Abuja Enterprise Edition',
+                billingCycle: 'monthly',
+                demoPackage: 'Growth Developer (₦30k/mo or ₦300k/yr)',
                 clientName: '',
                 clientCompany: '',
                 clientPhone: '',
