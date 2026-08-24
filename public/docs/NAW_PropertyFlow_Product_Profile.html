@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAW PropertyFlow CRM — Master Product Profile & Complete Functional Specification</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-950: #030B17;
+            --primary-900: #06152B;
+            --primary-800: #0B2545;
+            --primary-700: #133E6D;
+            --primary-600: #1D5C96;
+            --accent-gold: #C59B27;
+            --accent-gold-dark: #9A7B1C;
+            --accent-gold-light: #FEF9E7;
+            --accent-emerald: #059669;
+            --accent-emerald-light: #ECFDF5;
+            --accent-blue: #2563EB;
+            --accent-blue-light: #EFF6FF;
+            --accent-indigo: #4F46E5;
+            --accent-indigo-light: #EEF2FF;
+            --accent-purple: #7C3AED;
+            --accent-purple-light: #F5F3FF;
+            --accent-rose: #E11D48;
+            --accent-rose-light: #FFF1F2;
+            --slate-900: #0F172A;
+            --slate-800: #1E293B;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748B;
+            --slate-400: #94A3B8;
+            --slate-300: #CBD5E1;
+            --slate-200: #E2E8F0;
+            --slate-100: #F1F5F9;
+            --slate-50: #F8FAFC;
+            --white: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #E2E8F0;
+            color: var(--slate-800);
+            line-height: 1.45;
+            font-size: 12px;
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 20px;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            height: 297mm;
+            background: var(--white);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            page-break-after: always;
+            page-break-inside: avoid;
+        }
+
+        @media print {
+            body {
+                background: none;
+            }
+            .page-container {
+                padding: 0;
+                gap: 0;
+            }
+            .page {
+                box-shadow: none;
+                margin: 0;
+                width: 210mm;
+                height: 297mm;
+            }
+        }
+
+        .page-header {
+            height: 48px;
+            padding: 14px 35px 8px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--slate-200);
+            background: var(--white);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--primary-900);
+            letter-spacing: -0.4px;
+        }
+
+        .header-brand .gold-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .header-doc-title {
+            font-size: 9.5px;
+            font-weight: 700;
+            color: var(--slate-500);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .page-footer {
+            margin-top: auto;
+            height: 40px;
+            padding: 8px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--slate-200);
+            font-size: 9px;
+            color: var(--slate-400);
+            background: var(--white);
+        }
+
+        .page-content {
+            padding: 20px 35px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+            color: var(--primary-900);
+            line-height: 1.2;
+        }
+
+        .badge-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 3px 8px;
+            border-radius: 14px;
+            width: fit-content;
+            margin-bottom: 4px;
+        }
+
+        .badge-tag.gold { color: #854D0E; background: var(--accent-gold-light); border: 1px solid rgba(197, 155, 39, 0.3); }
+        .badge-tag.emerald { color: #065F46; background: var(--accent-emerald-light); border: 1px solid rgba(5, 150, 105, 0.2); }
+        .badge-tag.blue { color: #1E40AF; background: var(--accent-blue-light); border: 1px solid rgba(37, 99, 235, 0.2); }
+        .badge-tag.purple { color: #5B21B6; background: var(--accent-purple-light); border: 1px solid rgba(124, 58, 237, 0.2); }
+        .badge-tag.rose { color: #9F1239; background: var(--accent-rose-light); border: 1px solid rgba(225, 29, 72, 0.2); }
+
+        .module-title {
+            font-size: 17px;
+            font-weight: 700;
+            color: var(--primary-900);
+            letter-spacing: -0.3px;
+            margin-bottom: 2px;
+        }
+
+        .module-subtitle {
+            font-size: 11px;
+            color: var(--slate-600);
+            margin-bottom: 12px;
+            line-height: 1.35;
+        }
+
+        .feature-block {
+            background: var(--white);
+            border: 1px solid var(--slate-200);
+            border-radius: 9px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+        }
+
+        .feature-block-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .feature-block-name {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--primary-900);
+            display: flex;
+            align-items: center;
+            gap: 7px;
+        }
+
+        .feature-block-icon {
+            width: 24px;
+            height: 24px;
+            border-radius: 5px;
+            background: var(--slate-100);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-700);
+            flex-shrink: 0;
+        }
+
+        .feature-block-icon.gold { background: var(--accent-gold-light); color: var(--accent-gold-dark); }
+        .feature-block-icon.emerald { background: var(--accent-emerald-light); color: var(--accent-emerald); }
+        .feature-block-icon.blue { background: var(--accent-blue-light); color: var(--accent-blue); }
+        .feature-block-icon.purple { background: var(--accent-purple-light); color: var(--accent-purple); }
+        .feature-block-icon.rose { background: var(--accent-rose-light); color: var(--accent-rose); }
+
+        .feature-importance {
+            background: #FEF3C7;
+            border-left: 3px solid #D97706;
+            padding: 5px 8px;
+            border-radius: 0 5px 5px 0;
+            font-size: 10.5px;
+            color: #92400E;
+            margin-bottom: 6px;
+            line-height: 1.35;
+        }
+
+        .feature-importance strong {
+            color: #78350F;
+            font-weight: 700;
+        }
+
+        .feature-detail-text {
+            font-size: 11px;
+            color: var(--slate-600);
+            line-height: 1.4;
+            margin-bottom: 6px;
+        }
+
+        .capabilities-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px 10px;
+            list-style: none;
+            background: var(--slate-50);
+            padding: 6px 10px;
+            border-radius: 5px;
+            border: 1px solid var(--slate-200);
+        }
+
+        .capability-item {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--slate-700);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .capability-item::before {
+            content: '✓';
+            color: var(--accent-emerald);
+            font-weight: 800;
+            font-size: 10px;
+        }
+
+        /* -------------------------------------------------------------
+           COVER PAGE STYLES
+        ------------------------------------------------------------- */
+        .profile-cover {
+            background: linear-gradient(135deg, #030B17 0%, #06152B 40%, #0F325E 100%);
+            color: var(--white);
+            padding: 40px 35px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .profile-cover::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(197, 155, 39, 0.2) 0%, rgba(197, 155, 39, 0) 70%);
+            pointer-events: none;
+        }
+
+        .cover-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .cover-top-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--white);
+        }
+
+        .cover-badge {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 9.5px;
+            font-weight: 700;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            color: var(--accent-gold-light);
+        }
+
+        .cover-center-content {
+            z-index: 2;
+            margin: 20px 0;
+        }
+
+        .cover-main-kicker {
+            color: var(--accent-gold);
+            font-size: 10.5px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cover-main-kicker::before {
+            content: '';
+            width: 24px;
+            height: 2px;
+            background: var(--accent-gold);
+            display: inline-block;
+        }
+
+        .cover-main-heading {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.15;
+            color: var(--white);
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
+        }
+
+        .cover-main-heading span {
+            color: var(--accent-gold);
+        }
+
+        .cover-main-desc {
+            font-size: 12.5px;
+            color: #CBD5E1;
+            max-width: 580px;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .module-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .module-summary-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 8px 10px;
+            border-radius: 7px;
+        }
+
+        .module-summary-num {
+            font-size: 8.5px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            margin-bottom: 2px;
+        }
+
+        .module-summary-name {
+            font-size: 10.5px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .cover-meta-box {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 9px;
+            padding: 12px 18px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            z-index: 2;
+        }
+
+        .cover-meta-item .label {
+            font-size: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--slate-400);
+            margin-bottom: 2px;
+            font-weight: 600;
+        }
+
+        .cover-meta-item .val {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .spec-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 10px;
+            margin-bottom: 12px;
+            border: 1px solid var(--slate-200);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .spec-table th {
+            background: var(--primary-900);
+            color: var(--white);
+            padding: 7px 9px;
+            text-align: left;
+            font-weight: 700;
+        }
+
+        .spec-table td {
+            padding: 6px 9px;
+            border-bottom: 1px solid var(--slate-200);
+            color: var(--slate-700);
+        }
+
+        .spec-table tr:nth-child(even) td {
+            background: var(--slate-50);
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-container">
+
+    <!-- =========================================================================
+         PAGE 1: PRODUCT PROFILE COVER
+    ========================================================================== -->
+    <div class="page profile-cover">
+        <div class="cover-top-bar">
+            <div class="cover-top-brand">
+                <span style="color: var(--accent-gold);">◆</span> NAW PROPERTYFLOW CRM
+            </div>
+            <div class="cover-badge">
+                Complete Product Specification Guide
+            </div>
+        </div>
+
+        <div class="cover-center-content">
+            <div class="cover-main-kicker">Enterprise Architectural Specification</div>
+            <h1 class="cover-main-heading">
+                All-in-One Real Estate <span>Operating Engine</span> & Feature Matrix
+            </h1>
+            <p class="cover-main-desc">
+                An exhaustive functional breakdown of every core subsystem, automated workflow, marketing automation tool, HR engine, document generator, and financial control built into NAW PropertyFlow CRM.
+            </p>
+
+            <div class="module-summary-grid">
+                <div class="module-summary-item">
+                    <div class="module-summary-num">Module 01</div>
+                    <div class="module-summary-name">Land & Inventory Allocation</div>
+                </div>
+                <div class="module-summary-item">
+                    <div class="module-summary-num">Module 02</div>
+                    <div class="module-summary-name">Milestone Installments & SOAs</div>
+                </div>
+                <div class="module-summary-item">
+                    <div class="module-summary-num">Module 03</div>
+                    <div class="module-summary-name">Realtor & Commission Hub</div>
+                </div>
+                <div class="module-summary-item">
+                    <div class="module-summary-num">Module 04</div>
+                    <div class="module-summary-name">Lead & Inspection Logistics</div>
+                </div>
+                <div class="module-summary-item">
+                    <div class="module-summary-num">Module 05</div>
+                    <div class="module-summary-name">Drip Nurture & Campaigns</div>
+                </div>
+                <div class="module-summary-item">
+                    <div class="module-summary-num">Module 06</div>
+                    <div class="module-summary-name">Legal Document Factory</div>
+                </div>
+                <div class="module-summary-item">
+                    <div class="module-summary-num">Module 07</div>
+                    <div class="module-summary-name">Diaspora Investor Portal</div>
+                </div>
+                <div class="module-summary-item">
+                    <div class="module-summary-num">Module 08</div>
+                    <div class="module-summary-name">Project Milestones & Storage</div>
+                </div>
+                <div class="module-summary-item">
+                    <div class="module-summary-num">Module 09</div>
+                    <div class="module-summary-name">Expenses, Cash Flow & Accounting</div>
+                </div>
+                <div class="module-summary-item">
+                    <div class="module-summary-num">Module 10</div>
+                    <div class="module-summary-name">HR, Leaves & Payroll Engine</div>
+                </div>
+                <div class="module-summary-item">
+                    <div class="module-summary-num">Module 11</div>
+                    <div class="module-summary-name">Department Targets & KPIs</div>
+                </div>
+                <div class="module-summary-item">
+                    <div class="module-summary-num">Module 12</div>
+                    <div class="module-summary-name">Multi-Branch & Role Security</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cover-meta-box">
+            <div class="cover-meta-item">
+                <div class="label">Product Architecture</div>
+                <div class="val">Multi-Tenant Cloud ERP / CRM</div>
+            </div>
+            <div class="cover-meta-item">
+                <div class="label">Target Market</div>
+                <div class="val">Estate Developers & Brokerages</div>
+            </div>
+            <div class="cover-meta-item">
+                <div class="label">Platform Web Portal</div>
+                <div class="val">www.nawpropertyflow.com.ng</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 2: INVENTORY ALLOCATION & INSTALLMENT MILESTONES
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-brand"><span class="gold-dot"></span> NAW PropertyFlow</div>
+            <div class="header-doc-title">Product Profile — Modules 01 & 02</div>
+        </div>
+
+        <div class="page-content">
+            <div class="badge-tag gold">Core Operations</div>
+            <h2 class="module-title">1. Smart Plot & Layout Allocation Engine</h2>
+            <p class="module-subtitle">Centralized inventory control preventing double-allocations and managing land prototype layouts.</p>
+
+            <div class="feature-block">
+                <div class="feature-block-header">
+                    <div class="feature-block-name">
+                        <div class="feature-block-icon gold">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                        </div>
+                        Multi-Estate Plot, Unit & Prototype Registry
+                    </div>
+                </div>
+                <div class="feature-importance">
+                    <strong>Why It Matters:</strong> Double-allocating a single plot in high-value areas like Guzape or Katampe destroys developer reputation and triggers severe legal liabilities. NAW PropertyFlow eliminates this risk completely.
+                </div>
+                <p class="feature-detail-text">
+                    Tracks every plot number, square meterage (e.g., 250sqm, 500sqm, 1,000sqm), prototype building type (Fully Detached Duplex, Terrace, Penthouse), layout coordinates, and live status (Available, Reserved, Under Inspection, Allocated, Sold).
+                </p>
+                <div class="capabilities-list">
+                    <div class="capability-item">Instant Real-time Estate Occupancy Rate</div>
+                    <div class="capability-item">Plot Locking during inspection/booking</div>
+                    <div class="capability-item">Phase & Sector layout categorization</div>
+                    <div class="capability-item">Plot swapping & reassignment history</div>
+                </div>
+            </div>
+
+            <div class="badge-tag emerald" style="margin-top: 6px;">Cash Flow Security</div>
+            <h2 class="module-title">2. Milestone Installment & Billing Engine</h2>
+            <p class="module-subtitle">Automated payment plans, scheduled milestone reminders, and instant digital statements of account.</p>
+
+            <div class="feature-block">
+                <div class="feature-block-header">
+                    <div class="feature-block-name">
+                        <div class="feature-block-icon emerald">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        Automated Nigerian Payment Schedules & SOA
+                    </div>
+                </div>
+                <div class="feature-importance">
+                    <strong>Why It Matters:</strong> Un-tracked installment payments freeze project cash flow. Automated milestone alerts ensure 95%+ on-time debt collection without uncomfortable manual confrontations.
+                </div>
+                <p class="feature-detail-text">
+                    Configures flexible installment structures (Outright, 3-Month, 6-Month, 12-Month, 24-Month). Automatically computes principal paid, outstanding balances, overdue penalties, and issues instant Statements of Account (SOA).
+                </p>
+                <div class="capabilities-list">
+                    <div class="capability-item">Automated SMS & Email due-date alerts</div>
+                    <div class="capability-item">1-Click PDF Payment Receipts & Invoices</div>
+                    <div class="capability-item">Direct Bank Transfer reconciliation</div>
+                    <div class="capability-item">Comprehensive Client Ledger audit trail</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow CRM — Master Product Profile</span>
+            <span>Page 2 of 8</span>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 3: REALTORS & LEAD/INSPECTION PIPELINE
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-brand"><span class="gold-dot"></span> NAW PropertyFlow</div>
+            <div class="header-doc-title">Product Profile — Modules 03 & 04</div>
+        </div>
+
+        <div class="page-content">
+            <div class="badge-tag blue">Realtor Network</div>
+            <h2 class="module-title">3. Realtor & Affiliate Commission Management</h2>
+            <p class="module-subtitle">Zero-dispute commission tracking, multi-tier agency overrides, and automated payout vouchers.</p>
+
+            <div class="feature-block">
+                <div class="feature-block-header">
+                    <div class="feature-block-name">
+                        <div class="feature-block-icon blue">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        </div>
+                        Multi-Tier Commission Engine & Broker Ledgers
+                    </div>
+                </div>
+                <div class="feature-importance">
+                    <strong>Why It Matters:</strong> Top-selling Abuja realtors leave developers who delay or miscalculate commissions. Automated calculation and instant voucher issuance makes you the preferred developer for high-performing agents.
+                </div>
+                <p class="feature-detail-text">
+                    Supports individual agents, brokerage groups, and multi-tier network hierarchies. Automatically splits commissions upon verified client deposits, calculates team leader overrides, and tracks pending vs approved payouts.
+                </p>
+                <div class="capabilities-list">
+                    <div class="capability-item">Automated Commission Voucher Generation</div>
+                    <div class="capability-item">Tiered percentage rules per estate</div>
+                    <div class="capability-item">Split-deal commission allocation</div>
+                    <div class="capability-item">Realtor leaderboard & performance stats</div>
+                </div>
+            </div>
+
+            <div class="badge-tag purple" style="margin-top: 6px;">Sales Conversion</div>
+            <h2 class="module-title">4. Lead Pipeline & Site Inspection Logistics</h2>
+            <p class="module-subtitle">Full-funnel lead tracking from initial WhatsApp inquiry to physical inspection and closing.</p>
+
+            <div class="feature-block">
+                <div class="feature-block-header">
+                    <div class="feature-block-name">
+                        <div class="feature-block-icon purple">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </div>
+                        Inspection Logistics & Follow-Up Automation
+                    </div>
+                </div>
+                <div class="feature-importance">
+                    <strong>Why It Matters:</strong> Over 60% of real estate sales drop off because site inspections are forgotten or poorly organized. This module automates inspection schedules, driver assignments, and post-visit follow-ups.
+                </div>
+                <p class="feature-detail-text">
+                    Captures leads across Meta Ads, WhatsApp, website forms, and walk-ins. Schedules physical site inspections with vehicle/driver assignment, sends automated SMS directions to prospects, and logs inspection outcome feedback.
+                </p>
+                <div class="capabilities-list">
+                    <div class="capability-item">Visual Lead Stage Pipeline (Kanban)</div>
+                    <div class="capability-item">Inspection Booking & Vehicle Logistics</div>
+                    <div class="capability-item">WhatsApp 1-Click Messaging Hub</div>
+                    <div class="capability-item">Daily Follow-Up Task Queue for Sales Reps</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow CRM — Master Product Profile</span>
+            <span>Page 3 of 8</span>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 4: MARKETING DRIP AUTOMATION & DOCUMENT FACTORY
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-brand"><span class="gold-dot"></span> NAW PropertyFlow</div>
+            <div class="header-doc-title">Product Profile — Modules 05 & 06</div>
+        </div>
+
+        <div class="page-content">
+            <div class="badge-tag rose">Automated Marketing</div>
+            <h2 class="module-title">5. Drip Nurturing, Sequences & Broadcast Campaigns</h2>
+            <p class="module-subtitle">Multi-channel drip sequences and automated marketing broadcasts that convert cold leads on autopilot.</p>
+
+            <div class="feature-block">
+                <div class="feature-block-header">
+                    <div class="feature-block-name">
+                        <div class="feature-block-icon rose">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"/></svg>
+                        </div>
+                        Automated Drip Sequences & Mass Broadcasts
+                    </div>
+                </div>
+                <div class="feature-importance">
+                    <strong>Why It Matters:</strong> High-ticket real estate purchases take 30 to 90 days to close. Without automated drip sequences, sales reps forget to follow up, and prospective buyers buy from competitors.
+                </div>
+                <p class="feature-detail-text">
+                    Enroll leads automatically into step-by-step timed email & SMS drip sequences (e.g. Day 1: Welcome Brochure, Day 4: Inspection Video, Day 10: Infrastructure Progress Update, Day 21: Limited Promo Offer). Send mass promotional broadcasts to targeted buyer segments.
+                </p>
+                <div class="capabilities-list">
+                    <div class="capability-item">Multi-Step Drip Sequence Builder</div>
+                    <div class="capability-item">Automated Trigger Enrollments by Lead Stage</div>
+                    <div class="capability-item">Bulk SMS & Email Broadcast Campaigns</div>
+                    <div class="capability-item">Campaign Engagement & Open Rate Tracking</div>
+                </div>
+            </div>
+
+            <div class="badge-tag gold" style="margin-top: 6px;">Operational Automation</div>
+            <h2 class="module-title">6. Automated Legal & Commercial Document Factory</h2>
+            <p class="module-subtitle">Dynamic generation of branded, watermarked, legal agreements and official letters.</p>
+
+            <div class="feature-block">
+                <div class="feature-block-header">
+                    <div class="feature-block-name">
+                        <div class="feature-block-icon gold">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                        </div>
+                        Instant Real Estate Legal Document Automation
+                    </div>
+                </div>
+                <div class="feature-importance">
+                    <strong>Why It Matters:</strong> Typing legal documents manually in Microsoft Word introduces clerical errors, takes hours per client, and slows down closing momentum. NAW PropertyFlow generates verified legal documents in 3 seconds.
+                </div>
+                <p class="feature-detail-text">
+                    Merges buyer information, plot coordinates, agreed price, and milestone schedules directly into pre-approved legal templates. Produces high-resolution PDF documents with company branding, official watermarks, and verification codes.
+                </p>
+                <div class="capabilities-list">
+                    <div class="capability-item">Provisional & Final Offer Letters</div>
+                    <div class="capability-item">Contract of Sale & Deed of Assignment</div>
+                    <div class="capability-item">Provisional Plot Allocation Letters</div>
+                    <div class="capability-item">Template Versioning & Dynamic Placeholders</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow CRM — Master Product Profile</span>
+            <span>Page 4 of 8</span>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 5: DIASPORA PORTAL, PROJECT MILESTONES & CLOUD DRIVE
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-brand"><span class="gold-dot"></span> NAW PropertyFlow</div>
+            <div class="header-doc-title">Product Profile — Modules 07 & 08</div>
+        </div>
+
+        <div class="page-content">
+            <div class="badge-tag blue">Global Reach & Trust</div>
+            <h2 class="module-title">7. Diaspora Investor Self-Service Portal</h2>
+            <p class="module-subtitle">Secure, transparent web portal for buyers in the UK, USA, Canada, and UAE.</p>
+
+            <div class="feature-block">
+                <div class="feature-block-header">
+                    <div class="feature-block-name">
+                        <div class="feature-block-icon blue">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        </div>
+                        24/7 Overseas Client Experience & Trust Portal
+                    </div>
+                </div>
+                <div class="feature-importance">
+                    <strong>Why It Matters:</strong> Diaspora buyers represent 40%+ of Abuja high-ticket land capital. Providing a dedicated dashboard where they can see their verified payments and site photos builds 100% trust and accelerates referrals.
+                </div>
+                <p class="feature-detail-text">
+                    Each client receives private credentials to view their properties, transaction histories, download official stamped receipts, review construction milestones, and communicate directly with their assigned relationship officer.
+                </p>
+                <div class="capabilities-list">
+                    <div class="capability-item">Real-time payment history & balance lookup</div>
+                    <div class="capability-item">Construction progress photos & video logs</div>
+                    <div class="capability-item">Direct download of all issued certificates</div>
+                    <div class="capability-item">Client KYC update & documentation vault</div>
+                </div>
+            </div>
+
+            <div class="badge-tag gold" style="margin-top: 6px;">Engineering & Storage</div>
+            <h2 class="module-title">8. Project Milestones & Cloud Document Drive</h2>
+            <p class="module-subtitle">Live civil engineering milestone tracking and integrated enterprise file storage.</p>
+
+            <div class="feature-block">
+                <div class="feature-block-header">
+                    <div class="feature-block-name">
+                        <div class="feature-block-icon gold">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"/></svg>
+                        </div>
+                        Site Development Milestones & Cloud Document Vault
+                    </div>
+                </div>
+                <div class="feature-importance">
+                    <strong>Why It Matters:</strong> Developers need to track site delivery timelines (perimeter fencing, drainage, grading) while centralizing heavy architectural drawings, survey plans, and AGIS approvals in one secure location.
+                </div>
+                <p class="feature-detail-text">
+                    Track civil engineering phases with completion percentages, target vs actual completion dates, and progress logs. Built-in cloud drive organizes layout diagrams, survey plans, and video assets in folder hierarchies with role-based access.
+                </p>
+                <div class="capabilities-list">
+                    <div class="capability-item">Project Development Milestone % Progress</div>
+                    <div class="capability-item">Integrated Folder & Cloud File Storage</div>
+                    <div class="capability-item">Secure Storage for AGIS, C of O & Survey Plans</div>
+                    <div class="capability-item">Target vs Actual Delivery Date Variance</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow CRM — Master Product Profile</span>
+            <span>Page 5 of 8</span>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 6: EXPENSE ACCOUNTING & HR / PAYROLL
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-brand"><span class="gold-dot"></span> NAW PropertyFlow</div>
+            <div class="header-doc-title">Product Profile — Modules 09 & 10</div>
+        </div>
+
+        <div class="page-content">
+            <div class="badge-tag emerald">Financial Management</div>
+            <h2 class="module-title">9. Expense Tracking & Financial Accounting Hub</h2>
+            <p class="module-subtitle">Complete operational oversight: vendor payouts, site development costs, and project margins.</p>
+
+            <div class="feature-block">
+                <div class="feature-block-header">
+                    <div class="feature-block-name">
+                        <div class="feature-block-icon emerald">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                        </div>
+                        Real Estate Expense & Cash Flow Manager
+                    </div>
+                </div>
+                <div class="feature-importance">
+                    <strong>Why It Matters:</strong> Real estate projects bleed cash through untracked site expenses, unmonitored vendor payments, and missing receipts. This module enforces accountability across every single Naira spent.
+                </div>
+                <p class="feature-detail-text">
+                    Log and categorize expenses per estate project (e.g., Fencing, Infrastructure, Road Grading, Survey, AGIS Title regularizations, Marketing). Provides real-time profit and loss metrics per development.
+                </p>
+                <div class="capabilities-list">
+                    <div class="capability-item">Project-based expense categorization</div>
+                    <div class="capability-item">Vendor payment records & receipts attachment</div>
+                    <div class="capability-item">Net cash flow & liquidity projections</div>
+                    <div class="capability-item">Multi-currency (NGN, USD, GBP) record support</div>
+                </div>
+            </div>
+
+            <div class="badge-tag purple" style="margin-top: 6px;">Human Resources</div>
+            <h2 class="module-title">10. HR Suite, Leave Management & Payroll Engine</h2>
+            <p class="module-subtitle">Automated monthly staff payroll, salary structures, leave management, and appraisals.</p>
+
+            <div class="feature-block">
+                <div class="feature-block-header">
+                    <div class="feature-block-name">
+                        <div class="feature-block-icon purple">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+                        </div>
+                        Comprehensive HR Management & Payroll Generation
+                    </div>
+                </div>
+                <div class="feature-importance">
+                    <strong>Why It Matters:</strong> Real estate companies struggle with manual payroll calculations, untracked employee leaves, and scattered staff onboarding. This module automates full HR administration in one place.
+                </div>
+                <p class="feature-detail-text">
+                    Define custom salary structures (Basic, Housing, Transport, Allowances, Deductions). Generate monthly payslips with 1-click PDF export. Manage employee leave requests, new staff onboarding checklists, and performance appraisals.
+                </p>
+                <div class="capabilities-list">
+                    <div class="capability-item">Automated Monthly Payslip Generator</div>
+                    <div class="capability-item">Leave Request & Approval Workflows</div>
+                    <div class="capability-item">Staff Onboarding & Task Checklists</div>
+                    <div class="capability-item">Performance Reviews & Disciplinary Records</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow CRM — Master Product Profile</span>
+            <span>Page 6 of 8</span>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 7: DEPARTMENT TARGETS & ENTERPRISE SECURITY
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-brand"><span class="gold-dot"></span> NAW PropertyFlow</div>
+            <div class="header-doc-title">Product Profile — Modules 11 & 12</div>
+        </div>
+
+        <div class="page-content">
+            <div class="badge-tag blue">Performance Management</div>
+            <h2 class="module-title">11. Department Targets & Daily Staff Submissions</h2>
+            <p class="module-subtitle">Set monthly sales quotas, monitor department KPIs, and track daily staff metric submissions.</p>
+
+            <div class="feature-block">
+                <div class="feature-block-header">
+                    <div class="feature-block-name">
+                        <div class="feature-block-icon blue">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                        </div>
+                        Target Setting, Quotas & Metric Submissions
+                    </div>
+                </div>
+                <div class="feature-importance">
+                    <strong>Why It Matters:</strong> Sales teams without daily accountability miss monthly revenue goals. This module gives Managing Directors visibility into daily sales calls, site visits, and quota progress across every department.
+                </div>
+                <p class="feature-detail-text">
+                    Set granular targets for Sales, Legal, Operations, and Marketing teams. Staff submit daily activity metrics against assigned targets. Automated department reports give leadership instant executive clarity.
+                </p>
+                <div class="capabilities-list">
+                    <div class="capability-item">Monthly Sales Rep Revenue Quotas</div>
+                    <div class="capability-item">Daily Staff Activity Metric Submissions</div>
+                    <div class="capability-item">Department Target vs Actual Variance</div>
+                    <div class="capability-item">Automated Executive Department Reports</div>
+                </div>
+            </div>
+
+            <div class="badge-tag gold" style="margin-top: 6px;">Governance & Security</div>
+            <h2 class="module-title">12. Multi-Branch Operations & Role Security</h2>
+            <p class="module-subtitle">Multi-location enterprise branching, granular permission matrices, and immutable audit logs.</p>
+
+            <div class="feature-block">
+                <div class="feature-block-header">
+                    <div class="feature-block-name">
+                        <div class="feature-block-icon gold">
+                            <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                        </div>
+                        Multi-Branch Hierarchy & Role-Based Permissions
+                    </div>
+                </div>
+                <div class="feature-importance">
+                    <strong>Why It Matters:</strong> Growing real estate firms operate multiple branches (e.g. Abuja Head Office, Lagos, Port Harcourt). This architecture separates branch data while maintaining unified executive governance.
+                </div>
+                <p class="feature-detail-text">
+                    Manage multiple physical branches under one umbrella. Enforce granular role-based permissions (Super Admin, MD, Branch Manager, Accountant, Sales Executive, Legal Officer, Front Desk, Realtor) with immutable action logs.
+                </p>
+                <div class="capabilities-list">
+                    <div class="capability-item">Multi-Branch Data Separation & Roll-up</div>
+                    <div class="capability-item">Granular Permission Matrix per User Role</div>
+                    <div class="capability-item">Immutable Security & Action Audit Trail</div>
+                    <div class="capability-item">Global Keyboard Quick Search (Ctrl+K)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow CRM — Master Product Profile</span>
+            <span>Page 7 of 8</span>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 8: TECHNICAL ARCHITECTURE & CONTACT
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-brand"><span class="gold-dot"></span> NAW PropertyFlow</div>
+            <div class="header-doc-title">Product Profile — Specifications & Contact</div>
+        </div>
+
+        <div class="page-content">
+            <div class="badge-tag gold">Architecture Standards</div>
+            <h2 class="module-title">Enterprise System Specifications</h2>
+            <p class="module-subtitle">A quick technical reference of system requirements, security protocols, and infrastructure.</p>
+
+            <table class="spec-table">
+                <thead>
+                    <tr>
+                        <th style="width: 28%;">Technical Parameter</th>
+                        <th style="width: 72%;">Specification & Architecture Standard</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Deployment Mode</strong></td>
+                        <td>Cloud-Hosted Multi-Tenant SaaS or Dedicated Private Tenant Instance</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Encryption</strong></td>
+                        <td>256-bit SSL/TLS In-Transit & AES-256 Encrypted Database At-Rest</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Document Engine</strong></td>
+                        <td>Dynamic PDF rendering with Vector Graphics, QR Verification & Watermarking</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Marketing APIs</strong></td>
+                        <td>Automated SMS Gateway, WhatsApp Direct Integration & SMTP Drip Sequencer</td>
+                    </tr>
+                    <tr>
+                        <td><strong>HR & Finance Engine</strong></td>
+                        <td>Salary Structures, Leave Tracking, Expense Categories, and Payslip Generation</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Backup & Redundancy</strong></td>
+                        <td>Automated Daily Database Snapshots with 99.9% Uptime SLA Guarantee</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Data Portability</strong></td>
+                        <td>Full CSV/Excel/PDF export capabilities for all clients, properties, and financials</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="background: linear-gradient(135deg, var(--primary-900) 0%, #0F325E 100%); color: var(--white); border-radius: 10px; padding: 18px 22px; margin-top: auto;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
+                    <div>
+                        <h3 style="font-size: 15px; color: var(--accent-gold); margin-bottom: 3px;">Book an On-Site Enterprise Walkthrough</h3>
+                        <p style="font-size: 11px; color: #CBD5E1;">Schedule a live walkthrough for your Managing Director, Operations, and Accounts teams.</p>
+                    </div>
+                    <div style="background: var(--accent-gold); color: var(--primary-900); font-weight: 800; font-size: 9.5px; padding: 4px 10px; border-radius: 12px; text-transform: uppercase;">
+                        Abuja Hub
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 12px;">
+                    <div>
+                        <div style="font-size: 8.5px; text-transform: uppercase; color: #94A3B8; font-weight: 600;">Phone / WhatsApp Consultation</div>
+                        <div style="font-size: 12.5px; font-weight: 700; color: var(--white);">+234 810 135 8139</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 8.5px; text-transform: uppercase; color: #94A3B8; font-weight: 600;">Official Web Portal</div>
+                        <div style="font-size: 12.5px; font-weight: 700; color: var(--white);">www.nawpropertyflow.com.ng</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 8.5px; text-transform: uppercase; color: #94A3B8; font-weight: 600;">Executive Demo Bookings</div>
+                        <div style="font-size: 11.5px; font-weight: 700; color: var(--white);">sales@nawpropertyflow.com.ng</div>
+                    </div>
+                    <div>
+                        <div style="font-size: 8.5px; text-transform: uppercase; color: #94A3B8; font-weight: 600;">Regional Presence</div>
+                        <div style="font-size: 11.5px; font-weight: 700; color: var(--white);">Wuse II / CBD, Abuja, Nigeria</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow CRM — Master Product Profile</span>
+            <span>Page 8 of 8</span>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

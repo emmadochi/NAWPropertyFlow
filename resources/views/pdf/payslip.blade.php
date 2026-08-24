@@ -1,11 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta charset="UTF-8">
     <title>Payslip - {{ $payslip->user->name }} - {{ $payslip->payrollBatch->title }}</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; font-size: 13px; color: #1e293b; background: #fff; padding: 30px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'DejaVu Sans', sans-serif; }
+        body { font-family: 'DejaVu Sans', sans-serif; font-size: 12px; color: #1e293b; background: #fff; padding: 30px; }
         .payslip-card { max-width: 800px; margin: 0 auto; border: 1px solid #e2e8f0; border-radius: 12px; padding: 30px; }
         .header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #F37021; padding-bottom: 20px; margin-bottom: 25px; }
         .brand h1 { font-size: 20px; font-weight: 800; color: #0f172a; }

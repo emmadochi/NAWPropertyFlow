@@ -1,34 +1,36 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta charset="utf-8">
     <title>Payment Receipt #{{ $milestone->id }}</title>
     <style>
-        body { font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; color: #1e293b; line-height: 1.5; margin: 0; padding: 20px; font-size: 14px; }
+        * { font-family: 'DejaVu Sans', sans-serif; }
+        body { font-family: 'DejaVu Sans', sans-serif; color: #1e293b; line-height: 1.5; margin: 0; padding: 20px; font-size: 13px; }
         .receipt-header { border-bottom: 3px solid #FEA500; padding-bottom: 20px; margin-bottom: 30px; }
-        .company-title { font-size: 28px; font-weight: bold; color: #0f172a; }
+        .company-title { font-size: 24px; font-weight: bold; color: #0f172a; }
         .company-accent { color: #FEA500; }
-        .receipt-title { font-size: 22px; text-transform: uppercase; color: #475569; font-weight: 700; text-align: right; }
+        .receipt-title { font-size: 20px; text-transform: uppercase; color: #475569; font-weight: 700; text-align: right; }
         .grid { width: 100%; margin-bottom: 30px; }
         .grid td { vertical-align: top; }
         .col-50 { width: 50%; }
-        .section-title { font-size: 13px; font-weight: bold; text-transform: uppercase; color: #64748b; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 10px; }
+        .section-title { font-size: 12px; font-weight: bold; text-transform: uppercase; color: #64748b; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 10px; }
         .info-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-        .info-table th { background-color: #f8fafc; text-align: left; padding: 10px; font-weight: bold; font-size: 12px; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; }
+        .info-table th { background-color: #f8fafc; text-align: left; padding: 10px; font-weight: bold; font-size: 11px; color: #64748b; text-transform: uppercase; border-bottom: 2px solid #e2e8f0; }
         .info-table td { padding: 12px 10px; border-bottom: 1px solid #f1f5f9; color: #334155; }
-        .total-box { float: right; width: 300px; background-color: #fffcf5; border: 1px solid #ffe6b3; border-radius: 8px; padding: 15px; margin-top: 20px; }
+        .total-box { float: right; width: 320px; background-color: #fffcf5; border: 1px solid #ffe6b3; border-radius: 8px; padding: 15px; margin-top: 20px; }
         .total-row { width: 100%; margin-bottom: 8px; }
-        .total-row:last-child { margin-bottom: 0; font-weight: bold; font-size: 16px; border-top: 1px solid #ffe6b3; padding-top: 8px; }
-        .total-label { display: inline-block; width: 150px; color: #64748b; }
-        .total-val { text-align: right; display: inline-block; width: 130px; color: #0f172a; }
+        .total-row:last-child { margin-bottom: 0; font-weight: bold; font-size: 15px; border-top: 1px solid #ffe6b3; padding-top: 8px; }
+        .total-label { display: inline-block; width: 160px; color: #64748b; }
+        .total-val { text-align: right; display: inline-block; width: 140px; color: #0f172a; }
         .total-accent { color: #FEA500 !important; }
-        .footer { margin-top: 100px; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 11px; color: #94a3b8; text-align: center; }
-        .stamp { border: 2px dashed #FEA500; color: #FEA500; font-size: 18px; font-weight: bold; text-transform: uppercase; padding: 8px 15px; display: inline-block; transform: rotate(-5deg); margin-top: 20px; border-radius: 5px; }
+        .footer { margin-top: 100px; border-top: 1px solid #e2e8f0; padding-top: 20px; font-size: 10px; color: #94a3b8; text-align: center; }
+        .stamp { border: 2px dashed #FEA500; color: #FEA500; font-size: 16px; font-weight: bold; text-transform: uppercase; padding: 8px 15px; display: inline-block; transform: rotate(-5deg); margin-top: 20px; border-radius: 5px; }
     </style>
 </head>
 <body>
     @php
-        $settings = \App\Models\CompanySetting::first();
+        $settings = rescue(fn() => \App\Models\CompanySetting::first(), null);
     @endphp
     <table class="grid" style="border: none;">
         <tr>

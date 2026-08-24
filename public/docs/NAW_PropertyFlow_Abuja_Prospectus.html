@@ -1,0 +1,1417 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAW PropertyFlow CRM — Executive Prospectus & Capabilities Proposal</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-900: #06152B;
+            --primary-800: #0B2545;
+            --primary-700: #133E6D;
+            --primary-600: #1D5C96;
+            --accent-gold: #D4AF37;
+            --accent-gold-light: #FDF8E7;
+            --accent-emerald: #059669;
+            --accent-emerald-light: #ECFDF5;
+            --accent-blue: #2563EB;
+            --accent-blue-light: #EFF6FF;
+            --slate-900: #0F172A;
+            --slate-800: #1E293B;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748B;
+            --slate-400: #94A3B8;
+            --slate-200: #E2E8F0;
+            --slate-100: #F1F5F9;
+            --slate-50: #F8FAFC;
+            --white: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #E5E7EB;
+            color: var(--slate-800);
+            line-height: 1.5;
+            font-size: 13px;
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 20px;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            height: 297mm;
+            background: var(--white);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+            page-break-after: always;
+            page-break-inside: avoid;
+        }
+
+        @media print {
+            body {
+                background: none;
+            }
+            .page-container {
+                padding: 0;
+                gap: 0;
+            }
+            .page {
+                box-shadow: none;
+                margin: 0;
+                width: 210mm;
+                height: 297mm;
+            }
+        }
+
+        /* Header & Footer */
+        .page-header {
+            height: 60px;
+            padding: 20px 35px 10px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--slate-200);
+            background: var(--white);
+        }
+
+        .header-logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 15px;
+            color: var(--primary-900);
+            letter-spacing: -0.5px;
+        }
+
+        .header-logo .badge-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .header-tagline {
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--slate-500);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .page-footer {
+            margin-top: auto;
+            height: 48px;
+            padding: 12px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--slate-200);
+            font-size: 10px;
+            color: var(--slate-400);
+            background: var(--white);
+        }
+
+        .page-content {
+            padding: 28px 35px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Typography Utilities */
+        h1, h2, h3, h4 {
+            font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+            color: var(--primary-900);
+            line-height: 1.2;
+        }
+
+        .section-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.2px;
+            color: var(--accent-gold);
+            background: rgba(212, 175, 55, 0.12);
+            padding: 4px 10px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+            width: fit-content;
+        }
+
+        .section-tag.blue {
+            color: var(--accent-blue);
+            background: var(--accent-blue-light);
+        }
+
+        .section-tag.emerald {
+            color: var(--accent-emerald);
+            background: var(--accent-emerald-light);
+        }
+
+        .section-title {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+            color: var(--primary-900);
+        }
+
+        .section-desc {
+            font-size: 12px;
+            color: var(--slate-600);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+
+        /* -------------------------------------------------------------
+           PAGE 1: LUXURY COVER PAGE
+        ------------------------------------------------------------- */
+        .cover-page {
+            background: linear-gradient(145deg, #051020 0%, #0B2545 60%, #133E6D 100%);
+            color: var(--white);
+            padding: 50px 45px 40px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            position: relative;
+        }
+
+        .cover-page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 450px;
+            height: 450px;
+            background: radial-gradient(circle, rgba(212, 175, 55, 0.18) 0%, rgba(212, 175, 55, 0) 70%);
+            pointer-events: none;
+        }
+
+        .cover-page::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.15) 0%, rgba(37, 99, 235, 0) 70%);
+            pointer-events: none;
+        }
+
+        .cover-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .brand-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-weight: 700;
+            font-size: 14px;
+            letter-spacing: 0.5px;
+        }
+
+        .brand-pill .gold-diamond {
+            color: var(--accent-gold);
+            font-size: 14px;
+        }
+
+        .edition-badge {
+            background: var(--accent-gold);
+            color: var(--primary-900);
+            font-size: 10px;
+            font-weight: 800;
+            padding: 6px 14px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cover-hero {
+            z-index: 2;
+            margin: 40px 0;
+        }
+
+        .cover-kicker {
+            color: var(--accent-gold);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 12px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cover-kicker::before {
+            content: '';
+            display: inline-block;
+            width: 28px;
+            height: 2px;
+            background: var(--accent-gold);
+        }
+
+        .cover-title {
+            font-size: 38px;
+            font-weight: 800;
+            line-height: 1.15;
+            color: var(--white);
+            margin-bottom: 18px;
+            letter-spacing: -1px;
+        }
+
+        .cover-title span {
+            background: linear-gradient(90deg, #FFFFFF 0%, #D4AF37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cover-subtitle {
+            font-size: 15px;
+            color: #CBD5E1;
+            max-width: 560px;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+
+        .cover-highlights-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 35px;
+        }
+
+        .cover-highlight-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(8px);
+            padding: 16px;
+            border-radius: 12px;
+        }
+
+        .cover-highlight-card .stat {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: 4px;
+        }
+
+        .cover-highlight-card .label {
+            font-size: 11px;
+            color: #94A3B8;
+            font-weight: 500;
+            line-height: 1.3;
+        }
+
+        .cover-footer-meta {
+            z-index: 2;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 18px 24px;
+            display: grid;
+            grid-template-columns: 1.5fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .meta-col .meta-label {
+            font-size: 9px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94A3B8;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .meta-col .meta-val {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        /* -------------------------------------------------------------
+           PAGE 2: THE ABUJA REAL ESTATE BOTTLENECKS & THE SOLUTION
+        ------------------------------------------------------------- */
+        .problem-solution-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 22px;
+        }
+
+        .pain-container {
+            background: #FEF2F2;
+            border: 1px solid #FECACA;
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .pain-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #991B1B;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .pain-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pain-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 11.5px;
+            color: #7F1D1D;
+            line-height: 1.4;
+        }
+
+        .pain-item svg {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .solution-container {
+            background: #ECFDF5;
+            border: 1px solid #A7F3D0;
+            border-radius: 12px;
+            padding: 18px;
+        }
+
+        .solution-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            font-weight: 700;
+            color: #065F46;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .solution-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .solution-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 8px;
+            font-size: 11.5px;
+            color: #064E3B;
+            line-height: 1.4;
+        }
+
+        .solution-item svg {
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .callout-box {
+            background: linear-gradient(135deg, var(--primary-900) 0%, var(--primary-800) 100%);
+            color: var(--white);
+            padding: 20px 24px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            margin-top: auto;
+        }
+
+        .callout-box::after {
+            content: '“';
+            position: absolute;
+            right: 20px;
+            top: -10px;
+            font-size: 120px;
+            color: rgba(212, 175, 55, 0.12);
+            font-family: serif;
+            line-height: 1;
+            pointer-events: none;
+        }
+
+        .callout-quote {
+            font-size: 13px;
+            font-weight: 500;
+            line-height: 1.6;
+            color: #E2E8F0;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .callout-author {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        /* -------------------------------------------------------------
+           PAGE 3 & 4: FEATURE BREAKDOWN GRID & MODULES
+        ------------------------------------------------------------- */
+        .features-grid-3x2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .feature-card {
+            background: var(--white);
+            border: 1px solid var(--slate-200);
+            border-radius: 12px;
+            padding: 16px 18px;
+            transition: all 0.2s;
+            position: relative;
+        }
+
+        .feature-card.featured {
+            border: 1.5px solid #CBD5E1;
+            background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+
+        .feature-icon-wrapper {
+            width: 36px;
+            height: 36px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            background: var(--slate-100);
+            color: var(--primary-700);
+        }
+
+        .feature-icon-wrapper.gold {
+            background: var(--accent-gold-light);
+            color: #B45309;
+        }
+
+        .feature-icon-wrapper.emerald {
+            background: var(--accent-emerald-light);
+            color: var(--accent-emerald);
+        }
+
+        .feature-icon-wrapper.blue {
+            background: var(--accent-blue-light);
+            color: var(--accent-blue);
+        }
+
+        .feature-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-900);
+            margin-bottom: 6px;
+        }
+
+        .feature-desc {
+            font-size: 11.5px;
+            color: var(--slate-600);
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .feature-bullets {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .feature-bullet-item {
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--slate-700);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .feature-bullet-item::before {
+            content: '•';
+            color: var(--accent-gold);
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        /* -------------------------------------------------------------
+           PAGE 5: COMPARISON MATRIX & WHY OTHERS FAIL
+        ------------------------------------------------------------- */
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 11px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .comparison-table th {
+            background: var(--primary-900);
+            color: var(--white);
+            padding: 12px 14px;
+            text-align: left;
+            font-weight: 700;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 11.5px;
+            letter-spacing: 0.2px;
+        }
+
+        .comparison-table th.highlight-th {
+            background: var(--primary-800);
+            color: var(--accent-gold);
+            border-bottom: 2px solid var(--accent-gold);
+        }
+
+        .comparison-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--slate-200);
+            color: var(--slate-700);
+        }
+
+        .comparison-table tr:nth-child(even) td {
+            background-color: var(--slate-50);
+        }
+
+        .comparison-table td.highlight-td {
+            background-color: rgba(212, 175, 55, 0.06) !important;
+            font-weight: 600;
+            color: var(--primary-900);
+        }
+
+        .status-check {
+            color: var(--accent-emerald);
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-cross {
+            color: #EF4444;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-partial {
+            color: #F59E0B;
+            font-weight: 600;
+        }
+
+        /* -------------------------------------------------------------
+           PAGE 6: ROI & FINANCIAL IMPACT + IMPLEMENTATION
+        ------------------------------------------------------------- */
+        .roi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .roi-card {
+            background: var(--slate-50);
+            border: 1px solid var(--slate-200);
+            border-radius: 10px;
+            padding: 16px 12px;
+            text-align: center;
+        }
+
+        .roi-val {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary-900);
+            margin-bottom: 4px;
+        }
+
+        .roi-label {
+            font-size: 10.5px;
+            font-weight: 600;
+            color: var(--slate-600);
+            line-height: 1.3;
+        }
+
+        .onboarding-steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 20px;
+        }
+
+        .step-card {
+            background: var(--white);
+            border: 1px solid var(--slate-200);
+            border-radius: 10px;
+            padding: 16px;
+            position: relative;
+        }
+
+        .step-num {
+            position: absolute;
+            top: 12px;
+            right: 14px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--slate-200);
+        }
+
+        .step-title {
+            font-size: 12.5px;
+            font-weight: 700;
+            color: var(--primary-900);
+            margin-bottom: 6px;
+        }
+
+        .step-desc {
+            font-size: 11px;
+            color: var(--slate-600);
+            line-height: 1.4;
+        }
+
+        /* -------------------------------------------------------------
+           PAGE 7: CLOSING CALL TO ACTION & ONBOARDING PACKAGES
+        ------------------------------------------------------------- */
+        .cta-page {
+            background: linear-gradient(180deg, #FFFFFF 0%, #F8FAFC 100%);
+        }
+
+        .offer-banner {
+            background: linear-gradient(135deg, var(--primary-900) 0%, #0D325E 100%);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 14px;
+            padding: 24px;
+            color: var(--white);
+            margin-bottom: 22px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .offer-left h3 {
+            color: var(--accent-gold);
+            font-size: 18px;
+            margin-bottom: 6px;
+        }
+
+        .offer-left p {
+            font-size: 12px;
+            color: #CBD5E1;
+            max-width: 420px;
+            line-height: 1.5;
+        }
+
+        .offer-pill-badge {
+            background: var(--accent-gold);
+            color: var(--primary-900);
+            padding: 10px 18px;
+            border-radius: 30px;
+            font-weight: 800;
+            font-size: 12px;
+            text-align: center;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-top: auto;
+            background: var(--white);
+            border: 1px solid var(--slate-200);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .contact-icon-box {
+            width: 40px;
+            height: 40px;
+            background: var(--slate-100);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary-800);
+            flex-shrink: 0;
+        }
+
+        .contact-info .label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            color: var(--slate-400);
+            font-weight: 600;
+        }
+
+        .contact-info .val {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--primary-900);
+        }
+
+        .executive-signoff {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 14px 20px;
+            background: var(--slate-50);
+            border-radius: 8px;
+            border: 1px dashed var(--slate-300);
+        }
+
+        .signoff-meta {
+            font-size: 11px;
+            color: var(--slate-600);
+        }
+        
+        .signoff-meta strong {
+            color: var(--primary-900);
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-container">
+
+    <!-- =========================================================================
+         PAGE 1: HIGH-IMPACT LUXURY COVER
+    ========================================================================== -->
+    <div class="page cover-page">
+        <div class="cover-header">
+            <div class="brand-pill">
+                <span class="gold-diamond">◆</span> NAW PROPERTYFLOW CRM
+            </div>
+            <div class="edition-badge">
+                Abuja Enterprise Edition
+            </div>
+        </div>
+
+        <div class="cover-hero">
+            <div class="cover-kicker">Executive Capabilities & Commercial Proposal</div>
+            <h1 class="cover-title">
+                The Complete Operating Engine for <span>Abuja Estate Developers & Brokerages</span>
+            </h1>
+            <p class="cover-subtitle">
+                Eliminate spreadsheet leakages, automate multi-tier realtor commissions, enforce milestone installment tracking, and establish ironclad buyer trust for high-value FCT land and residential developments.
+            </p>
+
+            <div class="cover-highlights-grid">
+                <div class="cover-highlight-card">
+                    <div class="stat">100%</div>
+                    <div class="label">Automated Milestone & Installment Invoicing</div>
+                </div>
+                <div class="cover-highlight-card">
+                    <div class="stat">0%</div>
+                    <div class="label">Realtor Commission & Split Calculation Errors</div>
+                </div>
+                <div class="cover-highlight-card">
+                    <div class="stat">40%</div>
+                    <div class="label">Faster Sales Velocity with Diaspora Investor Portal</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="cover-footer-meta">
+            <div class="meta-col">
+                <div class="meta-label">Prepared Exclusively For</div>
+                <div class="meta-val">Executive Leadership, Managing Directors & Principal Brokers</div>
+            </div>
+            <div class="meta-col">
+                <div class="meta-label">Focus Territory</div>
+                <div class="meta-val">Abuja (FCT) & Diaspora Markets</div>
+            </div>
+            <div class="meta-col">
+                <div class="meta-label">Document Version</div>
+                <div class="meta-val">Confidential Prospectus 2026.1</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 2: THE ABUJA REAL ESTATE REALITY & THE SOLUTION
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-logo"><span class="badge-dot"></span> NAW PropertyFlow</div>
+            <div class="header-tagline">Executive Briefing & Problem Breakdown</div>
+        </div>
+
+        <div class="page-content">
+            <div class="section-tag">Market Diagnosis</div>
+            <h2 class="section-title">The Costly Reality of Operating with Spreadsheets in Abuja</h2>
+            <p class="section-desc">
+                Abuja is Nigeria's most lucrative real estate market, yet even established developers with multi-billion-naira land banks lose up to 18% of their revenue each year to unorganized manual processes, delayed installment collections, and fractured realtor communications.
+            </p>
+
+            <div class="problem-solution-grid">
+                <!-- The Problem -->
+                <div class="pain-container">
+                    <div class="pain-header">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        The Spreadsheet Bottlenecks
+                    </div>
+                    <ul class="pain-list">
+                        <li class="pain-item">
+                            <svg width="14" height="14" fill="#DC2626" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                            <span><strong>Milestone & Payment Amnesia:</strong> Buyers on 6–24 month installment plans miss payment dates without automated alerts, freezing cash flow.</span>
+                        </li>
+                        <li class="pain-item">
+                            <svg width="14" height="14" fill="#DC2626" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                            <span><strong>Realtor Commission Disputes:</strong> Multi-tier broker networks and independent realtors argue over split percentages, causing top sellers to leave.</span>
+                        </li>
+                        <li class="pain-item">
+                            <svg width="14" height="14" fill="#DC2626" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                            <span><strong>Diaspora Skepticism & Trust Deficit:</strong> High-net-worth buyers in the UK, US, and Canada hesitate to close deals due to lack of real-time verified records.</span>
+                        </li>
+                        <li class="pain-item">
+                            <svg width="14" height="14" fill="#DC2626" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
+                            <span><strong>Manual Document Bottlenecks:</strong> Admin staff waste hours typing Offer Letters, Receipts, and Allocation Letters one by one in Word.</span>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- The Solution -->
+                <div class="solution-container">
+                    <div class="solution-header">
+                        <svg width="18" height="18" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                        The NAW PropertyFlow Solution
+                    </div>
+                    <ul class="solution-list">
+                        <li class="solution-item">
+                            <svg width="14" height="14" fill="#059669" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <span><strong>Smart Milestone Engine:</strong> Automated installment schedules with proactive SMS & email notifications ensure on-time collections.</span>
+                        </li>
+                        <li class="solution-item">
+                            <svg width="14" height="14" fill="#059669" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <span><strong>Zero-Dispute Realtor Ledger:</strong> Track every agent, agency split, payout status, and automated commission voucher instantly.</span>
+                        </li>
+                        <li class="solution-item">
+                            <svg width="14" height="14" fill="#059669" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <span><strong>Diaspora Investor Portal:</strong> Buyers log in anywhere globally to view real-time payment ledgers, milestones, and property progress.</span>
+                        </li>
+                        <li class="solution-item">
+                            <svg width="14" height="14" fill="#059669" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+                            <span><strong>1-Click Document Automation:</strong> Generate branded Offer Letters, Payment Receipts, and Deeds with pre-filled buyer details in seconds.</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="callout-box">
+                <p class="callout-quote">
+                    "In real estate, speed of execution and payment clarity determine developer solvency. NAW PropertyFlow isn't just software; it is the institutional backbone that turns chaotic land transactions into predictable, high-margin revenue."
+                </p>
+                <div class="callout-author">Architecture & Growth Directive — NAW PropertyFlow</div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow CRM — Executive Prospectus</span>
+            <span>Page 2 of 7</span>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 3: CORE PRODUCT MODULES (PART 1)
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-logo"><span class="badge-dot"></span> NAW PropertyFlow</div>
+            <div class="header-tagline">Comprehensive Feature Suite — Part I</div>
+        </div>
+
+        <div class="page-content">
+            <div class="section-tag blue">Core Capabilities</div>
+            <h2 class="section-title">Built Specifically for the Nigerian Real Estate Lifecycle</h2>
+            <p class="section-desc">
+                Unlike foreign CRMs designed for generic retail, every module inside NAW PropertyFlow maps directly to land acquisition, estate planning, agent management, and client accounting in Abuja.
+            </p>
+
+            <div class="features-grid-3x2">
+                <!-- Feature 1 -->
+                <div class="feature-card featured">
+                    <div class="feature-icon-wrapper gold">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>
+                    </div>
+                    <div class="feature-title">1. Smart Plot & Inventory Allocation Engine</div>
+                    <div class="feature-desc">
+                        Manage multiple estates (Guzape, Katampe, Airport Road, Kyami) with live plot statuses: Available, Reserved, Under Offer, or Allocated.
+                    </div>
+                    <ul class="feature-bullets">
+                        <li class="feature-bullet-item">Zero double-allocation risk</li>
+                        <li class="feature-bullet-item">Plot dimension, sqm, and prototype tracking</li>
+                        <li class="feature-bullet-item">Instant estate occupancy & availability metrics</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 2 -->
+                <div class="feature-card featured">
+                    <div class="feature-icon-wrapper emerald">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div class="feature-title">2. Installment & Milestone Payment Tracker</div>
+                    <div class="feature-desc">
+                        Structure flexible payment plans (Outright, 3-Month, 6-Month, 12-Month, 24-Month) with automated installment schedules and balance tracking.
+                    </div>
+                    <ul class="feature-bullets">
+                        <li class="feature-bullet-item">Automated payment milestone due alerts</li>
+                        <li class="feature-bullet-item">Real-time payment receipt generation</li>
+                        <li class="feature-bullet-item">Statement of Account generation with single click</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 3 -->
+                <div class="feature-card featured">
+                    <div class="feature-icon-wrapper blue">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </div>
+                    <div class="feature-title">3. Realtor & Affiliate Commission Management</div>
+                    <div class="feature-desc">
+                        Keep thousands of realtors engaged and motivated. Automate commission calculation, agent tiers, split deals, and payout statuses.
+                    </div>
+                    <ul class="feature-bullets">
+                        <li class="feature-bullet-item">Automated commission voucher generation</li>
+                        <li class="feature-bullet-item">Multi-tier team hierarchy & override splits</li>
+                        <li class="feature-bullet-item">Instant transparency eliminates all commission disputes</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 4 -->
+                <div class="feature-card featured">
+                    <div class="feature-icon-wrapper gold">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div class="feature-title">4. Lead Pipeline & Site Inspection Manager</div>
+                    <div class="feature-desc">
+                        Capture leads from Instagram, WhatsApp, website, and referrals into a single pipeline. Schedule and track physical site inspections seamlessly.
+                    </div>
+                    <ul class="feature-bullets">
+                        <li class="feature-bullet-item">Inspection booking logs & driver/agent assignment</li>
+                        <li class="feature-bullet-item">Post-inspection automated follow-up triggers</li>
+                        <li class="feature-bullet-item">Conversion rate analytics per marketing channel</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow CRM — Executive Prospectus</span>
+            <span>Page 3 of 7</span>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 4: CORE PRODUCT MODULES (PART 2)
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-logo"><span class="badge-dot"></span> NAW PropertyFlow</div>
+            <div class="header-tagline">Comprehensive Feature Suite — Part II</div>
+        </div>
+
+        <div class="page-content">
+            <div class="section-tag emerald">Enterprise Operations</div>
+            <h2 class="section-title">Back-Office, Financials & Diaspora Trust</h2>
+            <p class="section-desc">
+                From internal company payroll and expense reconciliation to diaspora investor portals, NAW PropertyFlow is an end-to-end Enterprise Resource Planning (ERP) platform.
+            </p>
+
+            <div class="features-grid-3x2">
+                <!-- Feature 5 -->
+                <div class="feature-card featured">
+                    <div class="feature-icon-wrapper emerald">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
+                    <div class="feature-title">5. Automated Legal & Commercial Documents</div>
+                    <div class="feature-desc">
+                        Generate dynamic, branded official documentation with watermark, digital signatures, and standardized terms instantly.
+                    </div>
+                    <ul class="feature-bullets">
+                        <li class="feature-bullet-item">Offer Letters & Application Forms</li>
+                        <li class="feature-bullet-item">Contract of Sale & Deed of Assignment</li>
+                        <li class="feature-bullet-item">Provisional Allocation & Clearance Certificates</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 6 -->
+                <div class="feature-card featured">
+                    <div class="feature-icon-wrapper blue">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <div class="feature-title">6. Diaspora Investor Self-Service Portal</div>
+                    <div class="feature-desc">
+                        Give overseas buyers total peace of mind. Clients log in from London, Atlanta, or Dubai to view verified payments and site updates.
+                    </div>
+                    <ul class="feature-bullets">
+                        <li class="feature-bullet-item">Real-time payment history & balance statements</li>
+                        <li class="feature-bullet-item">Live construction milestone photo updates</li>
+                        <li class="feature-bullet-item">Direct download of verified PDF receipts & letters</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 7 -->
+                <div class="feature-card featured">
+                    <div class="feature-icon-wrapper gold">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+                    </div>
+                    <div class="feature-title">7. Expense, Accounting & Payroll Engine</div>
+                    <div class="feature-desc">
+                        Full financial oversight: record estate operational expenses, vendor bills, and run complete monthly payroll with salary structures.
+                    </div>
+                    <ul class="feature-bullets">
+                        <li class="feature-bullet-item">Categorized expense logs & vendor payouts</li>
+                        <li class="feature-bullet-item">Automated payslip generation & allowances</li>
+                        <li class="feature-bullet-item">Net cash flow and project profitability reports</li>
+                    </ul>
+                </div>
+
+                <!-- Feature 8 -->
+                <div class="feature-card featured">
+                    <div class="feature-icon-wrapper emerald">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                    </div>
+                    <div class="feature-title">8. Multi-Branch, Tenant & Role Security</div>
+                    <div class="feature-desc">
+                        Enterprise-grade permission controls. Restrict sensitive financial figures from regular realtors while empowering branch managers.
+                    </div>
+                    <ul class="feature-bullets">
+                        <li class="feature-bullet-item">Granular role-based permissions (Admin, Sales, Legal, Accounts)</li>
+                        <li class="feature-bullet-item">Full audit logs of all user actions & updates</li>
+                        <li class="feature-bullet-item">Isolated multi-branch & multi-company architecture</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow CRM — Executive Prospectus</span>
+            <span>Page 4 of 7</span>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 5: WHY GENERIC CRMS & SPREADSHEETS FAIL (COMPARISON)
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-logo"><span class="badge-dot"></span> NAW PropertyFlow</div>
+            <div class="header-tagline">Competitive Analysis & Strategic Superiority</div>
+        </div>
+
+        <div class="page-content">
+            <div class="section-tag">Market Comparison</div>
+            <h2 class="section-title">Why Foreign CRMs and Excel Fail in Abuja</h2>
+            <p class="section-desc">
+                Foreign enterprise software (HubSpot, Salesforce, Zoho) charges exorbitant USD subscriptions while completely missing the fundamental requirements of Nigerian real estate.
+            </p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th style="width: 32%;">Critical Operational Feature</th>
+                        <th class="highlight-th" style="width: 26%;">NAW PropertyFlow</th>
+                        <th style="width: 21%;">Generic CRMs (HubSpot/Zoho)</th>
+                        <th style="width: 21%;">Manual Excel Spreadsheets</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Nigerian Installment Plans & Milestones</strong></td>
+                        <td class="highlight-td"><span class="status-check">✓ Native Out-of-the-Box</span></td>
+                        <td><span class="status-cross">✗ Requires Custom Code</span></td>
+                        <td><span class="status-partial">⚠ Manual & Prone to Error</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Multi-Tier Realtor Commission Splits</strong></td>
+                        <td class="highlight-td"><span class="status-check">✓ Automated Ledgers & Vouchers</span></td>
+                        <td><span class="status-cross">✗ Not Supported</span></td>
+                        <td><span class="status-cross">✗ Constant Disputes</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Plot & Layout Allocation Management</strong></td>
+                        <td class="highlight-td"><span class="status-check">✓ Real-time Plot Inventory</span></td>
+                        <td><span class="status-cross">✗ No Land Layout Support</span></td>
+                        <td><span class="status-partial">⚠ High Double-Allocation Risk</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Auto-Generated Offer Letters & Deeds</strong></td>
+                        <td class="highlight-td"><span class="status-check">✓ 1-Click PDF Generation</span></td>
+                        <td><span class="status-partial">⚠ Complex Third-party Plugins</span></td>
+                        <td><span class="status-cross">✗ Manual Word Typing</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Dedicated Diaspora Investor Portal</strong></td>
+                        <td class="highlight-td"><span class="status-check">✓ Included for All Clients</span></td>
+                        <td><span class="status-cross">✗ High Per-Seat Cost</span></td>
+                        <td><span class="status-cross">✗ None (WhatsApp Screenshots)</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Built-in Naira Payroll & Expense Hub</strong></td>
+                        <td class="highlight-td"><span class="status-check">✓ Fully Integrated</span></td>
+                        <td><span class="status-cross">✗ Requires Extra ERP Software</span></td>
+                        <td><span class="status-partial">⚠ Disconnected Records</span></td>
+                    </tr>
+                    <tr>
+                        <td><strong>Pricing Currency & Total Cost of Ownership</strong></td>
+                        <td class="highlight-td"><span class="status-check">✓ Predictable Naira Pricing</span></td>
+                        <td><span class="status-cross">✗ Expensive USD Monthly Fees</span></td>
+                        <td><span class="status-cross">✗ Hidden Labor & Leakage Loss</span></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="background: #F8FAFC; border: 1px solid var(--slate-200); border-radius: 10px; padding: 16px 18px; margin-top: auto;">
+                <h4 style="font-size: 13px; font-weight: 700; color: var(--primary-900); margin-bottom: 6px;">The Strategic Advantage:</h4>
+                <p style="font-size: 11.5px; color: var(--slate-600); line-height: 1.5;">
+                    NAW PropertyFlow replaces 4 to 6 disconnected tools (CRM, Spreadsheet, Invoicing tool, Word Templates, Payroll app, and Cloud Storage) with <strong>one single, unified platform</strong> engineered specifically for Abuja's high-velocity property market.
+                </p>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow CRM — Executive Prospectus</span>
+            <span>Page 5 of 7</span>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 6: MEASURABLE ROI & FINANCIAL IMPACT
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-logo"><span class="badge-dot"></span> NAW PropertyFlow</div>
+            <div class="header-tagline">Economic Value & Projected ROI</div>
+        </div>
+
+        <div class="page-content">
+            <div class="section-tag emerald">Financial Return</div>
+            <h2 class="section-title">The Business Case: What This Means for Your Bottom Line</h2>
+            <p class="section-desc">
+                Deploying NAW PropertyFlow isn't a software cost — it is an immediate revenue accelerator that plugs financial leakages and expands your sales closing capacity.
+            </p>
+
+            <div class="roi-grid">
+                <div class="roi-card">
+                    <div class="roi-val" style="color: var(--accent-emerald);">+35%</div>
+                    <div class="roi-label">Faster Installment Collection Rates</div>
+                </div>
+                <div class="roi-card">
+                    <div class="roi-val" style="color: var(--accent-blue);">15 hrs</div>
+                    <div class="roi-label">Saved Per Staff/Week on Manual Admin</div>
+                </div>
+                <div class="roi-card">
+                    <div class="roi-val" style="color: #B45309;">100%</div>
+                    <div class="roi-label">Audit-Proof Commission Records</div>
+                </div>
+                <div class="roi-card">
+                    <div class="roi-val" style="color: var(--primary-800);">2.8x</div>
+                    <div class="roi-label">Higher Diaspora Closing Conversion</div>
+                </div>
+            </div>
+
+            <div class="section-tag" style="margin-top: 10px;">Turnkey Onboarding</div>
+            <h3 style="font-size: 16px; font-weight: 700; margin-bottom: 12px; color: var(--primary-900);">
+                White-Glove 72-Hour Deployment Roadmap
+            </h3>
+
+            <div class="onboarding-steps">
+                <div class="step-card">
+                    <div class="step-num">01</div>
+                    <div class="step-title">Data Migration & Estate Setup</div>
+                    <div class="step-desc">
+                        Our technical engineering team extracts, cleans, and imports your existing Excel spreadsheets, client records, and estate plots into your dedicated tenant instance within 24 hours.
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-num">02</div>
+                    <div class="step-title">Staff & Realtor Onboarding</div>
+                    <div class="step-desc">
+                        Interactive physical or live virtual training sessions for your accountants, sales executives, legal team, and agency heads with complete video guides and role permissions.
+                    </div>
+                </div>
+
+                <div class="step-card">
+                    <div class="step-num">03</div>
+                    <div class="step-title">Go-Live & Dedicated Support</div>
+                    <div class="step-desc">
+                        Launch your branded client portals and start generating 1-click receipts and automated commission statements with priority Abuja account manager support.
+                    </div>
+                </div>
+            </div>
+
+            <div style="background: var(--accent-gold-light); border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 10px; padding: 14px 18px; margin-top: auto;">
+                <strong style="color: #92400E; font-size: 11.5px;">Bank-Grade Data Security & Ownership:</strong>
+                <p style="font-size: 11px; color: #78350F; margin-top: 2px;">
+                    Your client data, financials, and land records are encrypted with 256-bit SSL protocols. You maintain 100% full ownership and can export your entire database anytime.
+                </p>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow CRM — Executive Prospectus</span>
+            <span>Page 6 of 7</span>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 7: COMMERCIAL OFFER & IMMEDIATE ACTION
+    ========================================================================== -->
+    <div class="page cta-page">
+        <div class="page-header">
+            <div class="header-logo"><span class="badge-dot"></span> NAW PropertyFlow</div>
+            <div class="header-tagline">Partnership Engagement & Call to Action</div>
+        </div>
+
+        <div class="page-content">
+            <div class="section-tag blue">Limited Pilot Offer</div>
+            <h2 class="section-title">Transform Your Real Estate Operations Today</h2>
+            <p class="section-desc">
+                Join Abuja's forward-thinking real estate developers and leading brokerages who have transitioned from spreadsheet vulnerabilities to high-margin automated efficiency.
+            </p>
+
+            <div class="offer-banner">
+                <div class="offer-left">
+                    <h3>Abuja Pioneer Partner Program</h3>
+                    <p>
+                        Book a personalized 30-minute operational audit and product demonstration this week to receive complimentary <strong>free spreadsheet-to-cloud data migration</strong> and <strong>14-day full team pilot access</strong> with zero upfront risk.
+                    </p>
+                </div>
+                <div class="offer-pill-badge">
+                    Complimentary Pilot
+                </div>
+            </div>
+
+            <h3 style="font-size: 15px; font-weight: 700; color: var(--primary-900); margin-bottom: 12px;">Direct Contact & Demo Scheduling</h3>
+
+            <div class="contact-grid">
+                <div class="contact-item">
+                    <div class="contact-icon-box">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                    </div>
+                    <div class="contact-info">
+                        <div class="label">Executive Demo Inquiries</div>
+                        <div class="val">sales@nawpropertyflow.com.ng</div>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon-box">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                    </div>
+                    <div class="contact-info">
+                        <div class="label">Direct Call / WhatsApp</div>
+                        <div class="val">+234 810 135 8139</div>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon-box">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                    </div>
+                    <div class="contact-info">
+                        <div class="label">FCT Headquarters</div>
+                        <div class="val">Wuse II / CBD, Abuja, Nigeria</div>
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon-box">
+                        <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"/></svg>
+                    </div>
+                    <div class="contact-info">
+                        <div class="label">Official Web Portal</div>
+                        <div class="val">www.nawpropertyflow.com.ng</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="executive-signoff">
+                <div class="signoff-meta">
+                    <strong>NAW PropertyFlow Technologies Ltd.</strong><br>
+                    Powering Nigeria's Next-Generation Real Estate Enterprises.
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-family: 'Space Grotesk', sans-serif; font-size: 13px; font-weight: 700; color: var(--primary-900);">SECURE YOUR ROLLOUT TODAY</div>
+                    <div style="font-size: 10px; color: var(--slate-500);">Instant Demo Booking & On-Site Consultation</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow CRM — Executive Prospectus</span>
+            <span>Page 7 of 7</span>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

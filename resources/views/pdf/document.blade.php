@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta charset="UTF-8">
     <title>{{ $title }}</title>
     <style>
         @page {
             margin: 100px 60px 80px 60px;
         }
+        * {
+            font-family: 'DejaVu Sans', sans-serif;
+        }
         body {
-            font-family: 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif;
-            font-size: 13px;
+            font-family: 'DejaVu Sans', sans-serif;
+            font-size: 12px;
             line-height: 1.6;
             color: #333;
         }
@@ -106,7 +110,7 @@
 </head>
 <body>
     @php
-        $settings = \App\Models\CompanySetting::first();
+        $settings = rescue(fn() => \App\Models\CompanySetting::first(), null);
     @endphp
 
     <header>
