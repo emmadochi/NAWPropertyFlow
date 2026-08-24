@@ -75,6 +75,7 @@ class LeadController extends Controller
             'phone_number' => 'required|string|max:30',
             'whatsapp_number' => 'nullable|string|max:30',
             'email' => 'nullable|email|max:255',
+            'address' => 'nullable|string|max:255',
             'budget_range' => 'required|string|max:100',
             'property_interest_id' => 'nullable|exists:properties,id',
             'preferred_location' => 'nullable|string|max:255',
@@ -263,6 +264,7 @@ class LeadController extends Controller
             'phone_number' => 'required|string|max:30',
             'whatsapp_number' => 'nullable|string|max:30',
             'email' => 'nullable|email|max:255',
+            'address' => 'nullable|string|max:255',
             'budget_range' => 'required|string|max:100',
             'property_interest_id' => 'nullable|exists:properties,id',
             'preferred_location' => 'nullable|string|max:255',
@@ -336,7 +338,7 @@ class LeadController extends Controller
             'Expires'             => '0'
         ];
 
-        $columns = ['full_name', 'phone_number', 'whatsapp_number', 'email', 'budget_range', 'preferred_location', 'lead_source', 'notes', 'status'];
+        $columns = ['full_name', 'phone_number', 'whatsapp_number', 'email', 'address', 'budget_range', 'preferred_location', 'lead_source', 'notes', 'status'];
 
         $callback = function() use ($columns) {
             $file = fopen('php://output', 'w');
@@ -346,6 +348,7 @@ class LeadController extends Controller
                 '+2348012345678',
                 '+2348012345678',
                 'johndoe@example.com',
+                'Plot 519, Olu Awotesu Street, Jabi, Abuja',
                 '₦10,000,000 - ₦20,000,000',
                 'Lekki Phase 1',
                 'Website',
@@ -427,6 +430,7 @@ class LeadController extends Controller
                 'phone_number' => trim($data['phone_number']),
                 'whatsapp_number' => isset($data['whatsapp_number']) ? trim($data['whatsapp_number']) : null,
                 'email' => (!empty($data['email']) && filter_var(trim($data['email']), FILTER_VALIDATE_EMAIL)) ? trim($data['email']) : null,
+                'address' => isset($data['address']) ? trim($data['address']) : null,
                 'budget_range' => !empty($data['budget_range']) ? trim($data['budget_range']) : 'N/A',
                 'preferred_location' => isset($data['preferred_location']) ? trim($data['preferred_location']) : null,
                 'lead_source' => !empty($data['lead_source']) ? trim($data['lead_source']) : 'CSV Import',

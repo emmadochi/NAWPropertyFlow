@@ -66,6 +66,9 @@
                 <div style="color: #475569; margin-top: 4px;">
                     Email: {{ $lead->email }}<br>
                     Phone: {{ $lead->phone_number }}
+                    @if(!empty($lead->address))
+                    <br>Address: {{ $lead->address }}
+                    @endif
                 </div>
             </td>
             <td class="col-50">

@@ -90,6 +90,12 @@
                         <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Email Address</span>
                         <a href="mailto:{{ $lead->email }}" class="text-dark-800 font-semibold hover:text-brand-600">{{ $lead->email ?? 'N/A' }}</a>
                     </div>
+                    @if($lead->address)
+                    <div>
+                        <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Residential / Office Address</span>
+                        <span class="text-dark-800 font-medium text-xs">{{ $lead->address }}</span>
+                    </div>
+                    @endif
                     <div>
                         <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Budget Range</span>
                         <span class="text-dark-900 font-bold">{{ $lead->budget_range ?? 'N/A' }}</span>
@@ -533,6 +539,13 @@
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">WhatsApp Number</label>
                         <input type="text" name="whatsapp_number" value="{{ $lead->whatsapp_number }}"
                                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 outline-none text-sm text-gray-800">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Client Residential / Office Address</label>
+                        <input type="text" name="address" value="{{ $lead->address }}"
+                               class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 outline-none text-sm text-gray-800"
+                               placeholder="e.g. Plot 519, Olu Awotesu Street, Jabi, Abuja">
                     </div>
 
                     <div>

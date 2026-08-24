@@ -36,6 +36,7 @@ class Lead extends Model
         'phone_number',
         'whatsapp_number',
         'email',
+        'address',
         'budget_range',
         'property_interest_id',
         'preferred_location',
