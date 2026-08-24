@@ -143,6 +143,7 @@ class PayrollSeeder extends Seeder
                 [
                     'deduction_type' => 'fine',
                     'amount' => 25000.00,
+                    'created_by' => $hrUser->id,
                 ]
             );
 
@@ -211,6 +212,7 @@ class PayrollSeeder extends Seeder
                 [
                     'deduction_type' => 'loan_repayment',
                     'amount' => 50000.00,
+                    'created_by' => $hrUser->id,
                 ]
             );
         }
