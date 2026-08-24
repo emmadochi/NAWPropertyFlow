@@ -10,9 +10,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
     
-    <!-- Static Pure CSS Framework (No JS dependency) -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
-    
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
@@ -28,9 +25,9 @@
         .login-card {
             background: #ffffff;
             width: 100%;
-            max-width: 440px;
-            border-radius: 1.5rem;
-            padding: 2.5rem;
+            max-width: 480px;
+            border-radius: 1.75rem;
+            padding: 2.5rem 2rem;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
             border: 1px solid rgba(255, 255, 255, 0.15);
             position: relative;
@@ -44,21 +41,21 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1.25rem auto;
+            margin: 0 auto 1rem auto;
             box-shadow: 0 10px 15px -3px rgba(254, 165, 0, 0.3);
         }
         .logo-box svg { width: 28px; height: 28px; color: #0B2545; }
-        .form-title { font-size: 1.5rem; font-weight: 800; color: #0f172a; text-align: center; font-family: 'Space Grotesk', sans-serif; }
-        .form-subtitle { font-size: 0.825rem; color: #64748b; text-align: center; margin-top: 0.35rem; margin-bottom: 1.75rem; }
-        .form-group { margin-bottom: 1.15rem; }
+        .form-title { font-size: 1.45rem; font-weight: 800; color: #0f172a; text-align: center; font-family: 'Space Grotesk', sans-serif; }
+        .form-subtitle { font-size: 0.8rem; color: #64748b; text-align: center; margin-top: 0.25rem; margin-bottom: 1.5rem; }
+        .form-group { margin-bottom: 1.1rem; }
         .form-label { display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #475569; margin-bottom: 0.4rem; }
         .form-input {
             width: 100%;
-            padding: 0.8rem 1rem;
+            padding: 0.75rem 1rem;
             border-radius: 0.75rem;
             border: 1.5px solid #e2e8f0;
             background-color: #f8fafc;
-            font-size: 0.9rem;
+            font-size: 0.875rem;
             color: #0f172a;
             outline: none;
             transition: all 0.2s ease;
@@ -70,26 +67,26 @@
         }
         .btn-submit {
             width: 100%;
-            padding: 0.9rem 1.25rem;
+            padding: 0.85rem 1.25rem;
             border-radius: 0.75rem;
             background: linear-gradient(135deg, #FEA500 0%, #E09200 100%);
             color: #ffffff;
             font-weight: 800;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
             border: none;
             cursor: pointer;
             box-shadow: 0 10px 20px -5px rgba(254, 165, 0, 0.4);
             transition: all 0.2s ease;
-            margin-top: 0.5rem;
+            margin-top: 0.25rem;
         }
         .btn-submit:hover {
             transform: translateY(-1px);
             box-shadow: 0 12px 24px -5px rgba(254, 165, 0, 0.5);
         }
         .quick-roles {
-            margin-top: 1.75rem;
+            margin-top: 1.5rem;
             padding-top: 1.25rem;
             border-top: 1px solid #f1f5f9;
         }
@@ -97,7 +94,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.65rem;
         }
         .quick-roles-title {
             font-size: 0.7rem;
@@ -107,30 +104,34 @@
             color: #64748b;
         }
         .badge-sandbox {
-            font-size: 0.65rem;
+            font-size: 0.625rem;
             font-weight: 700;
             color: #059669;
             background-color: #ecfdf5;
-            padding: 0.2rem 0.5rem;
+            padding: 0.15rem 0.45rem;
             border-radius: 9999px;
             border: 1px solid #d1fae5;
         }
         .role-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 0.5rem;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.4rem;
         }
         .role-btn {
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 0.65rem;
-            padding: 0.5rem 0.25rem;
+            border-radius: 0.6rem;
+            padding: 0.45rem 0.2rem;
             text-align: center;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
             color: #334155;
             cursor: pointer;
             transition: all 0.15s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
         }
         .role-btn:hover {
             background-color: #fffbeb;
@@ -138,7 +139,7 @@
             color: #b45309;
             transform: translateY(-1px);
         }
-        .role-icon { font-size: 1rem; display: block; margin-bottom: 0.2rem; }
+        .role-icon { font-size: 0.95rem; margin-bottom: 0.15rem; }
     </style>
 </head>
 <body>
@@ -156,13 +157,13 @@
         <p class="form-subtitle">Enterprise Real Estate Operating System</p>
 
         @if(session('success'))
-        <div style="background-color: #ecfdf5; color: #065f46; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid #a7f3d0; font-size: 0.8rem; margin-bottom: 1rem;">
+        <div style="background-color: #ecfdf5; color: #065f46; padding: 0.65rem 0.85rem; border-radius: 0.65rem; border: 1px solid #a7f3d0; font-size: 0.75rem; margin-bottom: 0.85rem;">
             {{ session('success') }}
         </div>
         @endif
 
         @if($errors->has('email'))
-        <div style="background-color: #fff1f2; color: #9f1239; padding: 0.75rem 1rem; border-radius: 0.75rem; border: 1px solid #fecdd3; font-size: 0.8rem; margin-bottom: 1rem;">
+        <div style="background-color: #fff1f2; color: #9f1239; padding: 0.65rem 0.85rem; border-radius: 0.65rem; border: 1px solid #fecdd3; font-size: 0.75rem; margin-bottom: 0.85rem;">
             {{ $errors->first('email') }}
         </div>
         @endif
@@ -177,16 +178,16 @@
             </div>
 
             <div class="form-group">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.35rem;">
                     <label for="password" class="form-label" style="margin-bottom: 0;">Password</label>
-                    <a href="{{ route('password.request') }}" style="font-size: 0.72rem; font-weight: 700; color: #d97706; text-decoration: none;">Forgot?</a>
+                    <a href="{{ route('password.request') }}" style="font-size: 0.7rem; font-weight: 700; color: #d97706; text-decoration: none;">Forgot?</a>
                 </div>
                 <input type="password" name="password" id="password" value="password" required class="form-input" placeholder="••••••••">
             </div>
 
-            <div style="display: flex; align-items: center; margin-bottom: 1.25rem;">
-                <input type="checkbox" name="remember" id="remember" checked style="width: 1rem; height: 1rem; accent-color: #FEA500; cursor: pointer;">
-                <label for="remember" style="margin-left: 0.5rem; font-size: 0.8rem; color: #64748b; cursor: pointer;">Keep me logged in</label>
+            <div style="display: flex; align-items: center; margin-bottom: 1.1rem;">
+                <input type="checkbox" name="remember" id="remember" checked style="width: 0.95rem; height: 0.95rem; accent-color: #FEA500; cursor: pointer;">
+                <label for="remember" style="margin-left: 0.45rem; font-size: 0.78rem; color: #64748b; cursor: pointer;">Keep me logged in</label>
             </div>
 
             <button type="submit" class="btn-submit">
@@ -194,10 +195,10 @@
             </button>
         </form>
 
-        <!-- 1-Click Role Login Selector -->
+        <!-- 1-Click Role Login Selector (8 Roles) -->
         <div class="quick-roles">
             <div class="quick-roles-header">
-                <span class="quick-roles-title">⚡ Instant Demo Switcher</span>
+                <span class="quick-roles-title">⚡ 1-Click Role Switcher</span>
                 <span class="badge-sandbox">Interactive Demo</span>
             </div>
             <div class="role-grid">
@@ -207,11 +208,31 @@
                 </button>
                 <button type="button" onclick="fillAndLogin('manager@propertyflow.com', 'password')" class="role-btn">
                     <span class="role-icon">📊</span>
-                    Sales Manager
+                    Manager
                 </button>
                 <button type="button" onclick="fillAndLogin('se1@propertyflow.com', 'password')" class="role-btn">
                     <span class="role-icon">💼</span>
                     Sales Agent
+                </button>
+                <button type="button" onclick="fillAndLogin('hr@propertyflow.com', 'password')" class="role-btn">
+                    <span class="role-icon">👥</span>
+                    HR Lead
+                </button>
+                <button type="button" onclick="fillAndLogin('accountant@propertyflow.com', 'password')" class="role-btn">
+                    <span class="role-icon">💰</span>
+                    Accountant
+                </button>
+                <button type="button" onclick="fillAndLogin('support@propertyflow.com', 'password')" class="role-btn">
+                    <span class="role-icon">🎧</span>
+                    Support
+                </button>
+                <button type="button" onclick="fillAndLogin('media@propertyflow.com', 'password')" class="role-btn">
+                    <span class="role-icon">🎬</span>
+                    Media
+                </button>
+                <button type="button" onclick="fillAndLogin('client@propertyflow.com', 'password')" class="role-btn">
+                    <span class="role-icon">📱</span>
+                    Client/Buyer
                 </button>
             </div>
         </div>

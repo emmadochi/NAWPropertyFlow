@@ -10,53 +10,104 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        // Super Admin
-        User::create([
-            'name' => 'Super Admin Officer',
-            'email' => 'superadmin@propertyflow.com',
-            'password' => Hash::make('password'),
-            'role' => 'super_admin',
-            'phone_number' => '+2348031112222',
-            'status' => 'active',
-        ]);
+        $users = [
+            // 1. Super Admin
+            [
+                'name' => 'Super Admin Officer',
+                'email' => 'superadmin@propertyflow.com',
+                'password' => Hash::make('password'),
+                'role' => 'super_admin',
+                'department' => 'Executive',
+                'phone_number' => '+2348031112222',
+                'status' => 'active',
+            ],
+            // 2. Company Admin
+            [
+                'name' => 'Company Administrator',
+                'email' => 'admin@propertyflow.com',
+                'password' => Hash::make('password'),
+                'role' => 'company_admin',
+                'department' => 'Management',
+                'phone_number' => '+2348032223333',
+                'status' => 'active',
+            ],
+            // 3. Sales Manager
+            [
+                'name' => 'Tunde Bakare (Sales Manager)',
+                'email' => 'manager@propertyflow.com',
+                'password' => Hash::make('password'),
+                'role' => 'sales_manager',
+                'department' => 'Sales',
+                'phone_number' => '+2348034445555',
+                'status' => 'active',
+            ],
+            // 4. Sales Executive
+            [
+                'name' => 'Emeka Okafor (Sales Exec)',
+                'email' => 'se1@propertyflow.com',
+                'password' => Hash::make('password'),
+                'role' => 'sales_executive',
+                'department' => 'Sales',
+                'phone_number' => '+2348036667777',
+                'status' => 'active',
+            ],
+            // 5. HR Officer
+            [
+                'name' => 'Zainab Ahmed (HR Lead)',
+                'email' => 'hr@propertyflow.com',
+                'password' => Hash::make('password'),
+                'role' => 'hr',
+                'department' => 'Human Resources',
+                'phone_number' => '+2348035556666',
+                'status' => 'active',
+            ],
+            // 6. Accountant / Finance
+            [
+                'name' => 'Femi Adeleke (Lead Accountant)',
+                'email' => 'accountant@propertyflow.com',
+                'password' => Hash::make('password'),
+                'role' => 'accountant',
+                'department' => 'Finance & Accounts',
+                'phone_number' => '+2348037778888',
+                'status' => 'active',
+            ],
+            // 7. Customer Service Rep
+            [
+                'name' => 'Blessing Nnamdi (Customer Care)',
+                'email' => 'support@propertyflow.com',
+                'password' => Hash::make('password'),
+                'role' => 'customer_service_rep',
+                'department' => 'Customer Service',
+                'phone_number' => '+2348039990000',
+                'status' => 'active',
+            ],
+            // 8. Media / Creative Manager
+            [
+                'name' => 'David Olatunji (Media Producer)',
+                'email' => 'media@propertyflow.com',
+                'password' => Hash::make('password'),
+                'role' => 'media_manager',
+                'department' => 'Media & Production',
+                'phone_number' => '+2348038881111',
+                'status' => 'active',
+            ],
+            // 9. Client / Investor (Customer Portal)
+            [
+                'name' => 'Chief Kenneth Ofori (Investor)',
+                'email' => 'client@propertyflow.com',
+                'password' => Hash::make('password'),
+                'role' => 'customer',
+                'department' => 'Investors',
+                'phone_number' => '+2348021119999',
+                'status' => 'active',
+            ],
+        ];
 
-        // Company Admin
-        User::create([
-            'name' => 'Company Admin User',
-            'email' => 'admin@propertyflow.com',
-            'password' => Hash::make('password'),
-            'role' => 'company_admin',
-            'phone_number' => '+2348032223333',
-            'status' => 'active',
-        ]);
-
-        // Sales Manager
-        User::create([
-            'name' => 'Sales Manager Officer',
-            'email' => 'manager@propertyflow.com',
-            'password' => Hash::make('password'),
-            'role' => 'sales_manager',
-            'phone_number' => '+2348034445555',
-            'status' => 'active',
-        ]);
-
-        // Sales Executives
-        User::create([
-            'name' => 'Emeka Okafor (Sales Exec)',
-            'email' => 'se1@propertyflow.com',
-            'password' => Hash::make('password'),
-            'role' => 'sales_executive',
-            'phone_number' => '+2348036667777',
-            'status' => 'active',
-        ]);
-
-        User::create([
-            'name' => 'Funmi Balogun (Sales Exec)',
-            'email' => 'se2@propertyflow.com',
-            'password' => Hash::make('password'),
-            'role' => 'sales_executive',
-            'phone_number' => '+2348038889999',
-            'status' => 'active',
-        ]);
+        foreach ($users as $user) {
+            User::updateOrCreate(
+                ['email' => $user['email']],
+                $user
+            );
+        }
     }
 }
