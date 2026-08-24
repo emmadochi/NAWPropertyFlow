@@ -224,13 +224,13 @@
                         <span>Buyer Dashboard</span>
                     </a>
                 @else
-                    {{-- 1. MAIN OVERVIEW --}}
-                    <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Overview</div>
+                    {{-- 1. OVERVIEW & PULSE --}}
+                    <div class="mt-2 mb-1 text-[11px] font-extrabold text-gray-400 dark:text-slate-500 uppercase tracking-wider px-4">Overview</div>
                     <a href="{{ route('dashboard') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('dashboard') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2H6a2 2 0 01-2-2v-4zM14 16a2 2 0 012-2h2a2 2 0 012 2v4a2 2 0 01-2 2h-2a2 2 0 01-2-2v-4z"></path>
                         </svg>
-                        <span>Dashboard</span>
+                        <span>Executive Dashboard</span>
                     </a>
 
                     <a href="{{ route('notifications.index') }}" class="flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('notifications.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
@@ -242,13 +242,6 @@
                         </div>
                         <span x-data="{ count: 0 }" x-init="window.addEventListener('notifications-unread-updated', e => { count = e.detail || 0 })" x-show="count > 0" x-text="count" class="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-rose-100 text-rose-700 dark:bg-rose-950 dark:text-rose-300" x-cloak></span>
                     </a>
-                    
-                    <a href="{{ route('virtual-tour') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('virtual-tour') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                        <span>Virtual Tour <span class="ml-2 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-500 dark:bg-amber-500/30 dark:text-amber-300 border border-amber-500/30">SOON</span></span>
-                    </a>
 
                     @if(in_array(Auth::user()->role, ['super_admin', 'company_admin', 'hr', 'sales_manager']) && $__cs?->hasFeature('leaderboard'))
                     <a href="{{ route('hr.leaderboard') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('hr.leaderboard') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
@@ -259,9 +252,10 @@
                     </a>
                     @endif
 
-                    {{-- 2. SALES & CLIENTS --}}
+
+                    {{-- 2. SALES & CRM --}}
                     @if(Auth::user()->hasPermission('leads.view_all') || Auth::user()->hasPermission('leads.view_own') || Auth::user()->hasPermission('inspections.schedule') || Auth::user()->hasPermission('followups.manage'))
-                    <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Sales & Clients</div>
+                    <div class="mt-5 mb-1 text-[11px] font-extrabold text-gray-400 dark:text-slate-500 uppercase tracking-wider px-4">Sales &amp; CRM</div>
                     @if(Auth::user()->hasPermission('leads.view_all') || Auth::user()->hasPermission('leads.view_own'))
                     <a href="{{ route('leads.index') }}" class="flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('leads.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <div class="flex items-center space-x-3">
@@ -287,121 +281,119 @@
                             <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                             </svg>
-                            <span>Inspections</span>
+                            <span>Site Inspections</span>
                         </div>
                         <span x-data="{ count: 0 }" x-init="window.addEventListener('sidebar-badges-updated', e => { count = e.detail.inspections || 0 })" x-show="count > 0" x-text="count" class="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300" x-cloak></span>
                     </a>
                     @endif
+                    <a href="{{ route('virtual-tour') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('virtual-tour') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>Virtual 3D Tours <span class="ml-2 text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-500 dark:bg-amber-500/30 dark:text-amber-300 border border-amber-500/30">SOON</span></span>
+                    </a>
                     @endif
 
-                    {{-- 3. INVENTORY --}}
+
+                    {{-- 3. ESTATES & INVENTORY --}}
                     @if(Auth::user()->hasPermission('properties.view') || Auth::user()->hasPermission('properties.create'))
-                    <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Inventory</div>
+                    <div class="mt-5 mb-1 text-[11px] font-extrabold text-gray-400 dark:text-slate-500 uppercase tracking-wider px-4">Estates &amp; Inventory</div>
                     <a href="{{ route('properties.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('properties.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                         </svg>
-                        <span>Properties</span>
+                        <span>Properties &amp; Schemes</span>
                     </a>
                     @if(Auth::user()->hasPermission('units.manage') || Auth::user()->isCompanyAdmin())
                     <a href="{{ route('projects.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('projects.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                         </svg>
-                        <span>Projects</span>
+                        <span>Projects &amp; Masterplans</span>
                     </a>
                     @endif
                     @endif
 
-                    {{-- 4. MARKETING (Professional+) --}}
-                    @if((Auth::user()->hasPermission('marketing.view') || Auth::user()->hasPermission('marketing.send_broadcast')) && $__cs?->hasFeature('marketing'))
-                    <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Marketing</div>
-                    <a href="{{ route('campaigns.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('campaigns.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
-                        </svg>
-                        <span>Campaigns</span>
-                    </a>
-                    @if(Auth::user()->hasPermission('marketing.manage_drip'))
-                    <a href="{{ route('drip-sequences.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('drip-sequences.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
-                        </svg>
-                        <span>Drip Sequences</span>
-                    </a>
-                    @endif
-                    @endif
 
-                    {{-- 5. DOCUMENTS (Professional+) --}}
+                    {{-- 4. CONTRACTS & LEGAL VAULT --}}
                     @if($__cs?->hasFeature('file_manager') || $__cs?->hasFeature('docs'))
                     @if(Auth::user()->hasPermission('properties.view') || Auth::user()->hasPermission('hr.view_staff'))
-                    <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Documents</div>
-                    @if($__cs?->hasFeature('file_manager'))
-                    <a href="{{ route('file-storage.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('file-storage.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
-                        </svg>
-                        <span>File Manager</span>
-                    </a>
-                    @endif
+                    <div class="mt-5 mb-1 text-[11px] font-extrabold text-gray-400 dark:text-slate-500 uppercase tracking-wider px-4">Contracts &amp; Legal Vault</div>
                     @if($__cs?->hasFeature('docs'))
                     <a href="{{ route('generated-documents.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('generated-documents.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
-                        <span>Generated Docs</span>
+                        <span>Generated Title Deeds</span>
                     </a>
                     @if(Auth::user()->isCompanyAdmin())
                     <a href="{{ route('document-templates.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('document-templates.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                         </svg>
-                        <span>Doc Templates</span>
+                        <span>Deed &amp; Doc Templates</span>
+                    </a>
+                    @endif
+                    @endif
+                    @if($__cs?->hasFeature('file_manager'))
+                    <a href="{{ route('file-storage.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('file-storage.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z"></path>
+                        </svg>
+                        <span>Cloud File Vault</span>
                     </a>
                     @endif
                     @endif
                     @endif
-                    @endif
 
-                    {{-- 6. ANALYTICS (Enterprise) --}}
-                    @if((Auth::user()->hasPermission('finance.view_ledger') || Auth::user()->hasPermission('hr.manage_targets') || Auth::user()->isCompanyAdmin()) && $__cs?->hasFeature('advanced_reports'))
-                    <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Analytics</div>
+
+                    {{-- 5. FINANCE & ACCOUNTS --}}
+                    @if(Auth::user()->hasPermission('finance.view_ledger') || Auth::user()->hasPermission('finance.manage_payroll') || Auth::user()->hasPermission('finance.log_expenses') || Auth::user()->hasPermission('finance.approve_expenses') || Auth::user()->isCompanyAdmin())
+                    <div class="mt-5 mb-1 text-[11px] font-extrabold text-gray-400 dark:text-slate-500 uppercase tracking-wider px-4">Finance &amp; Accounts</div>
+                    @if(Auth::user()->hasPermission('finance.manage_payroll'))
+                    <a href="{{ route('payroll.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('payroll.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <span>Naira Payroll &amp; Salaries</span>
+                    </a>
+                    @endif
+                    @if(Auth::user()->hasPermission('finance.log_expenses') || Auth::user()->hasPermission('finance.approve_expenses') || Auth::user()->hasPermission('finance.view_ledger'))
+                    <a href="{{ route('accounting.expenses.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('accounting.expenses.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        </svg>
+                        <span>Expenses &amp; OPEX</span>
+                    </a>
+                    @endif
+                    @if($__cs?->hasFeature('advanced_reports'))
                     <a href="{{ route('reports.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('reports.index') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
                         </svg>
-                        <span>Analytics Reports</span>
+                        <span>Financial &amp; Sales Reports</span>
                     </a>
                     <a href="{{ route('reports.departments.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('reports.departments.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"></path>
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"></path>
                         </svg>
-                        <span>Department Reports</span>
+                        <span>Department Analytics</span>
                     </a>
                     @endif
+                    @endif
 
-                    {{-- 7. HR & PERFORMANCE (Enterprise) --}}
-                    @if($__cs?->hasFeature('hr'))
-                    @if(Auth::user()->hasPermission('hr.view_staff') || Auth::user()->hasPermission('hr.approve_leaves') || Auth::user()->hasPermission('hr.review_submissions') || Auth::user()->hasPermission('hr.manage_targets') || Auth::user()->hasPermission('finance.manage_payroll') || Auth::user()->hasPermission('finance.log_expenses') || Auth::user()->hasPermission('finance.approve_expenses'))
-                    <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">HR &amp; Finance</div>
+
+                    {{-- 6. PEOPLE & MARKETING --}}
+                    @if($__cs?->hasFeature('hr') || $__cs?->hasFeature('marketing'))
+                    <div class="mt-5 mb-1 text-[11px] font-extrabold text-gray-400 dark:text-slate-500 uppercase tracking-wider px-4">People &amp; Marketing</div>
+                    @if(Auth::user()->hasPermission('hr.view_staff') || Auth::user()->hasPermission('hr.review_submissions'))
                     <a href="{{ route('hr.submissions.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('hr.submissions.index') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                         </svg>
-                        <span>My KPI Logs</span>
+                        <span>My Daily KPI Logs</span>
                     </a>
-                    @if(Auth::user()->hasPermission('hr.approve_leaves') || Auth::user()->isCompanyAdmin())
-                    <a href="{{ route('hr.leave.index') }}" class="flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('hr.leave.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
-                        <div class="flex items-center space-x-3">
-                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                            <span>Leave Requests</span>
-                        </div>
-                        <span x-data="{ count: 0 }" x-init="window.addEventListener('sidebar-badges-updated', e => { count = e.detail.hr || 0 })" x-show="count > 0" x-text="count + ' Pending'" class="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300" x-cloak></span>
-                    </a>
-                    @endif
                     @if(Auth::user()->hasPermission('hr.review_submissions') || (Auth::check() && Auth::user()->managedDepartments()->where('is_active', true)->exists()))
                     <a href="{{ route('hr.submissions.review') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('hr.submissions.review') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -418,38 +410,58 @@
                         <span>Department Targets</span>
                     </a>
                     @endif
-
-                    @if(Auth::user()->hasPermission('finance.manage_payroll'))
-                    <a href="{{ route('payroll.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('payroll.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                        </svg>
-                        <span>Payroll &amp; Salaries</span>
-                    </a>
-                    @endif
-
-                    @if(Auth::user()->hasPermission('finance.log_expenses') || Auth::user()->hasPermission('finance.approve_expenses') || Auth::user()->hasPermission('finance.view_ledger'))
-                    <a href="{{ route('accounting.expenses.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('accounting.expenses.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
-                        </svg>
-                        <span>Expenses &amp; OPEX</span>
+                    @if(Auth::user()->hasPermission('hr.approve_leaves') || Auth::user()->isCompanyAdmin())
+                    <a href="{{ route('hr.leave.index') }}" class="flex items-center justify-between px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('hr.leave.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <div class="flex items-center space-x-3">
+                            <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            <span>Leave Management</span>
+                        </div>
+                        <span x-data="{ count: 0 }" x-init="window.addEventListener('sidebar-badges-updated', e => { count = e.detail.hr || 0 })" x-show="count > 0" x-text="count + ' Pending'" class="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300" x-cloak></span>
                     </a>
                     @endif
                     @endif
+
+                    @if((Auth::user()->hasPermission('marketing.view') || Auth::user()->hasPermission('marketing.send_broadcast')) && $__cs?->hasFeature('marketing'))
+                    <a href="{{ route('campaigns.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('campaigns.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                        </svg>
+                        <span>Marketing Campaigns</span>
+                    </a>
+                    @if(Auth::user()->hasPermission('marketing.manage_drip'))
+                    <a href="{{ route('drip-sequences.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('drip-sequences.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                        </svg>
+                        <span>Drip Sequences</span>
+                    </a>
+                    @endif
+                    @endif
                     @endif
 
-                    {{-- 8. ADMINISTRATION --}}
+
+                    {{-- 7. ENTERPRISE CONFIG & SETTINGS --}}
                     @if(Auth::user()->hasPermission('hr.manage_users') || Auth::user()->hasPermission('system.manage_roles') || Auth::user()->isCompanyAdmin())
-                    <div class="mt-4 mb-1 text-xs font-bold text-gray-400 uppercase tracking-wider px-4">Administration</div>
+                    <div class="mt-5 mb-1 text-[11px] font-extrabold text-gray-400 dark:text-slate-500 uppercase tracking-wider px-4">Enterprise Config</div>
+
+                    {{-- Branch Settings: Professional+ (multi_branch) --}}
+                    @if(in_array(Auth::user()->role, ['super_admin', 'company_admin']) && $__cs?->hasFeature('multi_branch'))
+                    <a href="{{ route('branches.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('branches.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                        </svg>
+                        <span>Multi-Branch Setup</span>
+                    </a>
+                    @endif
 
                     @if(Auth::user()->hasPermission('hr.manage_users') || Auth::user()->isCompanyAdmin())
                     <a href="{{ route('settings.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('settings.index') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
-                        <span>Team Settings</span>
+                        <span>Team &amp; Staff Access</span>
                     </a>
                     @endif
 
@@ -466,19 +478,9 @@
                     @if(in_array(Auth::user()->role, ['super_admin', 'company_admin']) && $__cs?->hasFeature('department_setup'))
                     <a href="{{ route('departments.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('departments.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path>
                         </svg>
                         <span>Department Setup</span>
-                    </a>
-                    @endif
-
-                    {{-- Branch Settings: Professional+ (multi_branch) --}}
-                    @if(in_array(Auth::user()->role, ['super_admin', 'company_admin']) && $__cs?->hasFeature('multi_branch'))
-                    <a href="{{ route('branches.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('branches.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-                        </svg>
-                        <span>Branch Settings</span>
                     </a>
                     @endif
 
@@ -488,7 +490,7 @@
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
-                        <span>Activity Logs</span>
+                        <span>Activity Audit Trail</span>
                     </a>
                     @endif
 
@@ -496,9 +498,10 @@
                     @if(in_array(Auth::user()->role, ['super_admin', 'company_admin']))
                     <a href="{{ route('settings.company.edit') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('settings.company.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                         </svg>
-                        <span>Company Settings</span>
+                        <span>Company &amp; Letterhead</span>
                     </a>
                     @endif
 
