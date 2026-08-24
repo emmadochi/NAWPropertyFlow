@@ -201,22 +201,39 @@
                         Remaining Due: <strong x-text="'₦' + (activeMilestone ? new Intl.NumberFormat('en-NG').format(activeMilestone.amount_remaining) : '')"></strong>
                     </div>
 
-                    <!-- Amount Paid -->
-                    <div>
-                        <label for="amount_paid" class="block text-xs font-semibold text-gray-400 uppercase tracking-wide">Amount Paid (₦)</label>
-                        <input type="number" name="amount_paid" id="amount_paid" :value="activeMilestone ? activeMilestone.amount_remaining : ''" required min="0.01" step="0.01" class="mt-2 block w-full rounded-xl border-gray-300 focus:border-brand-500 focus:ring-brand-500 py-3 px-4 border text-sm">
+                    <!-- Amount Paid & Payment Date -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label for="amount_paid" class="block text-xs font-semibold text-gray-400 uppercase tracking-wide">Amount Paid (₦) *</label>
+                            <input type="number" name="amount_paid" id="amount_paid" :value="activeMilestone ? activeMilestone.amount_remaining : ''" required min="0.01" step="0.01" class="mt-1.5 block w-full rounded-xl border-gray-300 focus:border-brand-500 focus:ring-brand-500 py-2.5 px-3.5 border text-sm font-bold text-dark-800">
+                        </div>
+                        <div>
+                            <label for="payment_date" class="block text-xs font-semibold text-gray-400 uppercase tracking-wide">Payment Date *</label>
+                            <input type="date" name="payment_date" id="payment_date" value="{{ date('Y-m-d') }}" required class="mt-1.5 block w-full rounded-xl border-gray-300 focus:border-brand-500 focus:ring-brand-500 py-2.5 px-3.5 border text-sm font-medium text-dark-800">
+                        </div>
                     </div>
 
                     <!-- Bank Reference -->
                     <div>
                         <label for="bank_reference" class="block text-xs font-semibold text-gray-400 uppercase tracking-wide">Bank Reference / Narration</label>
-                        <input type="text" name="bank_reference" id="bank_reference" placeholder="e.g. FBN/2026/0622/4119" class="mt-2 block w-full rounded-xl border-gray-300 focus:border-brand-500 focus:ring-brand-500 py-3 px-4 border text-sm">
+                        <input type="text" name="bank_reference" id="bank_reference" placeholder="e.g. FBN/2026/0622/4119" class="mt-1.5 block w-full rounded-xl border-gray-300 focus:border-brand-500 focus:ring-brand-500 py-2.5 px-3.5 border text-sm">
                     </div>
 
                     <!-- Notes -->
                     <div>
                         <label for="modal_notes" class="block text-xs font-semibold text-gray-400 uppercase tracking-wide">Remarks</label>
-                        <textarea name="notes" id="modal_notes" rows="2" class="mt-2 block w-full rounded-xl border-gray-300 focus:border-brand-500 focus:ring-brand-500 py-3 px-4 border text-sm" placeholder="Additional details..."></textarea>
+                        <textarea name="notes" id="modal_notes" rows="2" class="mt-1.5 block w-full rounded-xl border-gray-300 focus:border-brand-500 focus:ring-brand-500 py-2 px-3.5 border text-sm" placeholder="Additional details..."></textarea>
+                    </div>
+
+                    <!-- Email Receipt Toggle -->
+                    <div class="bg-blue-50/70 rounded-xl p-3.5 border border-blue-100">
+                        <label class="flex items-start space-x-2.5 cursor-pointer">
+                            <input type="checkbox" name="send_receipt_email" value="1" checked class="mt-0.5 rounded text-brand-600 focus:ring-brand-500">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 block">Email Official Payment Receipt to Client</span>
+                                <span class="text-[11px] text-slate-500 block mt-0.5">Uncheck this if you are recording a historical or backdated payment to avoid emailing the buyer.</span>
+                            </div>
+                        </label>
                     </div>
                 </div>
 

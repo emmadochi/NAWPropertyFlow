@@ -11,9 +11,11 @@ class PaymentReceived
     use Dispatchable, SerializesModels;
 
     public $milestone;
+    public bool $sendNotification;
 
-    public function __construct(PaymentMilestone $milestone)
+    public function __construct(PaymentMilestone $milestone, bool $sendNotification = true)
     {
         $this->milestone = $milestone;
+        $this->sendNotification = $sendNotification;
     }
 }

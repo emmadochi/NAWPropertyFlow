@@ -399,6 +399,8 @@ class LeadController extends Controller
             ? $user->branch_id 
             : (session('selected_branch_id') !== 'all' ? session('selected_branch_id') : null);
 
+        $muteNotifications = $request->boolean('mute_notifications', true);
+
         while (($row = fgetcsv($handle)) !== false) {
             $rowNum++;
             if (count($row) !== count($headers)) {
@@ -435,7 +437,7 @@ class LeadController extends Controller
             ];
 
             try {
-                $this->leadService->createLead($leadData);
+                $this->leadService->createLead($leadData, $user->id, !$muteNotifications);
                 $importedCount++;
             } catch (\Exception $e) {
                 $errors[] = "Row {$rowNum}: Failed to import (" . $e->getMessage() . ").";

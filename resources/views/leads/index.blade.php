@@ -556,6 +556,16 @@
                     </a>
                 </div>
 
+                <div class="bg-amber-50/70 dark:bg-amber-950/30 p-3.5 rounded-xl border border-amber-200 dark:border-amber-800/40">
+                    <label class="flex items-start space-x-2.5 cursor-pointer">
+                        <input type="checkbox" name="mute_notifications" value="1" checked class="mt-0.5 rounded text-brand-600 focus:ring-brand-500">
+                        <div>
+                            <span class="text-xs font-bold text-amber-900 dark:text-amber-300 block">Historical Migration Mode (Recommended)</span>
+                            <span class="text-[11px] text-amber-700 dark:text-amber-400 block mt-0.5">Mute automated welcome emails & marketing drip sequences during this bulk import.</span>
+                        </div>
+                    </label>
+                </div>
+
                 <div class="flex justify-end space-x-3 pt-2">
                     <button type="button" @click="importLeadsOpen = false" class="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-700">Cancel</button>
                     <button type="submit" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl">

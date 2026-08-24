@@ -65,11 +65,20 @@ class PaymentController extends Controller
             'amount_paid' => 'required|numeric|min:0.01',
             'bank_reference' => 'nullable|string|max:100',
             'notes' => 'nullable|string',
+            'payment_date' => 'nullable|date',
+            'send_receipt_email' => 'nullable',
         ]);
 
-        $this->paymentService->recordMilestonePayment($milestone, $validated);
+        $validated['send_receipt_email'] = $request->has('send_receipt_email');
 
-        return back()->with('success', 'Payment of ₦' . number_format($validated['amount_paid'], 2) . ' successfully recorded!');
+        $this->paymentService->recordMilestonePayment($milestone, $validated, $validated['send_receipt_email']);
+
+        $msg = 'Payment of ₦' . number_format($validated['amount_paid'], 2) . ' successfully recorded!';
+        if (!$validated['send_receipt_email']) {
+            $msg .= ' (Silent / Historical Mode - No client email sent).';
+        }
+
+        return back()->with('success', $msg);
     }
 
     /**

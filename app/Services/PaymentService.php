@@ -74,20 +74,22 @@ class PaymentService
     /**
      * Record a milestone payment manually.
      */
-    public function recordMilestonePayment(PaymentMilestone $milestone, array $data): PaymentMilestone
+    public function recordMilestonePayment(PaymentMilestone $milestone, array $data, ?bool $sendReceiptEmail = null): PaymentMilestone
     {
-        return DB::transaction(function () use ($milestone, $data) {
+        return DB::transaction(function () use ($milestone, $data, $sendReceiptEmail) {
             $paymentPlan = $milestone->paymentPlan;
             $sale = $paymentPlan->sale;
             $lead = $sale->lead;
             $currentUserId = Auth::id() ?? 1;
 
             $amountPaid = $data['amount_paid'];
+            $paymentDate = !empty($data['payment_date']) ? Carbon::parse($data['payment_date']) : Carbon::now();
+            $sendNotification = $sendReceiptEmail ?? (isset($data['send_receipt_email']) ? filter_var($data['send_receipt_email'], FILTER_VALIDATE_BOOLEAN) : true);
             
             // Update milestone
             $milestone->amount_paid += $amountPaid;
             $milestone->bank_reference = $data['bank_reference'] ?? $milestone->bank_reference;
-            $milestone->paid_at = Carbon::now();
+            $milestone->paid_at = $paymentDate;
             if (isset($data['notes'])) {
                 $milestone->notes = $data['notes'];
             }
@@ -113,15 +115,25 @@ class PaymentService
                 $lead->id,
                 $currentUserId,
                 'Payment Received',
-                "Payment of ₦" . number_format($amountPaid, 2) . " received for milestone: '{$milestone->label}'. Reference: " . ($data['bank_reference'] ?? 'N/A')
+                "Payment of ₦" . number_format($amountPaid, 2) . " received for milestone: '{$milestone->label}' on " . $paymentDate->format('d M Y') . ". Reference: " . ($data['bank_reference'] ?? 'N/A')
             );
 
-            // Generate receipt PDF
+            // Generate receipt PDF for records
             $pdfPath = $this->generateReceiptPdf($milestone);
             $milestone->receipt_path = $pdfPath;
             $milestone->save();
 
-            event(new \App\Events\PaymentReceived($milestone));
+            // Fire event with notification flag
+            event(new \App\Events\PaymentReceived($milestone, $sendNotification));
+
+            // If notification email enabled, send email
+            if ($sendNotification && $lead->email) {
+                try {
+                    Mail::to($lead->email)->send(new \App\Mail\PaymentInvoiceMail($sale));
+                } catch (\Exception $e) {
+                    // Ignore or log
+                }
+            }
 
             return $milestone;
         });

@@ -32,7 +32,11 @@ class SaleController extends Controller
             'bank_reference' => 'nullable|string|max:100',
             'payment_method' => 'nullable|string|max:100',
             'payment_receipt' => 'nullable|file|mimes:pdf,jpg,png,jpeg|max:10240',
+            'deal_closed_at' => 'nullable|date',
+            'send_notification_email' => 'nullable',
         ]);
+
+        $validated['send_notification_email'] = $request->has('send_notification_email');
 
         if ($request->hasFile('payment_receipt')) {
             $path = $request->file('payment_receipt')->store('receipts', 'public');
@@ -41,6 +45,11 @@ class SaleController extends Controller
 
         $sale = $this->salesService->recordSale($validated);
 
-        return back()->with('success', 'Sale recorded successfully! Payment plan initialized & official PDF receipt generated.');
+        $msg = 'Sale recorded successfully! Payment plan initialized & official PDF receipt generated.';
+        if (!$validated['send_notification_email']) {
+            $msg .= ' (Saved in Silent / Historical Mode - No client emails sent).';
+        }
+
+        return back()->with('success', $msg);
     }
 }

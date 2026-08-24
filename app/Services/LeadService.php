@@ -14,7 +14,7 @@ class LeadService
     /**
      * Create a new lead and log activity.
      */
-    public function createLead(array $data, ?int $userId = null): Lead
+    public function createLead(array $data, ?int $userId = null, bool $sendWelcomeMail = true): Lead
     {
         $lead = Lead::create($data);
 
@@ -34,15 +34,13 @@ class LeadService
             );
         }
 
-        if ($lead->email) {
+        if ($sendWelcomeMail && $lead->email) {
             try {
                 Mail::to($lead->email)->send(new WelcomeLeadMail($lead));
             } catch (\Exception $e) {
                 // Ignore or log mail errors locally
             }
         }
-
-
 
         return $lead;
     }

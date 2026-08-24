@@ -874,20 +874,25 @@
                         </div>
                     </div>
 
-                    <!-- Payment Transaction Proof -->
-                    <div class="grid grid-cols-2 gap-3">
+                    <!-- Payment Transaction Details -->
+                    <div class="grid grid-cols-3 gap-2.5">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Bank Reference / Teller #</label>
+                            <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Transaction Date</label>
+                            <input type="date" name="deal_closed_at" value="{{ date('Y-m-d') }}"
+                                   class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-xs font-semibold text-gray-800 dark:text-white focus:border-brand-500 outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Bank Ref / Teller #</label>
                             <input type="text" name="bank_reference" placeholder="e.g. GTB-TXN-98421"
-                                   class="w-full px-3.5 py-2 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-xs font-semibold text-gray-800 dark:text-white focus:border-brand-500 outline-none">
+                                   class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-xs font-semibold text-gray-800 dark:text-white focus:border-brand-500 outline-none">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Payment Method</label>
                             <select name="payment_method" class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-xs font-semibold text-gray-800 dark:text-white focus:border-brand-500 outline-none">
-                                <option value="Bank Transfer">Bank Transfer (EFT/NIP)</option>
-                                <option value="Cheque / Draft">Bank Cheque / Draft</option>
-                                <option value="Debit Card">Online Card (Paystack/Flutterwave)</option>
-                                <option value="Cash Deposit">Bank Branch Cash Deposit</option>
+                                <option value="Bank Transfer">Bank Transfer</option>
+                                <option value="Cheque / Draft">Cheque / Draft</option>
+                                <option value="Debit Card">Online Card</option>
+                                <option value="Cash Deposit">Cash Deposit</option>
                             </select>
                         </div>
                     </div>
@@ -895,6 +900,17 @@
                     <div>
                         <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1">Upload Proof of Payment (Optional)</label>
                         <input type="file" name="payment_receipt" class="w-full text-xs text-gray-500 file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-orange-50 file:text-brand-600 hover:file:bg-orange-100 cursor-pointer">
+                    </div>
+
+                    <!-- Client Communication & Notification Toggle -->
+                    <div class="bg-blue-50/70 dark:bg-slate-900 p-3.5 rounded-2xl border border-blue-100 dark:border-slate-700">
+                        <label class="flex items-start space-x-2.5 cursor-pointer">
+                            <input type="checkbox" name="send_notification_email" value="1" checked class="mt-0.5 rounded text-brand-600 focus:ring-brand-500">
+                            <div>
+                                <span class="text-xs font-bold text-slate-800 dark:text-white block">Email Invoice &amp; Official Receipt to Client</span>
+                                <span class="text-[10.5px] text-slate-500 dark:text-slate-400 block mt-0.5">Uncheck this if you are backfilling a historical past deal or legacy client record to avoid sending automated emails.</span>
+                            </div>
+                        </label>
                     </div>
 
                     @if(Auth::user()->role !== 'sales_executive')

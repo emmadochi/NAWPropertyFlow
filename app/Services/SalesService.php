@@ -32,6 +32,9 @@ class SalesService
             $property = Property::findOrFail($data['property_id']);
             $currentUserId = $userId ?? Auth::id() ?? 1;
 
+            $dealClosedAt = !empty($data['deal_closed_at']) ? Carbon::parse($data['deal_closed_at']) : Carbon::now();
+            $sendNotification = isset($data['send_notification_email']) ? filter_var($data['send_notification_email'], FILTER_VALIDATE_BOOLEAN) : true;
+
             // 1. Create Sale Record
             $sale = Sale::create([
                 'lead_id' => $lead->id,
@@ -42,7 +45,7 @@ class SalesService
                 'units_purchased' => $data['units_purchased'] ?? 1,
                 'status' => $data['status'] ?? 'Closed Won',
                 'payment_receipt' => $data['payment_receipt'] ?? null,
-                'deal_closed_at' => Carbon::now(),
+                'deal_closed_at' => $dealClosedAt,
             ]);
 
             // 2. Update Lead Status to Closed Won
@@ -73,7 +76,7 @@ class SalesService
                 $milestones[] = [
                     'label' => '100% Outright Full Payment',
                     'amount_due' => $sale->deal_value,
-                    'due_date' => Carbon::now()->toDateString(),
+                    'due_date' => $dealClosedAt->toDateString(),
                 ];
             } else {
                 // Installment plan: Deposit milestone + monthly spread
@@ -85,7 +88,7 @@ class SalesService
                 $milestones[] = [
                     'label' => 'Initial Commitment Deposit',
                     'amount_due' => $initialDeposit > 0 ? $initialDeposit : $sale->deal_value,
-                    'due_date' => Carbon::now()->toDateString(),
+                    'due_date' => $dealClosedAt->toDateString(),
                 ];
 
                 // Milestones 2..N: Monthly Installments
@@ -96,7 +99,7 @@ class SalesService
                         $milestones[] = [
                             'label' => "Installment Tranche #{$i} of {$spreadMonths}",
                             'amount_due' => max(0, $installmentAmt),
-                            'due_date' => Carbon::now()->addMonths($i)->toDateString(),
+                            'due_date' => (clone $dealClosedAt)->addMonths($i)->toDateString(),
                         ];
                     }
                 }
@@ -117,13 +120,17 @@ class SalesService
                         'amount_paid' => $sale->deal_value,
                         'bank_reference' => $bankRef,
                         'notes' => "Full outright payment recorded on sale closing via {$payMethod}.",
-                    ]);
+                        'payment_date' => $dealClosedAt->toDateTimeString(),
+                        'send_receipt_email' => $sendNotification,
+                    ], $sendNotification);
                 } elseif ($initialDeposit > 0) {
                     $this->paymentService->recordMilestonePayment($firstMilestone, [
                         'amount_paid' => $initialDeposit,
                         'bank_reference' => $bankRef,
                         'notes' => "Initial commitment deposit recorded on sale closing via {$payMethod}.",
-                    ]);
+                        'payment_date' => $dealClosedAt->toDateTimeString(),
+                        'send_receipt_email' => $sendNotification,
+                    ], $sendNotification);
                 }
             }
 
@@ -153,8 +160,8 @@ class SalesService
                 }
             }
 
-            // 7. Send invoice/receipt notification email
-            if ($lead->email) {
+            // 7. Send invoice/receipt notification email (if enabled)
+            if ($sendNotification && $lead->email) {
                 try {
                     Mail::to($lead->email)->send(new PaymentInvoiceMail($sale));
                 } catch (\Exception $e) {
@@ -162,11 +169,13 @@ class SalesService
                 }
             }
 
-            event(new \App\Events\DealWon($sale));
+            event(new \App\Events\DealWon($sale, $sendNotification));
 
-            try {
-                app(\App\Services\DripService::class)->triggerFor($lead, 'deal_won');
-            } catch (\Exception $e) {}
+            if ($sendNotification) {
+                try {
+                    app(\App\Services\DripService::class)->triggerFor($lead, 'deal_won');
+                } catch (\Exception $e) {}
+            }
 
             return $sale;
         });
