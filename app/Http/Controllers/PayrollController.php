@@ -185,10 +185,35 @@ class PayrollController extends Controller
     }
 
     /**
+     * View personal salary balance, deduction breakdown, and historical payslips.
+     */
+    public function myPayslips(Request $request)
+    {
+        $user = Auth::user();
+        $salaryStructure = SalaryStructure::where('user_id', $user->id)->first();
+        $payslips = Payslip::where('user_id', $user->id)
+            ->with(['payrollBatch', 'deductions'])
+            ->latest()
+            ->paginate(12);
+
+        $activeFines = PayrollDeduction::where('user_id', $user->id)
+            ->where('month', (int) now()->format('n'))
+            ->where('year', (int) now()->format('Y'))
+            ->get();
+
+        return view('payroll.my-payslips', compact('user', 'salaryStructure', 'payslips', 'activeFines'));
+    }
+
+    /**
      * View and download printable PDF payslip for a staff member.
      */
     public function downloadPayslip(Payslip $payslip)
     {
+        $user = Auth::user();
+        if ($payslip->user_id !== $user->id && !in_array($user->role, ['super_admin', 'company_admin', 'hr', 'accountant'])) {
+            abort(403, 'Unauthorized access to this payslip.');
+        }
+
         $payslip->load(['payrollBatch', 'user.departmentRelation', 'deductions']);
         $companySetting = \App\Models\CompanySetting::getCached();
 

@@ -248,7 +248,8 @@ Route::middleware([
                 Route::get('payroll/{batch}/export-bank', [\App\Http\Controllers\PayrollController::class, 'exportBankCsv'])->name('payroll.export-bank');
             });
 
-            // Employee Payslip Download
+            // Employee Payslip & Salary Balance Portal
+            Route::get('payroll/my-payslips', [\App\Http\Controllers\PayrollController::class, 'myPayslips'])->name('payroll.my-payslips');
             Route::get('payroll/payslip/{payslip}/download', [\App\Http\Controllers\PayrollController::class, 'downloadPayslip'])->name('payroll.payslip.download');
 
             Route::patch('hr/staff/onboarding/{task}/toggle', [StaffProfileController::class, 'toggleOnboardingTask'])->name('hr.staff.onboarding.toggle');

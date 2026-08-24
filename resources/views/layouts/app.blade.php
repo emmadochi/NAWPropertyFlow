@@ -421,6 +421,14 @@
                         <span x-data="{ count: 0 }" x-init="window.addEventListener('sidebar-badges-updated', e => { count = e.detail.hr || 0 })" x-show="count > 0" x-text="count + ' Pending'" class="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-purple-100 text-purple-700 dark:bg-purple-950 dark:text-purple-300" x-cloak></span>
                     </a>
                     @endif
+
+                    {{-- Staff Personal Payslip & Salary Balance --}}
+                    <a href="{{ route('payroll.my-payslips') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('payroll.my-payslips') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                        <span>My Salary &amp; Payslips</span>
+                    </a>
                     @endif
 
                     @if((Auth::user()->hasPermission('marketing.view') || Auth::user()->hasPermission('marketing.send_broadcast')) && $__cs?->hasFeature('marketing'))
