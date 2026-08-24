@@ -898,6 +898,84 @@
 
 
     <!-- =========================================================================
+         FLOATING HIGH-CONVERTING CONTACT WIDGET (Abuja Enterprise Desk)
+    ========================================================================== -->
+    <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end">
+        
+        <!-- Expanded Contact Popover -->
+        <div x-show="floatingContactOpen" 
+             x-cloak
+             style="display: none;"
+             @click.away="floatingContactOpen = false"
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0 translate-y-4 scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+             x-transition:leave="transition ease-in duration-150"
+             x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+             x-transition:leave-end="opacity-0 translate-y-4 scale-95"
+             class="mb-3 w-80 glass-card rounded-2xl p-5 border border-amber-500/40 shadow-2xl bg-slate-900 text-left">
+            
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                <div class="flex items-center space-x-2">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span class="text-xs font-bold text-white uppercase tracking-wider">Abuja Enterprise Desk</span>
+                </div>
+                <button @click="floatingContactOpen = false" class="text-slate-400 hover:text-white text-xs cursor-pointer font-bold">✕</button>
+            </div>
+
+            <p class="text-[11px] text-slate-300 mt-2.5 mb-4 leading-relaxed">
+                Have questions on plot allocations, milestone installment setups, or on-site staff training?
+            </p>
+
+            <div class="space-y-2">
+                <!-- WhatsApp -->
+                <a href="https://wa.me/2348101358139?text=Hello%20NAW%20PropertyFlow%20Team%2C%20I'm%20exploring%20the%20CRM%20for%20my%20real%20estate%20firm." 
+                   target="_blank"
+                   class="w-full flex items-center justify-between p-3 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/80 border border-emerald-500/40 text-emerald-300 font-bold text-xs transition-all">
+                    <div class="flex items-center gap-2">
+                        <span class="text-base">💬</span>
+                        <span>Chat on WhatsApp</span>
+                    </div>
+                    <span class="text-[10px] text-emerald-400 font-semibold">&lt; 2 min reply</span>
+                </a>
+
+                <!-- Phone -->
+                <a href="tel:+2348101358139" 
+                   class="w-full flex items-center justify-between p-3 rounded-xl bg-slate-950/80 hover:bg-slate-800 border border-slate-800 text-slate-200 font-bold text-xs transition-all">
+                    <div class="flex items-center gap-2">
+                        <span class="text-base">📞</span>
+                        <span>Call Direct Line</span>
+                    </div>
+                    <span class="text-[10px] text-amber-400 font-mono">+234 810 135 8139</span>
+                </a>
+
+                <!-- Book Demo -->
+                <button @click="floatingContactOpen = false; openDemoModal('Executive Consultation')" 
+                        class="w-full text-center py-2.5 rounded-xl btn-primary-demo text-xs font-bold uppercase tracking-wider cursor-pointer">
+                    📅 Schedule VIP Meeting
+                </button>
+            </div>
+
+            <div class="mt-3 pt-2.5 border-t border-slate-800/80 text-[10px] text-slate-500 text-center">
+                📍 Kuriftu Plaza, Jabi, Abuja FCT
+            </div>
+        </div>
+
+        <!-- Floating Trigger Button -->
+        <button @click="floatingContactOpen = !floatingContactOpen" 
+                class="flex items-center space-x-2.5 px-4 py-3 rounded-full glass-card hover:border-amber-400 text-white font-bold text-xs shadow-2xl border border-amber-500/50 bg-slate-900/90 group transition-all transform hover:-translate-y-0.5 cursor-pointer">
+            <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+            </span>
+            <span class="font-semibold text-slate-200 group-hover:text-amber-400 transition-colors whitespace-nowrap">Speak with Property Specialist</span>
+            <span class="text-sm">💬</span>
+        </button>
+
+    </div>
+
+
+    <!-- =========================================================================
          DIRECT WHATSAPP & DEMO BOOKING MODAL
     ========================================================================== -->
     <div x-show="demoModalOpen" 
@@ -984,6 +1062,7 @@
             return {
                 mobileMenuOpen: false,
                 demoModalOpen: false,
+                floatingContactOpen: false,
                 billingCycle: 'monthly',
                 demoPackage: 'Growth Developer (₦35k/mo or ₦350k/yr)',
                 clientName: '',
