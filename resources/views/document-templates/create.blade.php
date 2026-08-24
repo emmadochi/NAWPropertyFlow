@@ -214,26 +214,26 @@ const PRESET_TEMPLATES = {
         name: 'Deed of Assignment & Conveyance of Title',
         trigger: 'deal_won',
         html: `<h2>DEED OF ASSIGNMENT</h2>
-<p><strong>THIS DEED OF ASSIGNMENT</strong> is made this <strong>{{current_date}}</strong></p>
+<p><strong>THIS DEED OF ASSIGNMENT</strong> is made this <strong>@{{current_date}}</strong></p>
 <p><strong>BETWEEN:</strong></p>
-<p><strong>{{company_name}}</strong>, having its corporate head office at {{company_address}} (hereinafter referred to as the <em>"ASSIGNOR"</em> which expression shall where the context so admits include its successors-in-title and assigns) of the ONE PART;</p>
+<p><strong>@{{company_name}}</strong>, having its corporate head office at @{{company_address}} (hereinafter referred to as the <em>"ASSIGNOR"</em> which expression shall where the context so admits include its successors-in-title and assigns) of the ONE PART;</p>
 <p><strong>AND:</strong></p>
-<p><strong>{{client_name}}</strong>, residing at {{client_address}} (NIN: {{client_nin}}) (hereinafter referred to as the <em>"ASSIGNEE"</em> which expression shall include their legal representatives and assigns) of the OTHER PART.</p>
+<p><strong>@{{client_name}}</strong>, residing at @{{client_address}} (NIN: @{{client_nin}}) (hereinafter referred to as the <em>"ASSIGNEE"</em> which expression shall include their legal representatives and assigns) of the OTHER PART.</p>
 <hr/>
 <h3>1. RECITALS</h3>
-<p>The Assignor is the absolute owner of that piece of land known as <strong>Plot {{property_block}}</strong> measuring approximately <strong>{{property_size}} sqm</strong>, situated at <strong>{{property_location}}, {{property_state}}</strong>, with Title: <strong>{{title_type}}</strong>.</p>
-<p>The Assignor has agreed to assign all its rights and unexpired term to the Assignee for the total consideration sum of <strong>₦{{deal_value}}</strong>.</p>
+<p>The Assignor is the absolute owner of that piece of land known as <strong>Plot @{{property_block}}</strong> measuring approximately <strong>@{{property_size}} sqm</strong>, situated at <strong>@{{property_location}}, @{{property_state}}</strong>, with Title: <strong>@{{title_type}}</strong>.</p>
+<p>The Assignor has agreed to assign all its rights and unexpired term to the Assignee for the total consideration sum of <strong>₦@{{deal_value}}</strong>.</p>
 <hr/>
 <h3>2. WITNESSETH</h3>
-<p>In consideration of the sum of <strong>₦{{deal_value}}</strong> paid by the Assignee to the Assignor (receipt of which the Assignor hereby acknowledges), the Assignor conveys and assigns unto the Assignee the property free from all encumbrances.</p>
+<p>In consideration of the sum of <strong>₦@{{deal_value}}</strong> paid by the Assignee to the Assignor (receipt of which the Assignor hereby acknowledges), the Assignor conveys and assigns unto the Assignee the property free from all encumbrances.</p>
 <br/>
 <table style="width: 100%; border: none;">
   <tr>
     <td style="border:none; width: 50%;">
-      <p>___________________________<br/><strong>SIGNED for the ASSIGNOR</strong><br/>Managing Director, {{company_name}}</p>
+      <p>___________________________<br/><strong>SIGNED for the ASSIGNOR</strong><br/>Managing Director, @{{company_name}}</p>
     </td>
     <td style="border:none; width: 50%;">
-      <p>___________________________<br/><strong>SIGNED by the ASSIGNEE</strong><br/>{{client_name}}</p>
+      <p>___________________________<br/><strong>SIGNED by the ASSIGNEE</strong><br/>@{{client_name}}</p>
     </td>
   </tr>
 </table>`
@@ -242,57 +242,57 @@ const PRESET_TEMPLATES = {
         name: 'Official Sales & Milestone Payment Receipt',
         trigger: 'payment_received',
         html: `<div style="text-align: center; border-bottom: 2px solid #FEA500; padding-bottom: 15px; margin-bottom: 20px;">
-  <h1 style="margin: 0; color: #0f172a;">{{company_name}}</h1>
-  <p style="margin: 4px 0; font-size: 13px; color: #64748b;">{{company_address}}</p>
+  <h1 style="margin: 0; color: #0f172a;">@{{company_name}}</h1>
+  <p style="margin: 4px 0; font-size: 13px; color: #64748b;">@{{company_address}}</p>
   <h3 style="margin: 10px 0 0; color: #FEA500; text-transform: uppercase;">OFFICIAL PAYMENT RECEIPT</h3>
 </div>
-<p><strong>Receipt Date:</strong> {{current_date}} | <strong>Ref No:</strong> {{transaction_ref}}</p>
+<p><strong>Receipt Date:</strong> @{{current_date}} | <strong>Ref No:</strong> @{{transaction_ref}}</p>
 <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
   <tr style="background: #f8fafc;">
     <th style="padding: 10px; text-align: left;">Customer Name:</th>
-    <td style="padding: 10px;">{{client_name}} ({{client_phone}})</td>
+    <td style="padding: 10px;">@{{client_name}} (@{{client_phone}})</td>
   </tr>
   <tr>
     <th style="padding: 10px; text-align: left;">Property Scheme:</th>
-    <td style="padding: 10px;">{{property_name}} (Plot {{property_block}})</td>
+    <td style="padding: 10px;">@{{property_name}} (Plot @{{property_block}})</td>
   </tr>
   <tr style="background: #f8fafc;">
     <th style="padding: 10px; text-align: left;">Location:</th>
-    <td style="padding: 10px;">{{property_location}}, {{property_state}}</td>
+    <td style="padding: 10px;">@{{property_location}}, @{{property_state}}</td>
   </tr>
   <tr>
     <th style="padding: 10px; text-align: left;">Total Property Value:</th>
-    <td style="padding: 10px; font-weight: bold;">₦{{deal_value}}</td>
+    <td style="padding: 10px; font-weight: bold;">₦@{{deal_value}}</td>
   </tr>
   <tr style="background: #ecfdf5;">
     <th style="padding: 10px; text-align: left; color: #065f46;">Amount Paid:</th>
-    <td style="padding: 10px; font-size: 16px; font-weight: bold; color: #059669;">₦{{down_payment}}</td>
+    <td style="padding: 10px; font-size: 16px; font-weight: bold; color: #059669;">₦@{{down_payment}}</td>
   </tr>
   <tr>
     <th style="padding: 10px; text-align: left;">Outstanding Balance:</th>
-    <td style="padding: 10px; font-weight: bold; color: #dc2626;">₦{{outstanding_balance}}</td>
+    <td style="padding: 10px; font-weight: bold; color: #dc2626;">₦@{{outstanding_balance}}</td>
   </tr>
 </table>
 <br/>
-<p><em>Issued by Officer: {{agent_name}}</em></p>`
+<p><em>Issued by Officer: @{{agent_name}}</em></p>`
     },
     offer: {
         name: 'Letter of Allocation & Offer of Sale',
         trigger: 'deal_won',
         html: `<h2>LETTER OF ALLOCATION &amp; PROVISIONAL OFFER</h2>
-<p><strong>Date:</strong> {{current_date}}</p>
-<p><strong>To:</strong><br/>{{client_name}}<br/>{{client_phone}} | {{client_email}}<br/>{{client_address}}</p>
-<p>Dear {{client_name}},</p>
-<p>We are pleased to convey the provisional offer and allocation of real estate unit in <strong>{{property_name}}</strong> located at <strong>{{property_location}}, {{property_state}}</strong> under the following agreed conditions:</p>
+<p><strong>Date:</strong> @{{current_date}}</p>
+<p><strong>To:</strong><br/>@{{client_name}}<br/>@{{client_phone}} | @{{client_email}}<br/>@{{client_address}}</p>
+<p>Dear @{{client_name}},</p>
+<p>We are pleased to convey the provisional offer and allocation of real estate unit in <strong>@{{property_name}}</strong> located at <strong>@{{property_location}}, @{{property_state}}</strong> under the following agreed conditions:</p>
 <ul>
-  <li><strong>Plot / Unit:</strong> Block / Plot {{property_block}} (Size: {{property_size}} sqm)</li>
-  <li><strong>Total Agreed Purchase Price:</strong> ₦{{deal_value}}</li>
-  <li><strong>Deposit Paid:</strong> ₦{{down_payment}}</li>
-  <li><strong>Title:</strong> {{title_type}}</li>
+  <li><strong>Plot / Unit:</strong> Block / Plot @{{property_block}} (Size: @{{property_size}} sqm)</li>
+  <li><strong>Total Agreed Purchase Price:</strong> ₦@{{deal_value}}</li>
+  <li><strong>Deposit Paid:</strong> ₦@{{down_payment}}</li>
+  <li><strong>Title:</strong> @{{title_type}}</li>
 </ul>
 <p>Please review and execute within fourteen (14) business days to formalize deed execution.</p>
 <br/>
-<p>Yours faithfully,<br/><strong>For: {{company_name}}</strong><br/>{{agent_name}} (Sales Executive)</p>`
+<p>Yours faithfully,<br/><strong>For: @{{company_name}}</strong><br/>@{{agent_name}} (Sales Executive)</p>`
     }
 };
 
