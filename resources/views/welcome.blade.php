@@ -107,6 +107,49 @@
             transform: scale(1.05);
             z-index: 20;
         }
+        /* Solid Opaque Modal Overlay & Container */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(2, 6, 23, 0.88);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 9998;
+        }
+        .modal-container {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 92%;
+            max-width: 480px;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: #0B192C;
+            border: 1px solid rgba(254, 165, 0, 0.4);
+            border-radius: 1.5rem;
+            padding: 2.25rem 2rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.95);
+            z-index: 9999;
+        }
+        .modal-input {
+            width: 100%;
+            background-color: #050E1A !important;
+            border: 1.5px solid #1e293b !important;
+            border-radius: 0.75rem !important;
+            padding: 0.65rem 1rem !important;
+            font-size: 0.875rem !important;
+            color: #ffffff !important;
+            outline: none !important;
+            transition: all 0.2s ease !important;
+        }
+        .modal-input:focus {
+            border-color: #FEA500 !important;
+            box-shadow: 0 0 0 3px rgba(254, 165, 0, 0.2) !important;
+        }
     </style>
 </head>
 <body x-data="landingApp()">
@@ -669,21 +712,20 @@
     ========================================================================== -->
     <div x-show="demoModalOpen" 
          x-cloak
-         style="display: none;"
-         class="fixed inset-0 z-[100] flex items-center justify-center p-4 overflow-y-auto"
-         x-transition:enter="transition ease-out duration-300"
-         x-transition:enter-start="opacity-0 scale-95"
-         x-transition:enter-end="opacity-100 scale-100"
-         x-transition:leave="transition ease-in duration-200"
-         x-transition:leave-start="opacity-100 scale-100"
-         x-transition:leave-end="opacity-0 scale-95"
-         x-cloak>
+         style="display: none;">
         
-        <!-- Backdrop -->
-        <div class="fixed inset-0 bg-slate-950/85 backdrop-blur-md" @click="demoModalOpen = false"></div>
+        <!-- Opaque Backdrop -->
+        <div class="modal-overlay" @click="demoModalOpen = false"></div>
         
-        <!-- Modal Container -->
-        <div class="relative w-full max-w-lg glass-card rounded-3xl p-8 border border-amber-500/30 shadow-2xl z-10 bg-slate-900 text-left">
+        <!-- Opaque Modal Container -->
+        <div class="modal-container text-left"
+             x-transition:enter="transition ease-out duration-300"
+             x-transition:enter-start="opacity-0 scale-95"
+             x-transition:enter-end="opacity-100 scale-100"
+             x-transition:leave="transition ease-in duration-200"
+             x-transition:leave-start="opacity-100 scale-100"
+             x-transition:leave-end="opacity-0 scale-95">
+            
             <button @click="demoModalOpen = false" class="absolute top-6 right-6 text-slate-400 hover:text-white transition-colors cursor-pointer">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
@@ -699,35 +741,34 @@
                     <div>
                         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Full Name / Title</label>
                         <input type="text" x-model="clientName" required
-                               class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                               class="modal-input"
                                placeholder="e.g. Chief / Barr. / Engr. Chukwudi Eze">
                     </div>
                     
                     <div>
                         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Company / Real Estate Firm</label>
                         <input type="text" x-model="clientCompany" required
-                               class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                               class="modal-input"
                                placeholder="e.g. Prime Abuja Estates Ltd. / Independent Broker">
                     </div>
                     
                     <div>
                         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Phone / WhatsApp Line</label>
                         <input type="tel" x-model="clientPhone" required
-                               class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                               class="modal-input"
                                placeholder="e.g. +234 810 135 8139">
                     </div>
                     
                     <div>
                         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Official Email</label>
                         <input type="email" x-model="clientEmail" required
-                               class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all"
+                               class="modal-input"
                                placeholder="e.g. director@company.ng">
                     </div>
                     
                     <div>
                         <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-300 mb-1">Selected Package / Program</label>
-                        <select x-model="demoPackage"
-                                class="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 transition-all">
+                        <select x-model="demoPackage" class="modal-input">
                             <option value="Growth Developer (₦30k/mo or ₦300k/yr)">🏢 Growth Developer Plan (₦30,000/mo or ₦300k/yr)</option>
                             <option value="Agency Starter (₦20k/mo or ₦200k/yr)">🏢 Agency Starter Plan (₦20,000/mo or ₦200k/yr)</option>
                             <option value="Enterprise Custom Edition">🏢 Full Enterprise Custom Edition (Dedicated Setup)</option>
