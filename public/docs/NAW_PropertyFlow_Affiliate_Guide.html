@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAW PropertyFlow CRM — Affiliate & Channel Partner Onboarding Guide</title>
+    <title>NAW PropertyFlow — Certified Partner & Advisory Network Guide</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
@@ -148,201 +148,172 @@
         .badge-tag {
             display: inline-flex;
             align-items: center;
-            gap: 5px;
+            gap: 6px;
             font-size: 9px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
             padding: 3px 8px;
-            border-radius: 14px;
+            border-radius: 4px;
             width: fit-content;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
         }
 
-        .badge-tag.gold { color: #854D0E; background: var(--accent-gold-light); border: 1px solid rgba(212, 175, 55, 0.3); }
-        .badge-tag.emerald { color: #065F46; background: var(--accent-emerald-light); border: 1px solid rgba(5, 150, 105, 0.2); }
-        .badge-tag.blue { color: #1E40AF; background: var(--accent-blue-light); border: 1px solid rgba(37, 99, 235, 0.2); }
+        .badge-tag.gold { background: var(--accent-gold-light); color: var(--accent-gold-dark); border: 1px solid rgba(212, 175, 55, 0.3); }
+        .badge-tag.emerald { background: var(--accent-emerald-light); color: var(--accent-emerald); border: 1px solid rgba(5, 150, 105, 0.3); }
+        .badge-tag.blue { background: var(--accent-blue-light); color: var(--accent-blue); border: 1px solid rgba(37, 99, 235, 0.3); }
 
         .section-title {
-            font-size: 18px;
+            font-size: 19px;
             font-weight: 700;
-            color: var(--primary-900);
             letter-spacing: -0.4px;
             margin-bottom: 4px;
+            color: var(--primary-900);
         }
 
         .section-desc {
             font-size: 11px;
             color: var(--slate-600);
             margin-bottom: 14px;
-            line-height: 1.4;
+            line-height: 1.45;
         }
 
-        /* -------------------------------------------------------------
-           COVER PAGE STYLES
-        ------------------------------------------------------------- */
+        /* Cover Page */
         .partner-cover {
-            background: linear-gradient(135deg, #030B17 0%, #06152B 40%, #0F325E 100%);
+            background: linear-gradient(145deg, #030B17 0%, #06152B 55%, #0B2545 100%);
             color: var(--white);
-            padding: 42px 38px;
+            padding: 40px 45px 30px 45px;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            position: relative;
-        }
-
-        .partner-cover::before {
-            content: '';
-            position: absolute;
-            top: -50px;
-            right: -50px;
-            width: 420px;
-            height: 420px;
-            background: radial-gradient(circle, rgba(212, 175, 55, 0.22) 0%, rgba(212, 175, 55, 0) 70%);
-            pointer-events: none;
         }
 
         .cover-top-brand {
             font-family: 'Space Grotesk', sans-serif;
+            font-size: 15px;
             font-weight: 700;
-            font-size: 14px;
+            color: var(--white);
             display: flex;
             align-items: center;
             gap: 8px;
-            color: var(--white);
         }
 
         .cover-badge {
             background: var(--accent-gold);
-            color: var(--primary-950);
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 9.5px;
+            color: var(--primary-900);
+            font-size: 9px;
             font-weight: 800;
-            letter-spacing: 0.8px;
+            padding: 4px 12px;
+            border-radius: 20px;
             text-transform: uppercase;
+            letter-spacing: 0.8px;
         }
 
         .cover-hero-heading {
-            font-size: 33px;
+            font-size: 32px;
             font-weight: 800;
             line-height: 1.15;
             color: var(--white);
-            margin-bottom: 14px;
-            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+            letter-spacing: -0.8px;
         }
 
         .cover-hero-heading span {
-            color: var(--accent-gold);
+            background: linear-gradient(90deg, #FFFFFF 0%, #D4AF37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        .earning-highlights-grid {
+        .partner-tiers-preview {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            margin: 22px 0;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+            margin-top: 18px;
+            margin-bottom: 18px;
         }
 
-        .earning-card {
-            background: rgba(255, 255, 255, 0.06);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            padding: 14px;
-            border-radius: 10px;
+        .tier-preview-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 8px;
         }
 
-        .earning-card .val {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 24px;
+        .tier-preview-card .tier-name {
+            font-size: 9px;
             font-weight: 800;
             color: var(--accent-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
             margin-bottom: 2px;
         }
 
-        .earning-card .lbl {
-            font-size: 10px;
-            color: #CBD5E1;
+        .tier-preview-card .tier-focus {
+            font-size: 10.5px;
             font-weight: 600;
-            line-height: 1.3;
+            color: var(--white);
+            line-height: 1.25;
         }
 
         .cover-meta-strip {
-            background: rgba(0, 0, 0, 0.45);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-            border-radius: 10px;
-            padding: 14px 18px;
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 12px 18px;
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
+            gap: 12px;
         }
 
-        .cover-meta-strip .lbl {
-            font-size: 8px;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            color: #94A3B8;
-            margin-bottom: 2px;
-            font-weight: 600;
-        }
+        .cover-meta-strip .lbl { font-size: 8.5px; text-transform: uppercase; color: #94A3B8; letter-spacing: 0.8px; font-weight: 600; }
+        .cover-meta-strip .val { font-size: 11.5px; font-weight: 700; color: var(--white); }
 
-        .cover-meta-strip .val {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--white);
-        }
-
-        /* -------------------------------------------------------------
-           INNER PAGE BLOCKS
-        ------------------------------------------------------------- */
+        /* Partner Models */
         .model-card {
             background: var(--white);
-            border: 1.5px solid var(--slate-200);
-            border-radius: 10px;
-            padding: 14px 16px;
+            border: 1px solid var(--slate-200);
+            border-radius: 8px;
+            padding: 12px;
             margin-bottom: 12px;
-            position: relative;
         }
 
         .model-card.featured {
-            border-color: var(--accent-gold);
-            background: linear-gradient(180deg, #FFFFFF 0%, var(--accent-gold-light) 100%);
+            border: 1.5px solid var(--accent-gold);
+            background: linear-gradient(180deg, #FFFFFF 0%, #FDFDFD 100%);
         }
 
         .model-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
         }
 
         .model-title {
-            font-size: 13.5px;
+            font-size: 13px;
             font-weight: 700;
             color: var(--primary-900);
         }
 
         .model-tag {
+            background: var(--primary-900);
+            color: var(--accent-gold);
             font-size: 9.5px;
             font-weight: 800;
-            text-transform: uppercase;
-            padding: 3px 8px;
+            padding: 2px 8px;
             border-radius: 12px;
-            background: var(--primary-900);
-            color: var(--white);
         }
 
         .calc-table {
             width: 100%;
             border-collapse: collapse;
             font-size: 10px;
-            margin-top: 8px;
-            border: 1px solid var(--slate-200);
-            border-radius: 6px;
-            overflow: hidden;
+            margin-top: 6px;
         }
 
         .calc-table th {
-            background: var(--primary-900);
-            color: var(--white);
+            background: var(--slate-100);
+            color: var(--primary-900);
             padding: 6px 8px;
             text-align: left;
             font-weight: 700;
@@ -367,11 +338,11 @@
             background: var(--slate-50);
             border: 1px dashed var(--slate-300);
             border-radius: 8px;
-            padding: 12px;
-            margin-bottom: 12px;
-            font-size: 10.5px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            font-size: 10px;
             color: var(--slate-700);
-            line-height: 1.45;
+            line-height: 1.4;
         }
 
         .script-box strong {
@@ -379,8 +350,8 @@
         }
 
         .step-circle {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             background: var(--primary-900);
             color: var(--accent-gold);
             border-radius: 50%;
@@ -388,7 +359,7 @@
             align-items: center;
             justify-content: center;
             font-weight: 800;
-            font-size: 10px;
+            font-size: 9.5px;
             flex-shrink: 0;
         }
     </style>
@@ -403,86 +374,90 @@
     <div class="page partner-cover">
         <div style="display: flex; justify-content: space-between; align-items: center;">
             <div class="cover-top-brand">
-                <span style="color: var(--accent-gold);">◆</span> NAW PROPERTYFLOW CRM
+                <span style="color: var(--accent-gold);">◆</span> NAW PROPERTYFLOW
             </div>
             <div class="cover-badge">
-                Affiliate Partner Program
+                Certified Partner & Advisory Network
             </div>
         </div>
 
-        <div style="margin: 20px 0;">
-            <div style="color: var(--accent-gold); font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;">
-                Channel Partner & Marketer Blueprint
+        <div style="margin: 18px 0;">
+            <div style="color: var(--accent-gold); font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;">
+                Strategic Technology Alliances for Real Estate Professionals
             </div>
             <h1 class="cover-hero-heading">
-                Turn Your Real Estate Network into <span>Predictable Monthly Passive Income</span>
+                Monetize Your Real Estate Network & <span>Advisory Authority</span>
             </h1>
             <p style="font-size: 12.5px; color: #CBD5E1; max-width: 560px; line-height: 1.5;">
-                Earn up to <strong>15% monthly recurring commission</strong> or <strong>20% instant upfront payouts</strong> by introducing Abuja real estate developers, top brokerages, and estate managers to NAW PropertyFlow CRM.
+                Partner with Nigeria's premier developer operations platform. Real estate lawyers, REDAN executives, estate surveyors, and senior consultants earn up to <strong>15% recurring advisory revenue</strong> or <strong>20% upfront partner bounties</strong> by introducing developers to NAW PropertyFlow.
             </p>
 
-            <div class="earning-highlights-grid">
-                <div class="earning-card">
-                    <div class="val">15%</div>
-                    <div class="lbl">Monthly Recurring Commission (12 Full Months)</div>
+            <div class="partner-tiers-preview">
+                <div class="tier-preview-card">
+                    <div class="tier-name">Bronze Partner</div>
+                    <div class="tier-focus">Realtor networks & brokers</div>
                 </div>
-                <div class="earning-card">
-                    <div class="val">₦468,000</div>
-                    <div class="lbl">Instant Cash Bounty Per Annual Developer Close</div>
+                <div class="tier-preview-card">
+                    <div class="tier-name">Silver Solution</div>
+                    <div class="tier-focus">Surveyors & marketing agencies</div>
                 </div>
-                <div class="earning-card">
-                    <div class="val">48 Hrs</div>
-                    <div class="lbl">Guaranteed Direct Bank Account Settlement</div>
+                <div class="tier-preview-card">
+                    <div class="tier-name">Gold Advisory</div>
+                    <div class="tier-focus">Property lawyers & accountants</div>
+                </div>
+                <div class="tier-preview-card">
+                    <div class="tier-name">Strategic Partner</div>
+                    <div class="tier-focus">REDAN chapters & regional leaders</div>
                 </div>
             </div>
         </div>
 
         <div class="cover-meta-strip">
             <div>
-                <div class="lbl">Partner Focus Territory</div>
-                <div class="val">Abuja (FCT) & Lagos Real Estate</div>
+                <div class="lbl">Eligible Professionals</div>
+                <div class="val">Lawyers, Surveyors, REDAN & Brokers</div>
             </div>
             <div>
-                <div class="lbl">Target Audience</div>
-                <div class="val">Realtors, Lawyers, Brokers & Marketers</div>
+                <div class="lbl">Advisory Model</div>
+                <div class="val">15% Recurring / 20% Annual Upfront</div>
             </div>
             <div>
-                <div class="lbl">Official Portal</div>
-                <div class="val">www.nawpropertyflow.com.ng</div>
+                <div class="lbl">Settlement SLA</div>
+                <div class="val">48-Hour Direct Bank Payout</div>
             </div>
         </div>
     </div>
 
     <!-- =========================================================================
-         PAGE 2: EARNING MODELS & COMMISSION CALCULATOR
+         PAGE 2: PARTNER REVENUE MODELS
     ========================================================================== -->
     <div class="page">
         <div class="page-header">
             <div class="header-brand"><span class="gold-dot"></span> NAW PropertyFlow</div>
-            <div class="header-doc-title">Partner Onboarding — Commission Models</div>
+            <div class="header-doc-title">Certified Partner Network — Revenue Models</div>
         </div>
 
         <div class="page-content">
-            <div class="badge-tag gold">Transparent Earning</div>
-            <h2 class="section-title">Two Lucrative Commission Models to Choose From</h2>
-            <p class="section-desc">We calculate commissions directly on <strong>Gross Subscription Revenue</strong> (not vague "net profit"), giving you 100% transparent and predictable earnings.</p>
+            <div class="badge-tag gold">Transparent Economics</div>
+            <h2 class="section-title">Institutional Advisory & Referral Structures</h2>
+            <p class="section-desc">We calculate partner compensation directly on <strong>Gross Contract Value</strong> with first-touch attribution and transparent 48-hour settlements.</p>
 
             <!-- Model A -->
             <div class="model-card featured">
                 <div class="model-header">
-                    <div class="model-title">Model A: Monthly Recurring Passive Income (Recommended)</div>
+                    <div class="model-title">Structure A: Monthly Recurring Advisory Revenue (12 Months)</div>
                     <span class="model-tag">15% Monthly for 1 Year</span>
                 </div>
-                <p style="font-size: 11px; color: var(--slate-600); margin-bottom: 6px;">
-                    Earn 15% of the client's monthly subscription fee every single month for the first 12 months as long as they stay subscribed.
+                <p style="font-size: 10.5px; color: var(--slate-600); margin-bottom: 6px;">
+                    Earn 15% of the developer's monthly subscription fee every month for the first 12 months with zero customer support obligations.
                 </p>
                 <table class="calc-table">
                     <thead>
                         <tr>
-                            <th>Referred Client Plan</th>
-                            <th>Monthly Plan Fee</th>
-                            <th>Your Monthly Earning</th>
-                            <th>Your 12-Month Total (Per Client)</th>
+                            <th>Developer Scale</th>
+                            <th>Monthly Subscription</th>
+                            <th>Monthly Partner Share</th>
+                            <th>12-Month Total (Per Account)</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -499,7 +474,7 @@
                             <td class="highlight">₦351,000</td>
                         </tr>
                         <tr>
-                            <td><strong>Abuja Enterprise (3 Branches)</strong></td>
+                            <td><strong>Enterprise Conglomerate</strong></td>
                             <td>₦450,000 / mo</td>
                             <td class="highlight">₦67,500 / mo</td>
                             <td class="highlight">₦810,000</td>
@@ -511,184 +486,162 @@
             <!-- Model B -->
             <div class="model-card">
                 <div class="model-header">
-                    <div class="model-title">Model B: Instant Annual Cash Bounty</div>
-                    <span class="model-tag" style="background: var(--accent-emerald);">20% Upfront Cash</span>
+                    <div class="model-title">Structure B: Upfront Annual Strategic Bounty</div>
+                    <span class="model-tag" style="background: var(--accent-emerald);">20% Upfront Bounty</span>
                 </div>
-                <p style="font-size: 11px; color: var(--slate-600); margin-bottom: 6px;">
-                    When your referred developer pays upfront for an annual subscription, you receive an instant 20% lump-sum payout within 48 hours.
+                <p style="font-size: 10.5px; color: var(--slate-600); margin-bottom: 6px;">
+                    When your referred developer chooses annual deployment billing, receive an instant 20% lump-sum bounty within 48 hours.
                 </p>
                 <table class="calc-table">
                     <thead>
                         <tr>
-                            <th>Annual Plan</th>
-                            <th>Annual Fee (Developer Pays)</th>
-                            <th>Your Instant 20% Lump Sum</th>
+                            <th>Annual Deployment</th>
+                            <th>Annual Contract Value</th>
+                            <th>Your 20% Upfront Bounty</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><strong>Starter Annual</strong></td>
                             <td>₦900,000 / yr</td>
-                            <td class="highlight">₦180,000 Instant Cash</td>
+                            <td class="highlight">₦180,000 Immediate Bounty</td>
                         </tr>
                         <tr>
                             <td><strong>Growth Developer Annual</strong></td>
                             <td>₦2,340,000 / yr</td>
-                            <td class="highlight">₦468,000 Instant Cash</td>
+                            <td class="highlight">₦468,000 Immediate Bounty</td>
                         </tr>
                         <tr>
-                            <td><strong>Enterprise Annual</strong></td>
+                            <td><strong>Enterprise Custom Annual</strong></td>
                             <td>₦5,000,000 / yr</td>
-                            <td class="highlight">₦1,000,000 Instant Cash</td>
+                            <td class="highlight">₦1,000,000 Immediate Bounty</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
-            <div style="background: #FEF3C7; border-left: 3px solid #D97706; padding: 10px 14px; border-radius: 0 6px 6px 0; margin-top: auto;">
-                <strong style="color: #92400E; font-size: 11px;">The 5-Client Passive Income Benchmark:</strong>
-                <p style="font-size: 10.5px; color: #78350F; margin-top: 2px;">
-                    Introducing just <strong>5 active Abuja developers</strong> on the Growth Plan earns you <strong>₦146,250 every single month</strong> (₦1.75 Million in a year) without doing any customer support or software maintenance.
+            <div style="background: var(--accent-gold-light); border-left: 3px solid var(--accent-gold-dark); padding: 8px 12px; border-radius: 0 6px 6px 0; margin-top: auto;">
+                <strong style="color: #92400E; font-size: 10.5px;">Institutional Portfolio Benchmark:</strong>
+                <p style="font-size: 10px; color: #78350F; margin-top: 2px;">
+                    Advising <strong>5 medium-to-large property developers</strong> to adopt NAW PropertyFlow yields <strong>₦146,250 every month (₦1.75M annually)</strong> in high-margin advisory compensation with zero technical maintenance.
                 </p>
             </div>
         </div>
 
         <div class="page-footer">
-            <span>NAW PropertyFlow CRM — Affiliate Partner Guide</span>
+            <span>NAW PropertyFlow — Certified Partner Guide</span>
             <span>Page 2 of 4</span>
         </div>
     </div>
 
     <!-- =========================================================================
-         PAGE 3: THE 3-STEP WARM HAND-OFF & OUTREACH SCRIPTS
+         PAGE 3: THE CONSULTATIVE ENGAGEMENT PROCESS
     ========================================================================== -->
     <div class="page">
         <div class="page-header">
             <div class="header-brand"><span class="gold-dot"></span> NAW PropertyFlow</div>
-            <div class="header-doc-title">Partner Onboarding — Outreach & Workflow</div>
+            <div class="header-doc-title">Certified Partner Network — Engagement Workflow</div>
         </div>
 
         <div class="page-content">
-            <div class="badge-tag blue">Zero Technical Hassle</div>
-            <h2 class="section-title">The 3-Step "Warm Hand-Off" Process</h2>
-            <p class="section-desc">You do NOT need to do technical demos or handle onboarding. You simply open the door, and our engineering team closes the deal.</p>
+            <div class="badge-tag blue">Consultative Protocol</div>
+            <h2 class="section-title">The 3-Step Consultative Introduction Model</h2>
+            <p class="section-desc">Partners do NOT deliver software demonstrations or handle data migrations. Your role is identifying operational challenges and connecting executive leadership.</p>
 
-            <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px;">
-                <div style="display: flex; gap: 10px; align-items: flex-start; background: var(--slate-50); padding: 10px; border-radius: 8px; border: 1px solid var(--slate-200);">
+            <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+                <div style="display: flex; gap: 10px; align-items: flex-start; background: var(--slate-50); padding: 10px; border-radius: 6px; border: 1px solid var(--slate-200);">
                     <div class="step-circle">1</div>
                     <div>
-                        <div style="font-size: 12px; font-weight: 700; color: var(--primary-900);">Identify & Qualify the Prospect</div>
-                        <div style="font-size: 10.5px; color: var(--slate-600);">Target Managing Directors, Principal Brokers, or Heads of Operations at real estate companies managing estates in Guzape, Katampe, Airport Road, Wuse II, or Maitama.</div>
+                        <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-900);">Identify Operational Pain Points</div>
+                        <div style="font-size: 10px; color: var(--slate-600);">Identify developers struggling with spreadsheet plot tracking, commission arguments with realtors, delayed installment follow-ups, or diaspora buyer skepticism.</div>
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 10px; align-items: flex-start; background: var(--slate-50); padding: 10px; border-radius: 8px; border: 1px solid var(--slate-200);">
+                <div style="display: flex; gap: 10px; align-items: flex-start; background: var(--slate-50); padding: 10px; border-radius: 6px; border: 1px solid var(--slate-200);">
                     <div class="step-circle">2</div>
                     <div>
-                        <div style="font-size: 12px; font-weight: 700; color: var(--primary-900);">Send the Pitch Script & Executive PDF</div>
-                        <div style="font-size: 10.5px; color: var(--slate-600);">Share the <strong>NAW_PropertyFlow_Abuja_Prospectus.pdf</strong> via WhatsApp or Email using our copy-paste scripts below.</div>
+                        <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-900);">Offer the Free Operations Audit</div>
+                        <div style="font-size: 10px; color: var(--slate-600);">Position the <strong>30-Minute Real Estate Operations Audit & Free Spreadsheet Migration Offer</strong> using our institutional advisory script.</div>
                     </div>
                 </div>
 
-                <div style="display: flex; gap: 10px; align-items: flex-start; background: var(--slate-50); padding: 10px; border-radius: 8px; border: 1px solid var(--slate-200);">
+                <div style="display: flex; gap: 10px; align-items: flex-start; background: var(--slate-50); padding: 10px; border-radius: 6px; border: 1px solid var(--slate-200);">
                     <div class="step-circle">3</div>
                     <div>
-                        <div style="font-size: 12px; font-weight: 700; color: var(--primary-900);">Introduce Our Team & Get Paid</div>
-                        <div style="font-size: 10.5px; color: var(--slate-600);">Create a 3-way WhatsApp connection with our Executive Sales team (+234 810 135 8139). We conduct the demo, migrate their data, and credit your bank within 48 hours of payment.</div>
+                        <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-900);">Executive Hand-Off & Payout Settlement</div>
+                        <div style="font-size: 10px; color: var(--slate-600);">Introduce the developer via WhatsApp/Email to our Enterprise Strategy team (+234 810 135 8139). We conduct the audit, pilot, and onboarding—crediting your bank within 48 hours of contract sign-off.</div>
                     </div>
                 </div>
             </div>
 
-            <div class="badge-tag gold">Copy & Paste Outreach Scripts</div>
-
-            <!-- WhatsApp Script -->
+            <div class="badge-tag gold">Advisory Script Template</div>
             <div class="script-box">
-                <strong>WhatsApp Message (For Real Estate MDs / CEOs):</strong><br>
-                <em>"Good day [Name / Chief]. I noticed how rapidly your estate projects are expanding in Abuja. A lot of developers lose 15-20% of revenue to spreadsheet errors, missed installment dates, and commission fights. I’m sharing a brief Executive Prospectus from NAW PropertyFlow (www.nawpropertyflow.com.ng) — an automated operating system built specifically for Nigerian developers to prevent plot double-allocations, automate milestone Statements of Account, and provide a 24/7 Diaspora Investor Portal. Would you be open to a 20-minute operational demo for your team this week? They are currently offering free data migration."</em>
-            </div>
-
-            <!-- Lawyer / Consultant Script -->
-            <div class="script-box">
-                <strong>For Real Estate Lawyers & Consultants:</strong><br>
-                <em>"Hello [Counsel/Sir], if you have developer clients spending hours manually drafting Offer Letters, Deeds of Assignment, and battling client payment disputes, NAW PropertyFlow generates verified legal documents in 3 seconds and tracks every milestone payment automatically. Check out www.nawpropertyflow.com.ng."</em>
+                <strong>Executive Conversation Starter (for MDs & Developers):</strong><br>
+                <em>"Good day [Name], I noticed your active projects across [Location]. Most developers at your scale lose substantial cash flow to spreadsheet plot double-allocation, manual SOA reconciliation, and unorganized diaspora reporting. NAW PropertyFlow is currently offering a complimentary 30-minute Real Estate Operations Audit that maps out leakages and migrates existing spreadsheets to their cloud platform for free. Would you like me to connect you with their Enterprise Lead?"</em>
             </div>
         </div>
 
         <div class="page-footer">
-            <span>NAW PropertyFlow CRM — Affiliate Partner Guide</span>
+            <span>NAW PropertyFlow — Certified Partner Guide</span>
             <span>Page 3 of 4</span>
         </div>
     </div>
 
     <!-- =========================================================================
-         PAGE 4: PARTNER RULES, PAYOUT POLICY & REGISTRATION
+         PAGE 4: REGISTRATION & PARTNER SUPPORT
     ========================================================================== -->
     <div class="page">
         <div class="page-header">
             <div class="header-brand"><span class="gold-dot"></span> NAW PropertyFlow</div>
-            <div class="header-doc-title">Partner Onboarding — Terms & Registration</div>
+            <div class="header-doc-title">Certified Partner Network — Onboarding & Portal</div>
         </div>
 
         <div class="page-content">
-            <div class="badge-tag emerald">Rules & Ethics</div>
-            <h2 class="section-title">Partner Standards & Payout Policy</h2>
-            <p class="section-desc">We operate a strictly ethical, professional, and transparent channel partnership ecosystem.</p>
+            <div class="badge-tag emerald">Partner Enablement</div>
+            <h2 class="section-title">Join the NAW Certified Partner Network Today</h2>
+            <p class="section-desc">Equip your practice with executive sales collaterals, audit frameworks, and dedicated partner management support.</p>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px;">
                 <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 8px; padding: 12px;">
-                    <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-900); margin-bottom: 4px;">48-Hour Bank Settlement</div>
-                    <p style="font-size: 10px; color: var(--slate-600); line-height: 1.4;">Commissions are paid directly into your verified Nigerian bank account within 48 hours of client subscription confirmation.</p>
+                    <h4 style="font-size: 11.5px; font-weight: 700; color: var(--primary-900); margin-bottom: 4px;">What Partners Receive</h4>
+                    <ul style="list-style: none; font-size: 10px; color: var(--slate-700); display: flex; flex-direction: column; gap: 4px;">
+                        <li>✓ Official Executive Prospectus & Capabilities PDF</li>
+                        <li>✓ Operations Audit Diagnostic Scorecard™</li>
+                        <li>✓ 1-on-1 Dedicated Partner Success Manager</li>
+                        <li>✓ Real-time deal attribution & commission portal</li>
+                    </ul>
                 </div>
+
                 <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 8px; padding: 12px;">
-                    <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-900); margin-bottom: 4px;">First-Touch Lead Attribution</div>
-                    <p style="font-size: 10px; color: var(--slate-600); line-height: 1.4;">The first partner to register a developer or introduce them on WhatsApp owns the referral credit for 90 active days.</p>
-                </div>
-                <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 8px; padding: 12px;">
-                    <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-900); margin-bottom: 4px;">Marketing Material Access</div>
-                    <p style="font-size: 10px; color: var(--slate-600); line-height: 1.4;">All partners receive high-resolution pitch decks, feature profiles, and video walkthrough links free of charge.</p>
-                </div>
-                <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 8px; padding: 12px;">
-                    <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-900); margin-bottom: 4px;">Dedicated Partner Manager</div>
-                    <p style="font-size: 10px; color: var(--slate-600); line-height: 1.4;">Direct access to our Abuja enterprise team for co-pitching high-ticket developer conglomerates.</p>
+                    <h4 style="font-size: 11.5px; font-weight: 700; color: var(--primary-900); margin-bottom: 4px;">Partner Protection & Ethics</h4>
+                    <ul style="list-style: none; font-size: 10px; color: var(--slate-700); display: flex; flex-direction: column; gap: 4px;">
+                        <li>✓ 90-Day Lead Registration Lockout Period</li>
+                        <li>✓ Multi-year client expansion commission eligibility</li>
+                        <li>✓ 100% strict NDPA 2023 compliance standards</li>
+                        <li>✓ Direct Naira bank transfer within 48 hours</li>
+                    </ul>
                 </div>
             </div>
 
-            <!-- Registration Callout Box -->
-            <div style="background: linear-gradient(135deg, var(--primary-900) 0%, #0F325E 100%); color: var(--white); border-radius: 12px; padding: 20px 24px; margin-top: auto;">
-                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 14px;">
-                    <div>
-                        <div style="color: var(--accent-gold); font-size: 9.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 2px;">Join Today</div>
-                        <h3 style="font-size: 16px; color: var(--white); margin-bottom: 4px;">Register as an Official Channel Partner</h3>
-                        <p style="font-size: 11px; color: #CBD5E1;">Send a message on WhatsApp with your full name and agency/firm details to activate your partner profile.</p>
-                    </div>
-                    <div style="background: var(--accent-gold); color: var(--primary-900); font-weight: 800; font-size: 9.5px; padding: 5px 12px; border-radius: 14px; text-transform: uppercase;">
-                        Instant Approval
-                    </div>
-                </div>
+            <div style="background: linear-gradient(135deg, var(--primary-900) 0%, #0F325E 100%); color: var(--white); border-radius: 8px; padding: 16px 20px; margin-top: auto;">
+                <h3 style="font-size: 14px; color: var(--accent-gold); margin-bottom: 3px;">Register Your Partner Profile</h3>
+                <p style="font-size: 10.5px; color: #CBD5E1; margin-bottom: 12px;">Connect with our Partner Alliances desk to activate your partner code and receive your executive onboarding kit.</p>
 
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 12px;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 10px;">
                     <div>
-                        <div style="font-size: 8.5px; text-transform: uppercase; color: #94A3B8; font-weight: 600;">Partner Hotline / WhatsApp</div>
-                        <div style="font-size: 13px; font-weight: 700; color: var(--white);">+234 810 135 8139</div>
+                        <div style="font-size: 8px; text-transform: uppercase; color: #94A3B8; font-weight: 600;">Partner Alliances Desk</div>
+                        <div style="font-size: 12px; font-weight: 700; color: var(--white);">+234 810 135 8139</div>
                     </div>
                     <div>
-                        <div style="font-size: 8.5px; text-transform: uppercase; color: #94A3B8; font-weight: 600;">Partner Email Channel</div>
-                        <div style="font-size: 12px; font-weight: 700; color: var(--white);">sales@nawpropertyflow.com.ng</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 8.5px; text-transform: uppercase; color: #94A3B8; font-weight: 600;">Official Web Portal</div>
-                        <div style="font-size: 12px; font-weight: 700; color: var(--white);">www.nawpropertyflow.com.ng</div>
-                    </div>
-                    <div>
-                        <div style="font-size: 8.5px; text-transform: uppercase; color: #94A3B8; font-weight: 600;">Regional Head Office</div>
-                        <div style="font-size: 12px; font-weight: 700; color: var(--white);">Wuse II / CBD, Abuja, Nigeria</div>
+                        <div style="font-size: 8px; text-transform: uppercase; color: #94A3B8; font-weight: 600;">Partner Portal</div>
+                        <div style="font-size: 12px; font-weight: 700; color: var(--white);">partners@nawpropertyflow.com.ng</div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="page-footer">
-            <span>NAW PropertyFlow CRM — Affiliate Partner Guide</span>
+            <span>NAW PropertyFlow — Certified Partner Guide</span>
             <span>Page 4 of 4</span>
         </div>
     </div>
