@@ -51,10 +51,18 @@ Route::middleware([
     'web',
 ])->group(function () {
 
-    // Landing redirect
+    // Landing redirect (Show landing page on main domain, CRM login on demo / tenant subdomains)
     Route::get('/', function () {
+        $host = request()->getHost();
+        if (in_array($host, ['nawpropertyflow.com.ng', 'www.nawpropertyflow.com.ng'])) {
+            return view('welcome');
+        }
         return redirect()->route('login');
-    });
+    })->name('home');
+
+    Route::get('/landing', function () {
+        return view('welcome');
+    })->name('landing');
 
     // Campaign Tracking (public, within tenant context)
     Route::get('campaigns/track/open/{token}', [CampaignController::class, 'trackOpen'])->name('campaigns.track.open');

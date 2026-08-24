@@ -198,16 +198,16 @@
 
                 <!-- Action / Contact Buttons -->
                 <div class="hidden md:flex items-center space-x-3">
-                    <a href="tel:+2348101358139" class="text-xs font-bold text-slate-300 hover:text-white flex items-center gap-1.5 px-3 py-2 rounded-lg hover:bg-white/5 transition-all">
-                        <svg class="w-3.5 h-3.5 text-brand-500" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
-                        +234 810 135 8139
+                    <a href="https://demo.nawpropertyflow.com.ng" class="px-4 py-2 rounded-full border border-brand-500/40 bg-brand-500/10 hover:bg-brand-500/20 text-brand-400 font-bold text-xs flex items-center gap-1.5 transition-all">
+                        <span>Launch Live Demo</span>
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
                     </a>
                     @auth('system_admin')
                         <a href="{{ route('system.dashboard') }}" class="text-xs font-bold text-navy-950 bg-white hover:bg-slate-200 px-4 py-2 rounded-full transition-all">System Dashboard</a>
                     @else
                         <a href="{{ route('system.login') }}" class="text-xs font-bold text-slate-300 hover:text-white px-3 py-2">System Login</a>
                         <a href="#" @click.prevent="openDemoModal('General Walkthrough')" class="px-5 py-2.5 rounded-full bg-gradient-to-r from-brand-600 to-brand-500 hover:from-brand-500 hover:to-amber-400 text-navy-950 font-extrabold text-xs tracking-wide uppercase shadow-lg shadow-brand-500/25 transition-all transform hover:-translate-y-0.5">
-                            Book Live Demo
+                            Book VIP Walkthrough
                         </a>
                     @endauth
                 </div>
@@ -269,13 +269,17 @@
             </p>
             
             <div class="flex flex-col sm:flex-row justify-center items-center gap-4 mb-12">
-                <a href="#" @click.prevent="openDemoModal('Executive Demo')" class="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-brand-600 via-brand-500 to-amber-400 hover:from-brand-500 hover:to-amber-300 text-navy-950 font-extrabold text-base shadow-xl shadow-brand-500/30 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-wide">
-                    <span>Schedule Executive Demo</span>
+                <a href="https://demo.nawpropertyflow.com.ng" class="w-full sm:w-auto px-8 py-4 rounded-full bg-gradient-to-r from-brand-600 via-brand-500 to-amber-400 hover:from-brand-500 hover:to-amber-300 text-navy-950 font-extrabold text-base shadow-xl shadow-brand-500/30 transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 uppercase tracking-wide">
+                    <span>🚀 Launch Interactive CRM Demo</span>
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </a>
-                <a href="{{ asset('docs/NAW_PropertyFlow_Abuja_Prospectus.pdf') }}" target="_blank" class="w-full sm:w-auto px-8 py-4 rounded-full glass-panel hover:bg-white/10 text-white font-bold text-base transition-all flex items-center justify-center gap-2 border border-white/15">
-                    <svg class="w-5 h-5 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span>Download Executive Prospectus (PDF)</span>
+                <a href="#" @click.prevent="openDemoModal('Executive Demo')" class="w-full sm:w-auto px-8 py-4 rounded-full glass-panel hover:bg-white/10 text-white font-bold text-base transition-all flex items-center justify-center gap-2 border border-white/15">
+                    <svg class="w-5 h-5 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    <span>Schedule Executive Meeting</span>
+                </a>
+                <a href="{{ asset('docs/NAW_PropertyFlow_Abuja_Prospectus.pdf') }}" target="_blank" class="w-full sm:w-auto px-6 py-4 rounded-full glass-panel hover:bg-white/10 text-slate-300 hover:text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 border border-white/10">
+                    <svg class="w-4 h-4 text-brand-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>PDF Prospectus</span>
                 </a>
             </div>
 
