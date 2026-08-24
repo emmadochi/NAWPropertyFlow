@@ -165,25 +165,30 @@ class LeadSeeder extends Seeder
                 'notes' => 'Fintech executive. Ready to pay 30% initial deposit.',
                 'portal_token' => Str::random(32),
             ],
-            // 10. Diaspora Lead (USA)
+            // 10. Closed Won Diaspora Deal (Banana Island Villa)
             [
-                'full_name' => 'Emeka & Grace Vance (Houston, USA)',
-                'phone_number' => '+17135550199',
-                'whatsapp_number' => '+17135550199',
-                'email' => 'emeka.vance@usenergy.com',
-                'budget_range' => '₦120M+',
+                'full_name' => 'Chief Obinna Okonkwo (Lagos / London)',
+                'phone_number' => '+447812999888',
+                'whatsapp_number' => '+447812999888',
+                'email' => 'obinna.okonkwo@diasporacapital.co.uk',
+                'budget_range' => '₦500M+',
                 'type' => 'Duplex',
-                'location' => 'Guzape Hills, Abuja',
-                'source' => 'Website',
-                'assigned_to' => $exec1->id,
-                'status' => 'Follow Up',
-                'notes' => 'Requested video recording of ongoing foundation construction.',
+                'location' => 'Banana Island, Lagos',
+                'source' => 'Diaspora Campaign',
+                'assigned_to' => $exec2->id,
+                'status' => 'Closed Won',
+                'notes' => 'Diaspora investor acquisition of Banana Island Waterfront Villa for ₦650M. Payment verified.',
                 'portal_token' => Str::random(32),
             ],
         ];
 
         foreach ($leadsData as $data) {
             $prop = $properties->where('property_type', $data['type'])->first() ?? $properties->random();
+            if (str_contains($data['full_name'], 'Obinna')) {
+                $prop = $properties->where('name', 'Banana Island Marina Court - 5 Bedroom Waterfront Detached Villa')->first() ?? $prop;
+            } elseif (str_contains($data['full_name'], 'Chinedu')) {
+                $prop = $properties->where('name', 'Guzape Royal Crest - 5 Bedroom Smart Luxury Villa')->first() ?? $prop;
+            }
 
             $lead = Lead::updateOrCreate(
                 ['email' => $data['email']],
@@ -230,16 +235,19 @@ class LeadSeeder extends Seeder
                     'status' => 'Pending',
                 ]);
             } elseif ($lead->status === 'Closed Won') {
+                $dealValue = str_contains($lead->full_name, 'Obinna') ? 650000000.00 : 180000000.00;
+                $closedDate = str_contains($lead->full_name, 'Obinna') ? Carbon::now()->subMonths(1) : Carbon::now()->subDays(3);
+
                 Sale::updateOrCreate(
                     ['lead_id' => $lead->id],
                     [
                         'property_id' => $lead->property_interest_id,
                         'sales_officer_id' => $lead->assigned_to,
-                        'deal_value' => 180000000.00,
+                        'deal_value' => $dealValue,
                         'units_purchased' => 1,
                         'status' => 'Closed Won',
-                        'payment_receipt' => 'receipts/chinedu_payment_receipt.pdf',
-                        'deal_closed_at' => Carbon::now()->subDays(2),
+                        'payment_receipt' => 'receipts/verified_payment_receipt.pdf',
+                        'deal_closed_at' => $closedDate,
                     ]
                 );
             }
