@@ -194,21 +194,21 @@
     ========================================================================== -->
     <header class="fixed top-0 left-0 right-0 z-50 glass-nav">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20 gap-4">
+            <div class="flex items-center justify-between h-16 sm:h-20 gap-3">
                 
                 <!-- Brand Logo -->
-                <a href="{{ url('/') }}" class="flex items-center space-x-3 group flex-shrink-0">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-amber-500/25 group-hover:scale-105 transition-transform flex-shrink-0">
-                        <svg class="w-6 h-6 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a href="{{ url('/') }}" class="flex items-center space-x-2.5 sm:space-x-3 group flex-shrink-0">
+                    <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-amber-500 to-amber-300 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-amber-500/25 group-hover:scale-105 transition-transform flex-shrink-0">
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
                         </svg>
                     </div>
                     <div class="flex flex-col">
-                        <div class="font-extrabold text-lg sm:text-xl tracking-tight text-white font-display flex items-center gap-1.5 whitespace-nowrap">
+                        <div class="font-extrabold text-base sm:text-xl tracking-tight text-white font-display flex items-center gap-1.5 whitespace-nowrap">
                             <span>NAW</span>
                             <span class="text-amber-400">PropertyFlow</span>
                         </div>
-                        <span class="text-[9px] uppercase font-bold tracking-widest text-slate-400 whitespace-nowrap">Enterprise Real Estate ERP</span>
+                        <span class="text-[8px] sm:text-[9px] uppercase font-bold tracking-widest text-slate-400 whitespace-nowrap">Enterprise Real Estate ERP</span>
                     </div>
                 </a>
 
@@ -244,8 +244,8 @@
 
                 <!-- Mobile Hamburger Button -->
                 <div class="lg:hidden flex items-center space-x-2">
-                    <a href="https://demo.nawpropertyflow.com.ng" class="btn-primary-demo px-3 py-1.5 rounded-full text-[11px] font-bold uppercase">
-                        Demo
+                    <a href="https://demo.nawpropertyflow.com.ng" class="btn-primary-demo px-3 py-1.5 rounded-full text-[10px] font-extrabold uppercase">
+                        Live Demo
                     </a>
                     <button @click="mobileMenuOpen = !mobileMenuOpen" class="p-2 text-slate-400 hover:text-white focus:outline-none">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
@@ -257,20 +257,20 @@
 
         <!-- Mobile Menu Dropdown -->
         <div x-show="mobileMenuOpen" x-transition class="lg:hidden glass-nav border-t border-slate-800 px-6 py-6 space-y-4">
-            <a href="#features" @click="mobileMenuOpen = false" class="block text-base font-semibold text-slate-200">Core Features</a>
-            <a href="#plot-engine" @click="mobileMenuOpen = false" class="block text-base font-semibold text-slate-200">Plot Engine</a>
-            <a href="#roi-calculator" @click="mobileMenuOpen = false" class="block text-base font-semibold text-slate-200">ROI Calculator</a>
-            <a href="#affiliates" @click="mobileMenuOpen = false" class="block text-base font-semibold text-amber-300">Partner & Earn 15%</a>
-            <a href="#pricing" @click="mobileMenuOpen = false" class="block text-base font-semibold text-slate-200">Pricing</a>
-            <a href="#contact" @click="mobileMenuOpen = false" class="block text-base font-semibold text-slate-200">Contact</a>
+            <a href="#features" @click="mobileMenuOpen = false" class="block text-sm font-semibold text-slate-200">Core Features</a>
+            <a href="#plot-engine" @click="mobileMenuOpen = false" class="block text-sm font-semibold text-slate-200">Plot Engine</a>
+            <a href="#roi-calculator" @click="mobileMenuOpen = false" class="block text-sm font-semibold text-slate-200">ROI Calculator</a>
+            <a href="#affiliates" @click="mobileMenuOpen = false" class="block text-sm font-semibold text-amber-300">Partner & Earn 15%</a>
+            <a href="#pricing" @click="mobileMenuOpen = false" class="block text-sm font-semibold text-slate-200">Pricing</a>
+            <a href="#contact" @click="mobileMenuOpen = false" class="block text-sm font-semibold text-slate-200">Contact</a>
             <div class="pt-4 border-t border-slate-800 flex flex-col space-y-3">
-                <a href="https://demo.nawpropertyflow.com.ng" class="btn-primary-demo text-center py-3 rounded-xl text-sm uppercase">
+                <a href="https://demo.nawpropertyflow.com.ng" class="btn-primary-demo text-center py-3 rounded-xl text-xs uppercase font-extrabold">
                     🚀 Launch Interactive Demo
                 </a>
                 <button @click="openDemoModal('Mobile Demo Request'); mobileMenuOpen = false" class="text-center py-3 rounded-xl glass-card text-white text-xs font-bold uppercase">
                     Book VIP Walkthrough
                 </button>
-                <a href="tel:+2348101358139" class="text-center text-xs font-bold text-amber-400 py-1">Call: +234 810 135 8139</a>
+                <a href="tel:+2348101358139" class="text-center text-xs font-bold text-amber-400 py-1">📞 Call: +234 810 135 8139</a>
             </div>
         </div>
     </header>
@@ -279,57 +279,57 @@
     <!-- =========================================================================
          HERO SECTION (High-Impact Proptech Showcase)
     ========================================================================== -->
-    <section class="relative pt-36 pb-20 md:pt-44 md:pb-28 overflow-hidden">
+    <section class="relative pt-28 pb-16 sm:pt-40 sm:pb-24 overflow-hidden">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
             
             <!-- Live Badge -->
-            <div class="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 text-xs font-bold uppercase tracking-wider mb-6">
+            <div class="inline-flex items-center space-x-2 px-3 py-1.5 sm:px-4 rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-300 text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-5">
                 <span class="w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
                 <span>The Operating System for Abuja & Nigerian Real Estate</span>
             </div>
 
             <!-- Main Headline -->
-            <h1 class="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight text-white mb-6 font-display max-w-5xl mx-auto leading-tight">
+            <h1 class="text-3xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-white mb-5 sm:mb-6 font-display max-w-5xl mx-auto leading-tight sm:leading-tight">
                 Automate Plot Allocations, Enforce Installments & <span class="text-gradient-gold">Eliminate Commission Disputes.</span>
             </h1>
 
-            <p class="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto mb-10 leading-relaxed font-normal">
+            <p class="text-sm sm:text-lg text-slate-300 max-w-3xl mx-auto mb-8 sm:mb-10 leading-relaxed font-normal px-2">
                 Replace spreadsheet chaos with enterprise precision: real-time estate plot maps, automated 3–24 month milestone collections, 1-click legal deeds, diaspora buyer portals, and native Naira payroll.
             </p>
 
             <!-- Hero Action Buttons -->
-            <div class="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 max-w-md sm:max-w-none mx-auto">
-                <a href="https://demo.nawpropertyflow.com.ng" class="w-full sm:w-auto btn-primary-demo px-8 py-4 rounded-full text-sm uppercase tracking-wide flex items-center justify-center gap-2">
+            <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 mb-12 sm:mb-16 max-w-md sm:max-w-none mx-auto">
+                <a href="https://demo.nawpropertyflow.com.ng" class="w-full sm:w-auto btn-primary-demo px-7 py-3.5 sm:px-8 sm:py-4 rounded-full text-xs sm:text-sm uppercase tracking-wide flex items-center justify-center gap-2">
                     <span>⚡ Try Interactive Live Demo</span>
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
                 </a>
-                <button @click="openDemoModal('Executive Consultation')" class="w-full sm:w-auto px-7 py-4 rounded-full glass-card hover:bg-white/10 text-white font-bold text-sm flex items-center justify-center gap-2 border border-slate-700 cursor-pointer">
-                    <svg class="w-5 h-5 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                <button @click="openDemoModal('Executive Consultation')" class="w-full sm:w-auto px-6 py-3.5 sm:px-7 sm:py-4 rounded-full glass-card hover:bg-white/10 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 border border-slate-700 cursor-pointer">
+                    <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                     <span>Schedule Executive Meeting</span>
                 </button>
-                <a href="{{ asset('docs/NAW_PropertyFlow_Abuja_Prospectus.pdf') }}" target="_blank" class="w-full sm:w-auto px-6 py-4 rounded-full glass-card hover:bg-white/10 text-slate-300 hover:text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 border border-slate-800">
+                <a href="{{ asset('docs/NAW_PropertyFlow_Abuja_Prospectus.pdf') }}" target="_blank" class="w-full sm:w-auto px-5 py-3 sm:px-6 sm:py-4 rounded-full glass-card hover:bg-white/10 text-slate-300 hover:text-white font-semibold text-xs transition-all flex items-center justify-center gap-2 border border-slate-800">
                     <svg class="w-4 h-4 text-amber-400" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
                     <span>Download PDF Prospectus</span>
                 </a>
             </div>
 
             <!-- Live KPI Counter Badges -->
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
-                <div class="glass-card p-5 rounded-2xl text-center">
-                    <div class="text-3xl font-extrabold text-amber-400 font-display">100%</div>
-                    <div class="text-xs text-slate-400 font-medium mt-1">Zero Double Allocations</div>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2.5 sm:gap-4 max-w-4xl mx-auto">
+                <div class="glass-card p-3.5 sm:p-5 rounded-xl sm:rounded-2xl text-center">
+                    <div class="text-2xl sm:text-3xl font-extrabold text-amber-400 font-display">100%</div>
+                    <div class="text-[10px] sm:text-xs text-slate-400 font-medium mt-0.5">Zero Double Allocations</div>
                 </div>
-                <div class="glass-card p-5 rounded-2xl text-center">
-                    <div class="text-3xl font-extrabold text-emerald-400 font-display">₦0</div>
-                    <div class="text-xs text-slate-400 font-medium mt-1">Realtor Split Calculation Errors</div>
+                <div class="glass-card p-3.5 sm:p-5 rounded-xl sm:rounded-2xl text-center">
+                    <div class="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-display">₦0</div>
+                    <div class="text-[10px] sm:text-xs text-slate-400 font-medium mt-0.5">Commission Disputes</div>
                 </div>
-                <div class="glass-card p-5 rounded-2xl text-center">
-                    <div class="text-3xl font-extrabold text-blue-400 font-display">35%+</div>
-                    <div class="text-xs text-slate-400 font-medium mt-1">Faster Milestone Debt Recovery</div>
+                <div class="glass-card p-3.5 sm:p-5 rounded-xl sm:rounded-2xl text-center">
+                    <div class="text-2xl sm:text-3xl font-extrabold text-blue-400 font-display">35%+</div>
+                    <div class="text-[10px] sm:text-xs text-slate-400 font-medium mt-0.5">Faster Milestone Recovery</div>
                 </div>
-                <div class="glass-card p-5 rounded-2xl text-center">
-                    <div class="text-3xl font-extrabold text-purple-400 font-display">3 Sec</div>
-                    <div class="text-xs text-slate-400 font-medium mt-1">1-Click Legal Document Factory</div>
+                <div class="glass-card p-3.5 sm:p-5 rounded-xl sm:rounded-2xl text-center">
+                    <div class="text-2xl sm:text-3xl font-extrabold text-purple-400 font-display">3 Sec</div>
+                    <div class="text-[10px] sm:text-xs text-slate-400 font-medium mt-0.5">1-Click Legal Deeds</div>
                 </div>
             </div>
 
@@ -523,45 +523,48 @@
             </div>
 
             <div class="glass-card rounded-3xl overflow-hidden border border-slate-800 max-w-5xl mx-auto">
+                <div class="block sm:hidden text-center text-[10px] text-amber-400 font-extrabold py-2.5 bg-slate-900/90 border-b border-slate-800">
+                    👈 Swipe horizontally to view full table 👉
+                </div>
                 <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs sm:text-sm">
+                    <table class="w-full text-left text-xs sm:text-sm min-w-[550px]">
                         <thead>
                             <tr class="border-b border-slate-800 bg-slate-900/90 text-slate-300">
-                                <th class="p-4 sm:p-6 font-bold uppercase tracking-wider text-xs">Real Estate Workflow</th>
-                                <th class="p-4 sm:p-6 font-bold uppercase tracking-wider text-xs text-rose-400 bg-rose-950/20">❌ Excel / Google Sheets</th>
-                                <th class="p-4 sm:p-6 font-bold uppercase tracking-wider text-xs text-amber-400 bg-amber-950/20">⚡ NAW PropertyFlow ERP</th>
+                                <th class="p-3.5 sm:p-6 font-bold uppercase tracking-wider text-xs w-1/3">Real Estate Workflow</th>
+                                <th class="p-3.5 sm:p-6 font-bold uppercase tracking-wider text-xs text-rose-400 bg-rose-950/20 w-1/3">❌ Excel / Google Sheets</th>
+                                <th class="p-3.5 sm:p-6 font-bold uppercase tracking-wider text-xs text-amber-400 bg-amber-950/20 w-1/3">⚡ NAW PropertyFlow ERP</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-800/60 text-slate-300">
                             <tr>
-                                <td class="p-4 sm:p-6 font-bold text-white">Plot Allocation & Inventory</td>
-                                <td class="p-4 sm:p-6 text-slate-400 bg-rose-950/10">High risk of catastrophic double-allocation between agents.</td>
-                                <td class="p-4 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">100% Locked reserve engine with real-time estate inventory visualizer.</td>
+                                <td class="p-3.5 sm:p-6 font-bold text-white">Plot Allocation & Inventory</td>
+                                <td class="p-3.5 sm:p-6 text-slate-400 bg-rose-950/10">High risk of catastrophic double-allocation between agents.</td>
+                                <td class="p-3.5 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">100% Locked reserve engine with real-time estate inventory visualizer.</td>
                             </tr>
                             <tr>
-                                <td class="p-4 sm:p-6 font-bold text-white">Milestone Installment Collections</td>
-                                <td class="p-4 sm:p-6 text-slate-400 bg-rose-950/10">Manual reminders often forgotten; delayed cash flow and bad debts.</td>
-                                <td class="p-4 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">Automated 3–24 month schedules with WhatsApp & SMS due alerts.</td>
+                                <td class="p-3.5 sm:p-6 font-bold text-white">Milestone Installment Collections</td>
+                                <td class="p-3.5 sm:p-6 text-slate-400 bg-rose-950/10">Manual reminders often forgotten; delayed cash flow and bad debts.</td>
+                                <td class="p-3.5 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">Automated 3–24 month schedules with WhatsApp & SMS due alerts.</td>
                             </tr>
                             <tr>
-                                <td class="p-4 sm:p-6 font-bold text-white">Realtor Commission Splits</td>
-                                <td class="p-4 sm:p-6 text-slate-400 bg-rose-950/10">Manual calculations lead to mistrust, arguments, and lost top brokers.</td>
-                                <td class="p-4 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">Instant transparent ledger with multi-tier affiliate and agent split tracking.</td>
+                                <td class="p-3.5 sm:p-6 font-bold text-white">Realtor Commission Splits</td>
+                                <td class="p-3.5 sm:p-6 text-slate-400 bg-rose-950/10">Manual calculations lead to mistrust, arguments, and lost top brokers.</td>
+                                <td class="p-3.5 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">Instant transparent ledger with multi-tier affiliate and agent split tracking.</td>
                             </tr>
                             <tr>
-                                <td class="p-4 sm:p-6 font-bold text-white">Deed of Assignment & Title Letters</td>
-                                <td class="p-4 sm:p-6 text-slate-400 bg-rose-950/10">Days of manual typing in Microsoft Word with typo risks.</td>
-                                <td class="p-4 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">1-Click Legal Document Factory auto-filled with client and plot data.</td>
+                                <td class="p-3.5 sm:p-6 font-bold text-white">Deed of Assignment & Title Letters</td>
+                                <td class="p-3.5 sm:p-6 text-slate-400 bg-rose-950/10">Days of manual typing in Microsoft Word with typo risks.</td>
+                                <td class="p-3.5 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">1-Click Legal Document Factory auto-filled with client and plot data.</td>
                             </tr>
                             <tr>
-                                <td class="p-4 sm:p-6 font-bold text-white">Diaspora Investor Experience</td>
-                                <td class="p-4 sm:p-6 text-slate-400 bg-rose-950/10">Sending WhatsApp photos that get lost; skepticism from overseas buyers.</td>
-                                <td class="p-4 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">Dedicated 24/7 client portal with site construction video logs & receipts.</td>
+                                <td class="p-3.5 sm:p-6 font-bold text-white">Diaspora Investor Experience</td>
+                                <td class="p-3.5 sm:p-6 text-slate-400 bg-rose-950/10">Sending WhatsApp photos that get lost; skepticism from overseas buyers.</td>
+                                <td class="p-3.5 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">Dedicated 24/7 client portal with site construction video logs & receipts.</td>
                             </tr>
                             <tr>
-                                <td class="p-4 sm:p-6 font-bold text-white">Staff Accountability & Daily Logs</td>
-                                <td class="p-4 sm:p-6 text-slate-400 bg-rose-950/10">No tracking of daily agent phone calls, site inspections, or tasks.</td>
-                                <td class="p-4 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">Daily work review submissions, HR KPI metrics, and integrated Naira payroll.</td>
+                                <td class="p-3.5 sm:p-6 font-bold text-white">Staff Accountability & Daily Logs</td>
+                                <td class="p-3.5 sm:p-6 text-slate-400 bg-rose-950/10">No tracking of daily agent phone calls, site inspections, or tasks.</td>
+                                <td class="p-3.5 sm:p-6 text-emerald-400 font-semibold bg-amber-950/10">Daily work review submissions, HR KPI metrics, and integrated Naira payroll.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -931,7 +934,7 @@
     <!-- =========================================================================
          FLOATING HIGH-CONVERTING CONTACT WIDGET (Abuja Enterprise Desk)
     ========================================================================== -->
-    <div class="fixed bottom-6 right-6 z-40 flex flex-col items-end">
+    <div class="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-40 flex flex-col items-end">
         
         <!-- Expanded Contact Popover -->
         <div x-show="floatingContactOpen" 
@@ -944,14 +947,14 @@
              x-transition:leave="transition ease-in duration-150"
              x-transition:leave-start="opacity-100 translate-y-0 scale-100"
              x-transition:leave-end="opacity-0 translate-y-4 scale-95"
-             class="mb-3 w-80 glass-card rounded-2xl p-5 border border-amber-500/40 shadow-2xl bg-slate-900 text-left">
+             class="mb-3 w-[calc(100vw-2rem)] max-w-xs sm:max-w-sm glass-card rounded-2xl p-5 border border-amber-500/40 shadow-2xl bg-slate-900 text-left">
             
             <div class="flex items-center justify-between pb-3 border-b border-slate-800">
                 <div class="flex items-center space-x-2">
                     <span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse"></span>
                     <span class="text-xs font-bold text-white uppercase tracking-wider">Abuja Enterprise Desk</span>
                 </div>
-                <button @click="floatingContactOpen = false" class="text-slate-400 hover:text-white text-xs cursor-pointer font-bold">✕</button>
+                <button @click="floatingContactOpen = false" class="text-slate-400 hover:text-white text-xs cursor-pointer font-bold p-1">✕</button>
             </div>
 
             <p class="text-[11px] text-slate-300 mt-2.5 mb-4 leading-relaxed">
@@ -995,15 +998,15 @@
         <!-- Floating High-Visibility Trigger Button -->
         <div class="relative">
             <!-- Small Popover Notice Pill -->
-            <div class="absolute -top-3 right-4 px-2.5 py-0.5 rounded-full bg-emerald-500 text-slate-950 text-[9px] font-extrabold tracking-wider uppercase shadow-lg flex items-center gap-1">
+            <div class="absolute -top-3 right-4 px-2 py-0.5 rounded-full bg-emerald-500 text-slate-950 text-[8px] sm:text-[9px] font-extrabold tracking-wider uppercase shadow-lg flex items-center gap-1">
                 <span class="w-1.5 h-1.5 rounded-full bg-white animate-ping"></span>
-                <span>Abuja Desk Live</span>
+                <span>Abuja Live</span>
             </div>
 
             <button @click="floatingContactOpen = !floatingContactOpen" 
                     class="floating-cta-btn">
-                <span class="text-base">💬</span>
-                <span class="font-extrabold text-xs tracking-tight text-slate-950 whitespace-nowrap">Speak with Property Specialist</span>
+                <span class="text-sm sm:text-base">💬</span>
+                <span class="font-extrabold text-[11px] sm:text-xs tracking-tight text-slate-950 whitespace-nowrap">Speak with Specialist</span>
                 <span class="w-2 h-2 rounded-full bg-emerald-600"></span>
             </button>
         </div>
