@@ -170,11 +170,29 @@ class User extends Authenticatable
 
     public function hasRole(array|string $roles): bool
     {
-        $currentRoleSlug = $this->roleRelation ? $this->roleRelation->slug : $this->role;
-        if (is_array($roles)) {
-            return in_array($currentRoleSlug, $roles) || in_array($this->role, $roles);
+        if ($this->role === 'super_admin' || ($this->roleRelation && $this->roleRelation->slug === 'super_admin')) {
+            return true;
         }
-        return $currentRoleSlug === $roles || $this->role === $roles;
+
+        $currentRoleSlug = $this->roleRelation ? $this->roleRelation->slug : $this->role;
+
+        if (is_string($roles)) {
+            $roles = str_contains($roles, ',') ? explode(',', $roles) : [$roles];
+        } else {
+            $flat = [];
+            array_walk_recursive($roles, function ($r) use (&$flat) {
+                if (is_string($r) && str_contains($r, ',')) {
+                    $flat = array_merge($flat, explode(',', $r));
+                } else {
+                    $flat[] = $r;
+                }
+            });
+            $roles = $flat;
+        }
+
+        $roles = array_map('trim', $roles);
+
+        return in_array($currentRoleSlug, $roles, true) || in_array($this->role, $roles, true);
     }
 
     // Relationships
