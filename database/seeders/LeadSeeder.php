@@ -33,8 +33,8 @@ class LeadSeeder extends Seeder
             // 0. Executive VIP Lead - Emmanuel Obinezu
             [
                 'full_name' => 'Emmanuel Obinezu',
-                'phone_number' => '+2348035550192',
-                'whatsapp_number' => '+2348035550192',
+                'phone_number' => '09042988676',
+                'whatsapp_number' => '09042988676',
                 'email' => 'emmadochi@gmail.com',
                 'budget_range' => '₦85M - ₦180M',
                 'type' => 'Duplex',
