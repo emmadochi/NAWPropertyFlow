@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Login - NAW PropertyFlow CRM</title>
+    @php
+        $companySetting = rescue(fn() => \App\Models\CompanySetting::getCached(), null);
+        $companyName = $companySetting?->company_name ?? config('app.name', 'RICAF PropertyFlow CRM');
+    @endphp
+    <title>Sign In &bull; {{ $companyName }}</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -34,17 +38,27 @@
             z-index: 10;
         }
         .logo-box {
-            width: 52px;
-            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.25rem auto;
+        }
+        .logo-box img {
+            max-height: 56px;
+            max-width: 200px;
+            object-fit: contain;
+        }
+        .logo-icon {
+            width: 54px;
+            height: 54px;
             background: linear-gradient(135deg, #FEA500 0%, #D4AF37 100%);
             border-radius: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: 0 auto 1rem auto;
             box-shadow: 0 10px 15px -3px rgba(254, 165, 0, 0.3);
         }
-        .logo-box svg { width: 28px; height: 28px; color: #0B2545; }
+        .logo-icon svg { width: 28px; height: 28px; color: #0B2545; }
         .form-title { font-size: 1.45rem; font-weight: 800; color: #0f172a; text-align: center; font-family: 'Space Grotesk', sans-serif; }
         .form-subtitle { font-size: 0.8rem; color: #64748b; text-align: center; margin-top: 0.25rem; margin-bottom: 1.5rem; }
         .form-group { margin-bottom: 1.1rem; }
@@ -146,14 +160,20 @@
 
     <div class="login-card">
         
-        <!-- Logo -->
+        <!-- Logo / Branding -->
         <div class="logo-box">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
-            </svg>
+            @if($companySetting?->logo_path && file_exists(public_path('storage/' . $companySetting->logo_path)))
+                <img src="{{ asset('storage/' . $companySetting->logo_path) }}" alt="{{ $companyName }}">
+            @else
+                <div class="logo-icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path>
+                    </svg>
+                </div>
+            @endif
         </div>
 
-        <h1 class="form-title">NAW PropertyFlow</h1>
+        <h1 class="form-title">{{ $companyName }}</h1>
         <p class="form-subtitle">Enterprise Real Estate Operating System</p>
 
         @if(session('success'))
@@ -174,7 +194,7 @@
             
             <div class="form-group">
                 <label for="email" class="form-label">Email Address</label>
-                <input type="email" name="email" id="email" value="{{ old('email', 'superadmin@propertyflow.com') }}" required autofocus class="form-input" placeholder="e.g. superadmin@propertyflow.com">
+                <input type="email" name="email" id="email" value="{{ old('email') }}" required autofocus class="form-input" placeholder="name@company.com">
             </div>
 
             <div class="form-group">
@@ -182,7 +202,7 @@
                     <label for="password" class="form-label" style="margin-bottom: 0;">Password</label>
                     <a href="{{ route('password.request') }}" style="font-size: 0.7rem; font-weight: 700; color: #d97706; text-decoration: none;">Forgot?</a>
                 </div>
-                <input type="password" name="password" id="password" value="password" required class="form-input" placeholder="••••••••">
+                <input type="password" name="password" id="password" required class="form-input" placeholder="••••••••">
             </div>
 
             <div style="display: flex; align-items: center; margin-bottom: 1.1rem;">
@@ -191,11 +211,12 @@
             </div>
 
             <button type="submit" class="btn-submit">
-                Sign In to Demo Workspace
+                Sign In to Account
             </button>
         </form>
 
-        <!-- 1-Click Role Login Selector (8 Roles) -->
+        {{-- 1-Click Role Login Selector (Only displayed in local testing or when ?demo=1 is present) --}}
+        @if(app()->environment('local') || request()->has('demo'))
         <div class="quick-roles">
             <div class="quick-roles-header">
                 <span class="quick-roles-title">⚡ 1-Click Role Switcher</span>
@@ -236,6 +257,7 @@
                 </button>
             </div>
         </div>
+        @endif
 
     </div>
 
