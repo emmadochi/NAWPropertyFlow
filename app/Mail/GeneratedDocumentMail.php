@@ -38,6 +38,10 @@ class GeneratedDocumentMail extends Mailable
     {
         return new Content(
             view: 'emails.document',
+            with: [
+                'document' => $this->document,
+                'lead'     => $this->document->lead,
+            ],
         );
     }
 

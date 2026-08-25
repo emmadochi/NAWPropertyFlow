@@ -6,7 +6,10 @@
   <title>{{ $document->title }}</title>
 </head>
 <body style="margin:0; padding:0; background-color:#f8fafc; font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#334155;">
-  @php $__setting = \App\Models\CompanySetting::first(); @endphp
+  @php 
+    $__setting = \App\Models\CompanySetting::first(); 
+    $lead = $lead ?? $document->lead;
+  @endphp
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc; padding: 40px 15px;">
     <tr>
       <td align="center">

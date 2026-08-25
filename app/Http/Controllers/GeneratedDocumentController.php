@@ -47,13 +47,13 @@ class GeneratedDocumentController extends Controller
     public function email(GeneratedDocument $document)
     {
         $lead = $document->lead;
-        if (!$lead->email) {
+        if (!$lead || !$lead->email) {
             return back()->with('error', 'Lead email address is missing.');
         }
 
         try {
             Mail::to($lead->email)->send(new GeneratedDocumentMail($document));
-            return back()->with('success', "Document mailed to {$lead->name} successfully.");
+            return back()->with('success', "Document mailed to {$lead->full_name} ({$lead->email}) successfully.");
         } catch (\Exception $e) {
             return back()->with('error', 'Mail server error: ' . $e->getMessage());
         }
