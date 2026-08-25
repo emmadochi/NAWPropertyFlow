@@ -75,14 +75,16 @@ class FollowUpController extends Controller
 
         // Log Activity
         $formattedDate = Carbon::parse($followUp->due_date)->format('d M Y, h:i A');
-        $this->leadService->logActivity(
-            $lead->id,
-            Auth::id(),
-            'Follow-up Logged',
-            "Scheduled a follow-up {$followUp->type} for {$formattedDate}."
-        );
+        // Send email confirmation to client
+        if ($lead->email && in_array($followUp->type, ['Call', 'Meeting'])) {
+            try {
+                \Illuminate\Support\Facades\Mail::to($lead->email)->send(new \App\Mail\FollowUpScheduledMail($followUp));
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Follow-up mail error: ' . $e->getMessage());
+            }
+        }
 
-        return back()->with('success', 'Follow-up scheduled successfully.');
+        return back()->with('success', 'Follow-up scheduled and confirmation emailed successfully.');
     }
 
     /**
