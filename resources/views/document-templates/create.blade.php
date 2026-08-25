@@ -309,27 +309,98 @@ const PRESET_TEMPLATES = {
         html: `<h2>DEED OF ASSIGNMENT</h2>
 <p><strong>THIS DEED OF ASSIGNMENT</strong> is made this <strong>@{{current_date}}</strong></p>
 <p><strong>BETWEEN:</strong></p>
-<p><strong>@{{company_name}}</strong>, having its corporate head office at @{{company_address}} (hereinafter referred to as the <em>"ASSIGNOR"</em> which expression shall where the context so admits include its successors-in-title and assigns) of the ONE PART;</p>
+<p><strong>@{{company_name}}</strong> (RC No: @{{company_rc_number}}), having its corporate head office at @{{company_address}} (hereinafter referred to as the <em>"ASSIGNOR"</em> which expression shall where the context so admits include its successors-in-title and assigns) of the ONE PART;</p>
 <p><strong>AND:</strong></p>
-<p><strong>@{{client_name}}</strong>, residing at @{{client_address}} (NIN: @{{client_nin}}) (hereinafter referred to as the <em>"ASSIGNEE"</em> which expression shall include their legal representatives and assigns) of the OTHER PART.</p>
+<p><strong>@{{client_name}}</strong>, residing at @{{client_address}} (NIN / ID: @{{client_nin}}) (hereinafter referred to as the <em>"ASSIGNEE"</em> which expression shall include their heirs, executors, legal representatives and assigns) of the OTHER PART.</p>
 <hr/>
 <h3>1. RECITALS</h3>
-<p>The Assignor is the absolute owner of that piece of land known as <strong>Plot @{{property_block}}</strong> measuring approximately <strong>@{{property_size}} sqm</strong>, situated at <strong>@{{property_location}}, @{{property_state}}</strong>, with Title: <strong>@{{title_type}}</strong>.</p>
-<p>The Assignor has agreed to assign all its rights and unexpired term to the Assignee for the total consideration sum of <strong>₦@{{deal_value}}</strong>.</p>
+<p><strong>WHEREAS:</strong></p>
+<p>1. The Assignor is the unencumbered legal owner and developer of that parcel of land known as <strong>@{{property_name}}</strong>, situated at <strong>@{{property_location}}, @{{property_state}}</strong>, holding root of title evidenced by <strong>@{{title_type}}</strong>.</p>
+<p>2. The Assignor has agreed to assign, transfer and convey all its title, rights and unexpired interest in <strong>@{{property_block}}</strong> measuring approximately <strong>@{{property_size}}</strong> to the Assignee for the total agreed consideration sum of <strong>@{{deal_value}}</strong>.</p>
 <hr/>
-<h3>2. WITNESSETH</h3>
-<p>In consideration of the sum of <strong>₦@{{deal_value}}</strong> paid by the Assignee to the Assignor (receipt of which the Assignor hereby acknowledges), the Assignor conveys and assigns unto the Assignee the property free from all encumbrances.</p>
-<br/>
-<table style="width: 100%; border: none;">
+<h3>2. OPERATIVE TESTATUM</h3>
+<p><strong>NOW THIS DEED WITNESSETH:</strong></p>
+<p>In pursuance of the said agreement and in consideration of the total sum of <strong>@{{deal_value}}</strong> paid by the Assignee to the Assignor (the receipt of which the Assignor hereby acknowledges), the Assignor as BENEFICIAL OWNER hereby ASSIGNS and CONVEYS unto the Assignee all that parcel of land described in the Schedule hereto, TO HOLD the same unto the Assignee for the entire unexpired residue of the term of years granted by the Governor's Consent / Title subject to statutory covenants and terms.</p>
+<hr/>
+<h3>3. COVENANTS OF TITLE &amp; INDEMNITY</h3>
+<p>The Assignor hereby covenants with the Assignee as follows:</p>
+<ol>
+  <li><strong>Right to Assign:</strong> That the Assignor has good right, full legal power and absolute authority to convey the subject property.</li>
+  <li><strong>Quiet Enjoyment:</strong> That the Assignee shall quietly enter, hold, and enjoy the property without lawful eviction or interruption by the Assignor or any party claiming through it.</li>
+  <li><strong>Freedom from Encumbrances:</strong> That the subject property is free from all prior mortgages, liens, lis pendens, customary disputes, or adverse government acquisitions.</li>
+  <li><strong>Indemnity:</strong> The Assignor indemnifies and keeps indemnified the Assignee against any defect in root of title.</li>
+</ol>
+
+<div class="page-break" style="page-break-after: always; break-after: page; border-top: 2px dashed #FEA500; margin: 28px 0; text-align: center; color: #FEA500; font-size: 11px; font-weight: bold; padding: 6px 0; background: rgba(254, 165, 0, 0.05);">✂️ --- PAGE BREAK (Next Page Starts Here) ---</div>
+<p><br/></p>
+
+<h3>4. THE SCHEDULE (THE PROPERTY DESCRIPTION)</h3>
+<table style="width: 100%; border-collapse: collapse; margin: 15px 0;">
+  <tr style="background: #f8fafc;">
+    <th style="width: 35%; padding: 8px;">Development Estate:</th>
+    <td style="padding: 8px;">@{{property_name}}</td>
+  </tr>
   <tr>
-    <td style="border:none; width: 50%;">
-      <p>___________________________<br/><strong>SIGNED for the ASSIGNOR</strong><br/>Managing Director, @{{company_name}}</p>
+    <th style="padding: 8px;">Allocated Unit / Plot:</th>
+    <td style="padding: 8px;"><strong>@{{property_block}}</strong> (Floor/Level: @{{property_floor}})</td>
+  </tr>
+  <tr style="background: #f8fafc;">
+    <th style="padding: 8px;">Approximate Size:</th>
+    <td style="padding: 8px;"><strong>@{{property_size}}</strong></td>
+  </tr>
+  <tr>
+    <th style="padding: 8px;">Location &amp; Jurisdiction:</th>
+    <td style="padding: 8px;">@{{property_location}}, @{{property_state}}</td>
+  </tr>
+  <tr style="background: #f8fafc;">
+    <th style="padding: 8px;">Title Type &amp; Survey No.:</th>
+    <td style="padding: 8px;">@{{title_type}} | Survey Plan: <strong>@{{survey_plan_no}}</strong></td>
+  </tr>
+</table>
+
+<p><strong>IN WITNESS WHEREOF</strong> the parties hereto have executed this Deed of Assignment the day and year first above written.</p>
+
+<table style="width: 100%; border: none; margin-top: 25px;">
+  <tr>
+    <td style="border:none; width: 50%; vertical-align: top;">
+      <p style="margin-bottom: 2px;"><strong>THE COMMON SEAL OF THE ASSIGNOR:</strong></p>
+      <p style="font-size: 11px; color: #64748b;">@{{company_name}} was hereunto affixed</p>
+      <br/><br/>
+      <p>____________________________________<br/><strong>MANAGING DIRECTOR / CEO</strong></p>
+      <br/>
+      <p>____________________________________<br/><strong>COMPANY SECRETARY / LEGAL COUNSEL</strong></p>
     </td>
-    <td style="border:none; width: 50%;">
-      <p>___________________________<br/><strong>SIGNED by the ASSIGNEE</strong><br/>@{{client_name}}</p>
+    <td style="border:none; width: 50%; vertical-align: top;">
+      <p style="margin-bottom: 2px;"><strong>SIGNED, SEALED &amp; DELIVERED BY:</strong></p>
+      <p style="font-size: 11px; color: #64748b;">The within named Assignee</p>
+      <br/><br/>
+      <p>____________________________________<br/><strong>@{{client_name}}</strong> (ASSIGNEE)<br/>Date: @{{current_date}}</p>
     </td>
   </tr>
-</table>`
+</table>
+
+<br/>
+<table style="width: 100%; border-top: 1px solid #cbd5e1; padding-top: 15px;">
+  <tr>
+    <td style="border:none; width: 50%;">
+      <p><strong>IN THE PRESENCE OF (WITNESS 1):</strong><br/>
+      Name: @{{witness_1_name}}<br/>
+      Address: @{{company_address}}<br/>
+      Signature: ______________________</p>
+    </td>
+    <td style="border:none; width: 50%;">
+      <p><strong>IN THE PRESENCE OF (WITNESS 2):</strong><br/>
+      Name: @{{witness_2_name}}<br/>
+      Address: @{{company_address}}<br/>
+      Signature: ______________________</p>
+    </td>
+  </tr>
+</table>
+
+<br/>
+<div style="border-top: 1px solid #e2e8f0; padding-top: 10px; font-size: 10px; color: #64748b; text-align: center;">
+  <em>Prepared by: <strong>@{{solicitor_name}}</strong>, @{{solicitor_firm}}, Legal Practitioners &amp; Notaries Public. Ref: @{{document_ref}}</em>
+</div>`
     },
     receipt: {
         name: 'Official Sales & Milestone Payment Receipt',
@@ -347,7 +418,7 @@ const PRESET_TEMPLATES = {
   </tr>
   <tr>
     <th style="padding: 10px; text-align: left;">Property Scheme:</th>
-    <td style="padding: 10px;">@{{property_name}} (Plot @{{property_block}})</td>
+    <td style="padding: 10px;">@{{property_name}} (@{{property_block}})</td>
   </tr>
   <tr style="background: #f8fafc;">
     <th style="padding: 10px; text-align: left;">Location:</th>
@@ -355,15 +426,15 @@ const PRESET_TEMPLATES = {
   </tr>
   <tr>
     <th style="padding: 10px; text-align: left;">Total Property Value:</th>
-    <td style="padding: 10px; font-weight: bold;">₦@{{deal_value}}</td>
+    <td style="padding: 10px; font-weight: bold;">@{{deal_value}}</td>
   </tr>
   <tr style="background: #ecfdf5;">
     <th style="padding: 10px; text-align: left; color: #065f46;">Amount Paid:</th>
-    <td style="padding: 10px; font-size: 16px; font-weight: bold; color: #059669;">₦@{{down_payment}}</td>
+    <td style="padding: 10px; font-size: 16px; font-weight: bold; color: #059669;">@{{down_payment}}</td>
   </tr>
   <tr>
     <th style="padding: 10px; text-align: left;">Outstanding Balance:</th>
-    <td style="padding: 10px; font-weight: bold; color: #dc2626;">₦@{{outstanding_balance}}</td>
+    <td style="padding: 10px; font-weight: bold; color: #dc2626;">@{{outstanding_balance}}</td>
   </tr>
 </table>
 <br/>
@@ -378,9 +449,9 @@ const PRESET_TEMPLATES = {
 <p>Dear @{{client_name}},</p>
 <p>We are pleased to convey the provisional offer and allocation of real estate unit in <strong>@{{property_name}}</strong> located at <strong>@{{property_location}}, @{{property_state}}</strong> under the following agreed conditions:</p>
 <ul>
-  <li><strong>Plot / Unit:</strong> Block / Plot @{{property_block}} (Size: @{{property_size}} sqm)</li>
-  <li><strong>Total Agreed Purchase Price:</strong> ₦@{{deal_value}}</li>
-  <li><strong>Deposit Paid:</strong> ₦@{{down_payment}}</li>
+  <li><strong>Plot / Unit:</strong> @{{property_block}} (Size: @{{property_size}})</li>
+  <li><strong>Total Agreed Purchase Price:</strong> @{{deal_value}}</li>
+  <li><strong>Deposit Paid:</strong> @{{down_payment}}</li>
   <li><strong>Title:</strong> @{{title_type}}</li>
   <li><strong>Survey Plan:</strong> @{{survey_plan_no}}</li>
 </ul>

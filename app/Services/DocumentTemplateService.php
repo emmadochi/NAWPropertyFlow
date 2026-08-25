@@ -115,6 +115,13 @@ class DocumentTemplateService
         // 4. Substitute values
         $compiledHtml = str_replace(array_keys($replacements), array_values($replacements), $content);
 
+        // Clean any double currency symbols or doubled words
+        $compiledHtml = str_replace(
+            ['₦₦', '₦ ₦', 'Plot Plot ', 'sqm sqm', 'sqm. sqm'],
+            ['₦', '₦', 'Plot ', 'sqm', 'sqm'],
+            $compiledHtml
+        );
+
         // Normalize Page Breaks for DomPDF so it forces a new page and removes visual editor badges
         $compiledHtml = preg_replace(
             '/<div[^>]*class=["\'][^"\']*page-break[^"\']*["\'][^>]*>.*?<\/div>/is',
