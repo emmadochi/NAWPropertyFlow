@@ -1,89 +1,96 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta charset="utf-8">
-    <title>{{ $document->title }}</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f6f9fc;
-            margin: 0;
-            padding: 0;
-            color: #333333;
-        }
-        .container {
-            max-width: 600px;
-            margin: 40px auto;
-            background-color: #ffffff;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border: 1px solid #eef2f6;
-        }
-        .header {
-            background-color: #FEA500;
-            padding: 30px;
-            text-align: center;
-            color: #ffffff;
-        }
-        .header h1 {
-            margin: 0;
-            font-size: 20px;
-            font-weight: 700;
-        }
-        .body {
-            padding: 30px;
-            line-height: 1.6;
-        }
-        .body p {
-            margin-top: 0;
-            margin-bottom: 20px;
-            font-size: 14px;
-        }
-        .btn-box {
-            text-align: center;
-            margin: 30px 0;
-        }
-        .btn {
-            background-color: #FEA500;
-            color: #ffffff;
-            text-decoration: none;
-            padding: 12px 28px;
-            border-radius: 8px;
-            font-weight: bold;
-            font-size: 14px;
-            display: inline-block;
-        }
-        .footer {
-            background-color: #f8fafc;
-            padding: 20px;
-            text-align: center;
-            font-size: 11px;
-            color: #888888;
-            border-top: 1px solid #eef2f6;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ $document->title }}</title>
 </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Document Transmittal</h1>
-        </div>
-        <div class="body">
-            <p>Dear {{ $document->lead->full_name }},</p>
-            <p>Please find attached the compiled document: <strong>{{ $document->title }}</strong> generated for your reference regarding your property interest.</p>
-            <p>You can also download or view the document online by clicking the button below:</p>
-            
-            <div class="btn-box">
-                <a href="{{ asset('storage/' . $document->pdf_path) }}" target="_blank" class="btn" style="color: #ffffff;">View Document Online</a>
-            </div>
+<body style="margin:0; padding:0; background-color:#f8fafc; font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#334155;">
+  @php $__setting = \App\Models\CompanySetting::first(); @endphp
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc; padding: 40px 15px;">
+    <tr>
+      <td align="center">
+        <table width="100%" cellpadding="0" cellspacing="0" style="max-width:600px; background-color:#ffffff; border-radius:20px; overflow:hidden; box-shadow:0 10px 25px rgba(0,0,0,0.06); border: 1px solid #e2e8f0;">
+          
+          <!-- Header Banner -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 35px 30px; text-align: center; border-bottom: 4px solid #FEA500;">
+              @if($__setting?->logo_path && file_exists(public_path('storage/' . $__setting->logo_path)))
+                <img src="{{ asset('storage/' . $__setting->logo_path) }}" alt="{{ $__setting->company_name ?? config('app.name') }}" style="max-height: 48px; object-fit: contain; margin-bottom: 8px;">
+              @else
+                <h1 style="margin:0; font-size:22px; font-weight:900; color:#ffffff; letter-spacing: -0.5px;">{{ $__setting?->company_name ?? 'NAW PropertyFlow' }}</h1>
+              @endif
+              <p style="margin:5px 0 0; font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:1px;">Official Document Dispatch</p>
+            </td>
+          </tr>
 
-            <p>If you have any questions or require further assistance, please do not hesitate to contact our sales team.</p>
-            <p>Best regards,<br><strong>NAW Properties Team</strong></p>
-        </div>
-        <div class="footer">
-            <p>&copy; {{ date('Y') }} NAW Properties Ltd. All rights reserved.<br>Plot 12, Admiralty Way, Lekki Phase 1, Lagos, Nigeria.</p>
-        </div>
-    </div>
+          <!-- Main Body -->
+          <tr>
+            <td style="padding: 40px 35px;">
+              <div style="display:inline-block; padding: 6px 14px; background-color:#eff6ff; border: 1px solid #bfdbfe; border-radius: 999px; font-size:12px; font-weight:800; color:#1d4ed8; margin-bottom: 20px;">
+                📑 Legal Instrument Ready
+              </div>
+
+              <h2 style="margin:0 0 15px; font-size:20px; font-weight:800; color:#0f172a;">Dear {{ $lead->full_name }},</h2>
+              <p style="margin:0 0 20px; font-size:14px; line-height:1.7; color:#475569;">
+                Your official document <strong>{{ $document->title }}</strong> has been prepared and generated by our legal and conveyancing department.
+              </p>
+
+              <!-- Document Card -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; margin: 25px 0; overflow:hidden;">
+                <tr>
+                  <td colspan="2" style="background-color:#0f172a; padding:12px 18px; font-size:11px; font-weight:800; color:#FEA500; text-transform:uppercase; letter-spacing:0.5px;">
+                    Document Information
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 18px; border-bottom:1px solid #e2e8f0; font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase;">Document Name</td>
+                  <td style="padding:12px 18px; border-bottom:1px solid #e2e8f0; font-size:13px; font-weight:800; color:#0f172a; text-align:right;">{{ $document->title }}</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 18px; border-bottom:1px solid #e2e8f0; font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase;">Generated On</td>
+                  <td style="padding:12px 18px; border-bottom:1px solid #e2e8f0; font-size:12px; font-weight:700; color:#475569; text-align:right;">{{ $document->created_at->format('F d, Y') }}</td>
+                </tr>
+                <tr>
+                  <td style="padding:12px 18px; font-size:11px; font-weight:700; color:#64748b; text-transform:uppercase;">Status</td>
+                  <td style="padding:12px 18px; font-size:12px; font-weight:800; color:#059669; text-align:right;">Compiled &amp; Signed</td>
+                </tr>
+              </table>
+
+              <p style="margin:0 0 20px; font-size:14px; line-height:1.7; color:#475569;">
+                A certified PDF copy is attached with this email. You can also view, track, or download your legal documentation anytime via your secure Client Portal.
+              </p>
+
+              <!-- CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-top: 30px;">
+                <tr>
+                  <td align="center">
+                    <a href="{{ route('buyer.portal', ['token' => $lead->portal_token ?? 'view']) }}" style="display:inline-block; padding: 14px 32px; background: linear-gradient(135deg, #FEA500 0%, #e09400 100%); color:#ffffff; font-size:14px; font-weight:800; text-decoration:none; border-radius:12px; box-shadow:0 6px 15px rgba(254,165,0,0.35);">
+                      Open Client Portal &rarr;
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin:30px 0 0; font-size:13px; color:#64748b;">
+                Best regards,<br>
+                <strong style="color:#0f172a;">Legal &amp; Conveyancing Unit</strong><br>
+                <span style="font-size:12px; color:#94a3b8;">{{ $__setting?->company_name ?? config('app.name') }}</span>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f1f5f9; padding: 25px 35px; text-align:center; border-top:1px solid #e2e8f0;">
+              <p style="margin:0 0 5px; font-size:12px; font-weight:700; color:#475569;">{{ $__setting?->company_name ?? config('app.name') }}</p>
+              <p style="margin:0; font-size:11px; color:#94a3b8;">{{ $__setting?->address ?? 'Nigeria' }} &bull; {{ $__setting?->email ?? config('mail.from.address') }}</p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
 </body>
 </html>
