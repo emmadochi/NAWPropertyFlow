@@ -212,7 +212,10 @@
                         <!-- Alignment -->
                         <button type="button" onclick="wysiwyg_exec('doc-editor','justifyLeft')" title="Align Left" class="wysiwyg-btn"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M15 15H3v2h12v-2zm0-8H3v2h12V7zM3 13h18v-2H3v2zm0 8h18v-2H3v2zM3 3v2h18V3H3z"/></svg></button>
                         <button type="button" onclick="wysiwyg_exec('doc-editor','justifyCenter')" title="Align Center" class="wysiwyg-btn"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M7 15v2h10v-2H7zm-4 6h18v-2H3v2zm0-8h18v-2H3v2zm4-6v2h10V7H7zM3 3v2h18V3H3z"/></svg></button>
-                        <button type="button" onclick="wysiwyg_exec('doc-editor','justifyRight')" title="Align Right" class="wysiwyg-btn"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M3 21h18v-2H3v2zm6-4h12v-2H9v2zm-6-4h18v-2H3v2zm6-4h12V7H9v2zM3 3v2h18V3H3z"/></svg></button>
+                        <!-- Multi-Page Break & Clear -->
+                        <button type="button" onclick="insertPageBreak('doc-editor')" title="Insert Multi-Page Break (Splits PDF into Next Page)" class="wysiwyg-btn text-[10px] font-black text-amber-600 hover:text-amber-700 bg-amber-50/60 hover:bg-amber-100/80 dark:bg-amber-950/40 dark:hover:bg-amber-900/60 dark:text-amber-300 px-2 rounded-lg border border-amber-300/40 flex items-center space-x-1 transition-all">
+                            <span>📄 Page Break</span>
+                        </button>
 
                         <!-- HTML Source Toggle -->
                         <button type="button" onclick="wysiwyg_toggle_source('doc-editor', 'doc-editor-source', this)" title="Toggle HTML Source" class="wysiwyg-btn ml-auto text-[10px] font-black text-brand-600 hover:text-brand-800 hover:bg-brand-50 px-2.5">&lt;/&gt; HTML</button>
@@ -329,6 +332,14 @@ function insertTokenToEditor(editorId, token) {
     } else {
         editor.innerHTML += token;
     }
+    wysiwyg_sync(editorId, 'doc-content-input');
+}
+
+function insertPageBreak(editorId) {
+    const editor = document.getElementById(editorId);
+    editor.focus();
+    const pageBreakHtml = '<div class="page-break" style="page-break-after: always; break-after: page; border-top: 2px dashed #FEA500; margin: 28px 0; text-align: center; color: #FEA500; font-size: 11px; font-weight: bold; padding: 6px 0; background: rgba(254, 165, 0, 0.05);">✂️ --- PAGE BREAK (Next Page Starts Here) ---</div><p><br></p>';
+    document.execCommand('insertHTML', false, pageBreakHtml);
     wysiwyg_sync(editorId, 'doc-content-input');
 }
 

@@ -106,6 +106,11 @@
         .clear {
             clear: both;
         }
+        /* Multi-Page handling & Page Breaks */
+        .page-break {
+            page-break-after: always;
+            break-after: page;
+        }
     </style>
 </head>
 <body>
@@ -133,7 +138,7 @@
         @if($settings && $settings->letterhead_footer)
             {!! $settings->letterhead_footer !!}
         @else
-            <div>Generated automatically by {{ $settings ? $settings->company_name : config('app.name') }} | Page <span class="page-number"></span></div>
+            <div>{{ $settings ? $settings->company_name : config('app.name') }} &bull; Confidential Real Estate Conveyance</div>
         @endif
     </footer>
 
@@ -141,5 +146,17 @@
         {!! $content !!}
     </div>
 
+    {{-- DomPDF Dynamic Page Counter script --}}
+    <script type="text/php">
+        if (isset($pdf)) {
+            $text = "Page " . $PAGE_NUM . " of " . $PAGE_COUNT;
+            $size = 8;
+            $font = $fontMetrics->getFont("DejaVu Sans");
+            $width = $fontMetrics->get_text_width($text, $font, $size);
+            $x = ($pdf->get_width() - $width) / 2;
+            $y = $pdf->get_height() - 25;
+            $pdf->page_text($x, $y, $text, $font, $size, array(0.5, 0.5, 0.5));
+        }
+    </script>
 </body>
 </html>
