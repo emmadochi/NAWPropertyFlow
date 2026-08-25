@@ -115,6 +115,18 @@ class DocumentTemplateService
         // 4. Substitute values
         $compiledHtml = str_replace(array_keys($replacements), array_values($replacements), $content);
 
+        // Normalize Page Breaks for DomPDF so it forces a new page and removes visual editor badges
+        $compiledHtml = preg_replace(
+            '/<div[^>]*class=["\'][^"\']*page-break[^"\']*["\'][^>]*>.*?<\/div>/is',
+            '<div style="page-break-before: always; clear: both;"></div>',
+            $compiledHtml
+        );
+        $compiledHtml = str_replace(
+            ['<!--pagebreak-->', '[pagebreak]', '✂️ --- PAGE BREAK (Next Page Starts Here) ---'],
+            '<div style="page-break-before: always; clear: both;"></div>',
+            $compiledHtml
+        );
+
         // 5. Generate filename & path
         $filename = 'documents/doc_' . $template->id . '_' . $lead->id . '_' . time() . '.pdf';
         $title = $template->name . ' - ' . $lead->full_name;
