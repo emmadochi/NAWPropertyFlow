@@ -30,6 +30,21 @@ class LeadSeeder extends Seeder
         $exec2 = $executives->last();
 
         $leadsData = [
+            // 0. Executive VIP Lead - Emmanuel Obinezu
+            [
+                'full_name' => 'Emmanuel Obinezu',
+                'phone_number' => '+2348035550192',
+                'whatsapp_number' => '+2348035550192',
+                'email' => 'emmadochi@gmail.com',
+                'budget_range' => '₦85M - ₦180M',
+                'type' => 'Duplex',
+                'location' => 'Maitama, Abuja',
+                'source' => 'VIP Executive Referral',
+                'assigned_to' => $exec1->id,
+                'status' => 'Hot',
+                'notes' => 'Executive Investor & VIP Client interested in luxury serviced terrace duplex in Maitama / Guzape with flexible milestone schedule.',
+                'portal_token' => Str::random(32),
+            ],
             // 1. Closed Won
             [
                 'full_name' => 'Chinedu Okafor',
