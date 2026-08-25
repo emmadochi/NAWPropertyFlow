@@ -51,10 +51,23 @@ class GeneratedDocumentController extends Controller
             return back()->with('error', 'Lead email address is missing.');
         }
 
+        // Ensure PDF is generated and saved on disk
+        if (!$document->pdf_path || !Storage::disk('public')->exists($document->pdf_path)) {
+            try {
+                $pdfService = app(\App\Services\PdfService::class);
+                $filename = 'documents/doc_' . $document->id . '_' . $lead->id . '_' . time() . '.pdf';
+                $pdfService->generateAndSave($document->content, $filename, $document->title);
+                $document->update(['pdf_path' => $filename]);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('PDF generation error: ' . $e->getMessage());
+            }
+        }
+
         try {
             Mail::to($lead->email)->send(new GeneratedDocumentMail($document));
             return back()->with('success', "Document mailed to {$lead->full_name} ({$lead->email}) successfully.");
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Document mail error: ' . $e->getMessage());
             return back()->with('error', 'Mail server error: ' . $e->getMessage());
         }
     }

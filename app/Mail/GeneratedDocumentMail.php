@@ -53,9 +53,12 @@ class GeneratedDocumentMail extends Mailable
         $attachments = [];
         
         if ($this->document->pdf_path) {
-            $path = storage_path('app/public/' . $this->document->pdf_path);
-            if (file_exists($path)) {
-                $attachments[] = Attachment::fromPath($path)
+            if (\Illuminate\Support\Facades\Storage::disk('public')->exists($this->document->pdf_path)) {
+                $attachments[] = Attachment::fromStorageDisk('public', $this->document->pdf_path)
+                    ->as(basename($this->document->pdf_path))
+                    ->withMime('application/pdf');
+            } elseif (file_exists(storage_path('app/public/' . $this->document->pdf_path))) {
+                $attachments[] = Attachment::fromPath(storage_path('app/public/' . $this->document->pdf_path))
                     ->as(basename($this->document->pdf_path))
                     ->withMime('application/pdf');
             }
