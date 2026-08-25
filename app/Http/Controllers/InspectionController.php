@@ -150,7 +150,9 @@ class InspectionController extends Controller
             }
         }
 
-        if ($request->filled('inspection_date') && Carbon::parse($originalDate)->ne(Carbon::parse($inspection->inspection_date))) {
+        $dateChanged = $request->filled('inspection_date') && Carbon::parse($originalDate)->ne(Carbon::parse($inspection->inspection_date));
+
+        if ($dateChanged) {
             $formattedDate = Carbon::parse($inspection->inspection_date)->format('d M Y, h:i A');
             $this->leadService->logActivity(
                 $lead->id,
@@ -160,7 +162,16 @@ class InspectionController extends Controller
             );
         }
 
-        return back()->with('success', 'Inspection updated successfully.');
+        // Send Reschedule / Shifted email notification to client
+        if (($dateChanged || $inspection->status === 'Rescheduled') && $lead->email) {
+            try {
+                Mail::to($lead->email)->send(new InspectionScheduledMail($inspection, true, $originalDate));
+            } catch (\Exception $e) {
+                // Log mail exception without blocking UI
+            }
+        }
+
+        return back()->with('success', 'Inspection updated and notification dispatched successfully.');
     }
 
     /**

@@ -14,13 +14,17 @@ class InspectionScheduledMail extends Mailable
     use Queueable, SerializesModels;
 
     public $inspection;
+    public $isRescheduled;
+    public $originalDate;
 
     /**
      * Create a new message instance.
      */
-    public function __construct(Inspection $inspection)
+    public function __construct(Inspection $inspection, bool $isRescheduled = false, $originalDate = null)
     {
         $this->inspection = $inspection;
+        $this->isRescheduled = $isRescheduled;
+        $this->originalDate = $originalDate;
     }
 
     /**
@@ -28,8 +32,10 @@ class InspectionScheduledMail extends Mailable
      */
     public function envelope(): Envelope
     {
+        $prefix = $this->isRescheduled ? '🔄 [Rescheduled] Site Inspection Update - ' : '📍 Site Inspection Scheduled - ';
+
         return new Envelope(
-            subject: 'Site Inspection Scheduled - ' . $this->inspection->property->name,
+            subject: $prefix . $this->inspection->property->name,
         );
     }
 
@@ -40,6 +46,11 @@ class InspectionScheduledMail extends Mailable
     {
         return new Content(
             view: 'emails.inspection',
+            with: [
+                'inspection'    => $this->inspection,
+                'isRescheduled' => $this->isRescheduled,
+                'originalDate'  => $this->originalDate,
+            ],
         );
     }
 
