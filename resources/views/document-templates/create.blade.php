@@ -68,48 +68,138 @@
                 <div class="flex items-center justify-between">
                     <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase">Template Document Body Editor *</label>
 
-                    <!-- Quick Token Insert helper -->
-                    <div x-data="{ openTokens: false }" class="relative">
-                        <button type="button" @click="openTokens = !openTokens" class="px-3 py-1.5 bg-gray-50 dark:bg-slate-700 hover:bg-gray-100 dark:hover:bg-slate-600 border border-gray-200 dark:border-slate-600 rounded-xl text-[10px] font-bold text-gray-700 dark:text-slate-200 flex items-center space-x-1 transition-all">
-                            <span>Insert Dynamic Field Token</span>
-                            <svg class="w-3 h-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <!-- Searchable Dynamic Token Insert helper -->
+                    <div x-data="{
+                        openTokens: false,
+                        search: '',
+                        categories: [
+                            {
+                                name: '👤 Lead & Client',
+                                tokens: [
+                                    { label: 'Client Full Name', tag: 'client_name', desc: 'e.g. Chief Emeka Adeleke' },
+                                    { label: 'Client Phone', tag: 'client_phone', desc: '+234 803 123 4567' },
+                                    { label: 'Client Email', tag: 'client_email', desc: 'client@example.com' },
+                                    { label: 'Client Home Address', tag: 'client_address', desc: 'Residential contact address' },
+                                    { label: 'Client NIN / ID', tag: 'client_nin', desc: 'National ID / Tax ID' },
+                                    { label: 'Client Date of Birth', tag: 'client_dob', desc: 'DD/MM/YYYY' },
+                                    { label: 'Client Occupation', tag: 'client_occupation', desc: 'Profession / Business' },
+                                    { label: 'Client Company Name', tag: 'client_company', desc: 'Employer or Firm' },
+                                    { label: 'Client Nationality', tag: 'client_nationality', desc: 'Nigerian' },
+                                    { label: 'Passport / ID No.', tag: 'client_passport', desc: 'Official ID No.' }
+                                ]
+                            },
+                            {
+                                name: '🏘️ Property & Land Specs',
+                                tokens: [
+                                    { label: 'Property Name', tag: 'property_name', desc: 'The Orange Valley Heights' },
+                                    { label: 'Property Type', tag: 'property_type', desc: 'Residential Land / Duplex' },
+                                    { label: 'Location / Estate', tag: 'property_location', desc: 'Guzape District' },
+                                    { label: 'Property Full Address', tag: 'property_address', desc: 'Plot 402, Cadastral Zone' },
+                                    { label: 'State / City', tag: 'property_state', desc: 'Abuja (FCT) / Lagos' },
+                                    { label: 'Plot Size (sqm)', tag: 'property_size', desc: '500 sqm' },
+                                    { label: 'Unit / House Type', tag: 'property_unit_type', desc: '4-Bedroom Terrace' },
+                                    { label: 'Plot / Block No.', tag: 'property_block', desc: 'Block B, Plot 14' },
+                                    { label: 'Floor / Level', tag: 'property_floor', desc: '2nd Floor' },
+                                    { label: 'Survey Plan No.', tag: 'survey_plan_no', desc: 'SURV/ABJ/2026/092' },
+                                    { label: 'Title Type', tag: 'title_type', desc: 'C of O / R of O / Deed' },
+                                    { label: 'Base / List Price', tag: 'property_price', desc: '₦180,000,000.00' },
+                                    { label: 'Property Description', tag: 'property_description', desc: 'Architectural overview' }
+                                ]
+                            },
+                            {
+                                name: '💰 Deals, Payments & Schedule',
+                                tokens: [
+                                    { label: 'Final Sale / Deal Value', tag: 'deal_value', desc: '₦85,000,000.00' },
+                                    { label: 'Initial Deposit / Paid', tag: 'down_payment', desc: '₦25,000,000.00' },
+                                    { label: 'Outstanding Balance', tag: 'outstanding_balance', desc: '₦60,000,000.00' },
+                                    { label: 'Payment Plan Duration', tag: 'payment_plan_duration', desc: '6 Months' },
+                                    { label: 'Units Purchased', tag: 'units_purchased', desc: '1 unit(s)' },
+                                    { label: 'Transaction Reference', tag: 'transaction_ref', desc: 'REF-TX-89201' },
+                                    { label: 'Commission Amount', tag: 'commission_amount', desc: '₦4,250,000.00' },
+                                    { label: 'Milestones Payment Table', tag: 'milestone_payments', desc: 'HTML Table Breakdown' }
+                                ]
+                            },
+                            {
+                                name: '🏢 Company & Developer Info',
+                                tokens: [
+                                    { label: 'Company Name', tag: 'company_name', desc: 'NAW PropertyFlow Real Estate' },
+                                    { label: 'Company Address', tag: 'company_address', desc: 'Maitama, Abuja' },
+                                    { label: 'Company Phone', tag: 'company_phone', desc: '+234 800 000 0000' },
+                                    { label: 'Company Email', tag: 'company_email', desc: 'info@propertyflow.com' },
+                                    { label: 'Corporate RC Number', tag: 'company_rc_number', desc: 'RC 1892044' }
+                                ]
+                            },
+                            {
+                                name: '📅 Dates & Deadlines',
+                                tokens: [
+                                    { label: 'Current Date', tag: 'current_date', desc: 'Today (e.g. August 25, 2026)' },
+                                    { label: 'Date of Sale', tag: 'date_of_sale', desc: 'Deal Closing Date' },
+                                    { label: 'Inspection Date', tag: 'inspection_date', desc: 'Site Tour Date' },
+                                    { label: 'Key Handover Date', tag: 'key_handover_date', desc: 'Keys Delivery Target' },
+                                    { label: 'Contract Date', tag: 'contract_date', desc: 'Execution Date' },
+                                    { label: 'Expected Completion Date', tag: 'completion_date', desc: 'Project Delivery Date' }
+                                ]
+                            },
+                            {
+                                name: '🧑‍💼 Staff & Legal Attestation',
+                                tokens: [
+                                    { label: 'Assigned Agent Name', tag: 'agent_name', desc: 'Sales Executive' },
+                                    { label: 'Agent Phone', tag: 'agent_phone', desc: 'Officer Contact' },
+                                    { label: 'Agent Email', tag: 'agent_email', desc: 'Officer Email' },
+                                    { label: 'Agent Branch', tag: 'agent_branch', desc: 'Abuja Central' },
+                                    { label: 'Document Reference No.', tag: 'document_ref', desc: 'DOC-90218' },
+                                    { label: 'Witness 1 Name', tag: 'witness_1_name', desc: 'First Legal Witness' },
+                                    { label: 'Witness 2 Name', tag: 'witness_2_name', desc: 'Second Legal Witness' },
+                                    { label: 'Solicitor / Notary Name', tag: 'solicitor_name', desc: 'Legal Counsel' },
+                                    { label: 'Solicitor Law Firm', tag: 'solicitor_firm', desc: 'Chambers / Firm' },
+                                    { label: 'Signatory Capacity', tag: 'signatory_capacity', desc: 'Vendor / Purchaser' }
+                                ]
+                            }
+                        ],
+                        insert(tag) {
+                            insertTokenToEditor('doc-editor', '&#123;&#123;' + tag + '&#125;&#125;');
+                            this.openTokens = false;
+                        },
+                        filterTokens(tokens) {
+                            if (!this.search.trim()) return tokens;
+                            const q = this.search.toLowerCase();
+                            return tokens.filter(t => t.label.toLowerCase().includes(q) || t.tag.toLowerCase().includes(q) || t.desc.toLowerCase().includes(q));
+                        }
+                    }" class="relative">
+                        <button type="button" @click="openTokens = !openTokens" class="px-3.5 py-1.5 bg-brand-50 hover:bg-brand-100 dark:bg-brand-950 dark:hover:bg-brand-900 border border-brand-200 dark:border-brand-800 rounded-xl text-xs font-black text-brand-700 dark:text-brand-300 flex items-center space-x-1.5 shadow-sm transition-all">
+                            <span>✨ Insert Dynamic Field Token</span>
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                             </svg>
                         </button>
+
                         <div x-cloak x-show="openTokens" @click.away="openTokens = false"
-                             class="absolute right-0 mt-1 w-72 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-2xl z-50 divide-y divide-gray-100 dark:divide-slate-700 py-1 text-left text-[11px] max-h-[420px] overflow-y-auto">
+                             class="absolute right-0 mt-1.5 w-80 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-2xl shadow-2xl z-50 overflow-hidden text-left text-xs">
 
-                            {{-- Lead / Client --}}
-                            <div class="px-3 py-1.5 text-[9px] font-black text-brand-600 dark:text-brand-400 uppercase tracking-widest bg-brand-50 dark:bg-brand-950/60 sticky top-0">👤 Lead / Client</div>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;client_name&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Client Full Name</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;client_phone&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Client Phone</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;client_email&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Client Email</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;client_address&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Client Home Address</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;client_nin&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Client NIN / ID</a>
+                            <!-- Search Input -->
+                            <div class="p-2.5 bg-gray-50 dark:bg-slate-900/80 border-b border-gray-200 dark:border-slate-700">
+                                <input type="text" x-model="search" placeholder="Search 35+ fields (e.g. nin, plot, price)..."
+                                       class="w-full px-3 py-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-xs text-dark-900 dark:text-white focus:outline-none focus:border-brand-500 placeholder:text-gray-400">
+                            </div>
 
-                            {{-- Property --}}
-                            <div class="px-3 py-1.5 text-[9px] font-black text-brand-600 dark:text-brand-400 uppercase tracking-widest bg-brand-50 dark:bg-brand-950/60 sticky top-0">🏘️ Property</div>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;property_name&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Property Name</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;property_type&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Property Type</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;property_location&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Location / Estate</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;property_state&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">State / City</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;property_size&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Plot Size (sqm)</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;property_block&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Plot / Block No.</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;title_type&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Title Type (C of O / R of O)</a>
-
-                            {{-- Financials --}}
-                            <div class="px-3 py-1.5 text-[9px] font-black text-brand-600 dark:text-brand-400 uppercase tracking-widest bg-brand-50 dark:bg-brand-950/60 sticky top-0">💰 Financials</div>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;deal_value&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Deal / Sale Value (₦)</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;down_payment&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Down Payment (₦)</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;outstanding_balance&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Outstanding Balance (₦)</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;transaction_ref&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Transaction Reference</a>
-
-                            {{-- Company & Dates --}}
-                            <div class="px-3 py-1.5 text-[9px] font-black text-brand-600 dark:text-brand-400 uppercase tracking-widest bg-brand-50 dark:bg-brand-950/60 sticky top-0">🏢 Company &amp; Dates</div>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;company_name&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Company Name</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;company_address&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Company Address</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;current_date&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Current Date</a>
-                            <a href="#" @click.prevent="insertTokenToEditor('doc-editor', '&#123;&#123;agent_name&#125;&#125;'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-200 hover:bg-brand-50 dark:hover:bg-slate-700 hover:text-brand-700 font-semibold">Assigned Agent Name</a>
+                            <!-- Tokens List -->
+                            <div class="max-h-[380px] overflow-y-auto divide-y divide-gray-100 dark:divide-slate-700/60">
+                                <template x-for="cat in categories" :key="cat.name">
+                                    <div x-show="filterTokens(cat.tokens).length > 0">
+                                        <div class="px-3 py-1.5 text-[9px] font-black text-brand-600 dark:text-brand-400 uppercase tracking-widest bg-brand-50/80 dark:bg-brand-950/60 sticky top-0" x-text="cat.name"></div>
+                                        <template x-for="tok in filterTokens(cat.tokens)" :key="tok.tag">
+                                            <button type="button" @click="insert(tok.tag)"
+                                                    class="w-full text-left px-3 py-2 hover:bg-brand-50 dark:hover:bg-slate-700 flex items-center justify-between group transition-colors">
+                                                <div>
+                                                    <p class="font-bold text-dark-900 dark:text-white text-xs group-hover:text-brand-600 dark:group-hover:text-brand-400" x-text="tok.label"></p>
+                                                    <p class="text-[10px] text-gray-400 dark:text-slate-400" x-text="tok.desc"></p>
+                                                </div>
+                                                <code class="text-[9px] px-1.5 py-0.5 bg-gray-100 dark:bg-slate-900 text-gray-600 dark:text-slate-300 rounded font-mono" x-text="'{{' + tok.tag + '}}'"></code>
+                                            </button>
+                                        </template>
+                                    </div>
+                                </template>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -243,7 +333,7 @@ const PRESET_TEMPLATES = {
         trigger: 'payment_received',
         html: `<div style="text-align: center; border-bottom: 2px solid #FEA500; padding-bottom: 15px; margin-bottom: 20px;">
   <h1 style="margin: 0; color: #0f172a;">@{{company_name}}</h1>
-  <p style="margin: 4px 0; font-size: 13px; color: #64748b;">@{{company_address}}</p>
+  <p style="margin: 4px 0; font-size: 13px; color: #64748b;">@{{company_address}} | RC: @{{company_rc_number}}</p>
   <h3 style="margin: 10px 0 0; color: #FEA500; text-transform: uppercase;">OFFICIAL PAYMENT RECEIPT</h3>
 </div>
 <p><strong>Receipt Date:</strong> @{{current_date}} | <strong>Ref No:</strong> @{{transaction_ref}}</p>
@@ -274,7 +364,7 @@ const PRESET_TEMPLATES = {
   </tr>
 </table>
 <br/>
-<p><em>Issued by Officer: @{{agent_name}}</em></p>`
+<p><em>Issued by Officer: @{{agent_name}} (@{{agent_branch}})</em></p>`
     },
     offer: {
         name: 'Letter of Allocation & Offer of Sale',
@@ -289,6 +379,7 @@ const PRESET_TEMPLATES = {
   <li><strong>Total Agreed Purchase Price:</strong> ₦@{{deal_value}}</li>
   <li><strong>Deposit Paid:</strong> ₦@{{down_payment}}</li>
   <li><strong>Title:</strong> @{{title_type}}</li>
+  <li><strong>Survey Plan:</strong> @{{survey_plan_no}}</li>
 </ul>
 <p>Please review and execute within fourteen (14) business days to formalize deed execution.</p>
 <br/>
