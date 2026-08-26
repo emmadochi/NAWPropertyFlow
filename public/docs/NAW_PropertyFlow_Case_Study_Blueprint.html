@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NAW PropertyFlow — Case Study & Zero-Downtime Migration Blueprint</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-950: #030B17;
+            --primary-900: #06152B;
+            --primary-800: #0B2545;
+            --primary-700: #133E6D;
+            --primary-600: #1D5C96;
+            --accent-gold: #D4AF37;
+            --accent-gold-dark: #A1811D;
+            --accent-gold-light: #FEF9E7;
+            --accent-emerald: #059669;
+            --accent-emerald-light: #ECFDF5;
+            --accent-blue: #2563EB;
+            --accent-blue-light: #EFF6FF;
+            --slate-900: #0F172A;
+            --slate-800: #1E293B;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748B;
+            --slate-400: #94A3B8;
+            --slate-200: #E2E8F0;
+            --slate-100: #F1F5F9;
+            --slate-50: #F8FAFC;
+            --white: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #E2E8F0;
+            color: var(--slate-800);
+            line-height: 1.45;
+            font-size: 12px;
+        }
+
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+
+        .page-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 0;
+            gap: 20px;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            height: 297mm;
+            background: var(--white);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            page-break-after: always;
+            page-break-inside: avoid;
+        }
+
+        @media print {
+            body { background: none; }
+            .page-container { padding: 0; gap: 0; }
+            .page { box-shadow: none; margin: 0; width: 210mm; height: 297mm; }
+        }
+
+        .page-header {
+            height: 48px;
+            padding: 14px 35px 8px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--slate-200);
+            background: var(--white);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--primary-900);
+            letter-spacing: -0.4px;
+        }
+
+        .header-brand .gold-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-gold);
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .header-doc-title {
+            font-size: 9.5px;
+            font-weight: 700;
+            color: var(--slate-500);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .page-footer {
+            margin-top: auto;
+            height: 40px;
+            padding: 8px 35px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid var(--slate-200);
+            font-size: 9px;
+            color: var(--slate-400);
+            background: var(--white);
+        }
+
+        .page-content {
+            padding: 22px 35px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Space Grotesk', 'Plus Jakarta Sans', sans-serif;
+            color: var(--primary-900);
+            line-height: 1.2;
+        }
+
+        .badge-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 9px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 3px 8px;
+            border-radius: 4px;
+            width: fit-content;
+            margin-bottom: 6px;
+        }
+
+        .badge-tag.gold { background: var(--accent-gold-light); color: var(--accent-gold-dark); border: 1px solid rgba(212, 175, 55, 0.3); }
+        .badge-tag.emerald { background: var(--accent-emerald-light); color: var(--accent-emerald); border: 1px solid rgba(5, 150, 105, 0.3); }
+        .badge-tag.blue { background: var(--accent-blue-light); color: var(--accent-blue); border: 1px solid rgba(37, 99, 235, 0.3); }
+
+        .section-title {
+            font-size: 19px;
+            font-weight: 700;
+            letter-spacing: -0.4px;
+            margin-bottom: 4px;
+            color: var(--primary-900);
+        }
+
+        .section-desc {
+            font-size: 11px;
+            color: var(--slate-600);
+            margin-bottom: 12px;
+            line-height: 1.45;
+        }
+
+        /* Cover Page */
+        .case-cover {
+            background: linear-gradient(145deg, #030B17 0%, #06152B 55%, #0B2545 100%);
+            color: var(--white);
+            padding: 40px 45px 30px 45px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .cover-top-brand {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cover-badge {
+            background: var(--accent-gold);
+            color: var(--primary-900);
+            font-size: 9px;
+            font-weight: 800;
+            padding: 4px 12px;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .cover-hero-heading {
+            font-size: 32px;
+            font-weight: 800;
+            line-height: 1.15;
+            color: var(--white);
+            margin-bottom: 12px;
+            letter-spacing: -0.8px;
+        }
+
+        .cover-hero-heading span {
+            background: linear-gradient(90deg, #FFFFFF 0%, #D4AF37 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .metrics-hero-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 18px 0;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-card .val {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent-gold);
+            margin-bottom: 2px;
+        }
+
+        .metric-card .lbl {
+            font-size: 9.5px;
+            color: #CBD5E1;
+            line-height: 1.3;
+        }
+
+        .story-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .story-box {
+            background: var(--slate-50);
+            border: 1px solid var(--slate-200);
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        .story-box.before { border-left: 3px solid #DC2626; }
+        .story-box.after { border-left: 3px solid #059669; }
+
+        .story-title {
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .blueprint-step {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+            background: var(--slate-50);
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid var(--slate-200);
+            margin-bottom: 8px;
+        }
+
+        .blueprint-num {
+            background: var(--primary-900);
+            color: var(--accent-gold);
+            font-size: 9.5px;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-container">
+
+    <!-- =========================================================================
+         PAGE 1: CASE STUDY COVER
+    ========================================================================== -->
+    <div class="page case-cover">
+        <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div class="cover-top-brand">
+                <span style="color: var(--accent-gold);">◆</span> NAW PROPERTYFLOW
+            </div>
+            <div class="cover-badge">
+                Operational Transformation Case Study
+            </div>
+        </div>
+
+        <div style="margin: 20px 0;">
+            <div style="color: var(--accent-gold); font-size: 10.5px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px;">
+                Spreadsheet-to-Cloud Transformation Blueprint
+            </div>
+            <h1 class="cover-hero-heading">
+                Migrating 4,200 Plots & ₦3.8B in Active Ledgers <span>in 48 Hours</span>
+            </h1>
+            <p style="font-size: 12.5px; color: #CBD5E1; max-width: 580px; line-height: 1.5; margin-bottom: 18px;">
+                How a leading multi-estate developer eliminated spreadsheet double-allocation risks, automated installment collection schedules, and provided 24/7 diaspora portal visibility with zero sales downtime.
+            </p>
+
+            <div class="metrics-hero-grid">
+                <div class="metric-card">
+                    <div class="val">4,200</div>
+                    <div class="lbl">Plots & Units Consolidated</div>
+                </div>
+                <div class="metric-card">
+                    <div class="val">48 Hrs</div>
+                    <div class="lbl">Zero-Downtime Migration Window</div>
+                </div>
+                <div class="metric-card">
+                    <div class="val">+35%</div>
+                    <div class="lbl">Faster Installment Collections</div>
+                </div>
+            </div>
+        </div>
+
+        <div style="background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 12px 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+            <div>
+                <div style="font-size: 8.5px; text-transform: uppercase; color: #94A3B8; font-weight: 600;">Developer Profile</div>
+                <div style="font-size: 11.5px; font-weight: 700; color: var(--white);">Multi-Estate Land Developer</div>
+            </div>
+            <div>
+                <div style="font-size: 8.5px; text-transform: uppercase; color: #94A3B8; font-weight: 600;">Locations</div>
+                <div style="font-size: 11.5px; font-weight: 700; color: var(--white);">Guzape, Katampe & Airport Road</div>
+            </div>
+            <div>
+                <div style="font-size: 8.5px; text-transform: uppercase; color: #94A3B8; font-weight: 600;">Previous System</div>
+                <div style="font-size: 11.5px; font-weight: 700; color: var(--white);">15 Disconnected Excel Sheets</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 2: THE CHALLENGE VS THE TRANSFORMATION
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-brand"><span class="gold-dot"></span> NAW PropertyFlow</div>
+            <div class="header-doc-title">Case Study — The Operational Challenge</div>
+        </div>
+
+        <div class="page-content">
+            <div class="badge-tag gold">Diagnostic Comparison</div>
+            <h2 class="section-title">The Challenge: Scaling Beyond Spreadsheets</h2>
+            <p class="section-desc">With rapid sales across 6 estate developments, the manual spreadsheet model reached a breaking point.</p>
+
+            <div class="story-grid">
+                <div class="story-box before">
+                    <div class="story-title" style="color: #991B1B;">The Manual Spreadsheet Reality</div>
+                    <p style="font-size: 10px; color: var(--slate-600); line-height: 1.4;">
+                        • Plot availability spread across 15 Excel workbooks.<br>
+                        • Multiple accidental reservations on the same 500sqm plots.<br>
+                        • Accounts team took 2 days to compile a single customer SOA.<br>
+                        • Diaspora buyers in London constantly called for payment updates.
+                    </p>
+                </div>
+
+                <div class="story-box after">
+                    <div class="story-title" style="color: #065F46;">The NAW PropertyFlow Operating Model</div>
+                    <p style="font-size: 10px; color: var(--slate-600); line-height: 1.4;">
+                        • Single central inventory registry with automated plot locking.<br>
+                        • Zero double-allocation incidents across all 6 estates.<br>
+                        • 1-click instant PDF Statements of Account with verified payment logs.<br>
+                        • Diaspora buyers access 24/7 self-service portal with live drone updates.
+                    </p>
+                </div>
+            </div>
+
+            <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 8px; padding: 12px; margin-top: auto;">
+                <h4 style="font-size: 11.5px; font-weight: 700; color: var(--primary-900); margin-bottom: 3px;">Executive Managing Director Verdict:</h4>
+                <p style="font-size: 10.5px; color: var(--slate-700); font-style: italic; line-height: 1.45;">
+                    "We were terrified of moving our historical records from Excel because of our active payment plans. NAW PropertyFlow migrated all 4,200 plots and client ledgers in 48 hours. Our installment follow-up time was cut in half, and our diaspora buyers now have complete confidence."
+                </p>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow — Case Study & Migration Blueprint</span>
+            <span>Page 2 of 4</span>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 3: THE 4-STEP ZERO-DOWNTIME MIGRATION PROTOCOL
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-brand"><span class="gold-dot"></span> NAW PropertyFlow</div>
+            <div class="header-doc-title">Case Study — The 4-Step Migration Blueprint</div>
+        </div>
+
+        <div class="page-content">
+            <div class="badge-tag blue">Methodology Blueprint</div>
+            <h2 class="section-title">The 4-Step Zero-Downtime Data Migration Protocol</h2>
+            <p class="section-desc">How our technical solutions team guarantees zero data loss and flawless ledger continuity.</p>
+
+            <div class="blueprint-step">
+                <span class="blueprint-num">Step 01</span>
+                <div>
+                    <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-900);">Extraction & Inventory Layout Ingestion</div>
+                    <div style="font-size: 10px; color: var(--slate-600);">We extract raw Excel plot registers, plot dimensions (250sqm/500sqm/1,000sqm), estate sectors, and prototype classifications.</div>
+                </div>
+            </div>
+
+            <div class="blueprint-step">
+                <span class="blueprint-num">Step 02</span>
+                <div>
+                    <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-900);">Ledger Reconciliation & Milestone Schedule Mapping</div>
+                    <div style="font-size: 10px; color: var(--slate-600);">Historical payment records and outstanding installment balances are reconciled against bank statements and mapped into automated milestone schedules.</div>
+                </div>
+            </div>
+
+            <div class="blueprint-step">
+                <span class="blueprint-num">Step 03</span>
+                <div>
+                    <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-900);">Dual-Verification & Executive Sign-Off</div>
+                    <div style="font-size: 10px; color: var(--slate-600);">Client accounts team verifies imported customer balances and plot occupancy metrics side-by-side with original Excel files before production go-live.</div>
+                </div>
+            </div>
+
+            <div class="blueprint-step">
+                <span class="blueprint-num">Step 04</span>
+                <div>
+                    <div style="font-size: 11.5px; font-weight: 700; color: var(--primary-900);">Role Activation & Diaspora Credentials Dispatch</div>
+                    <div style="font-size: 10px; color: var(--slate-600);">Staff roles activated with custom permissions; secure self-service portal credentials dispatched to diaspora buyers via SMS and email.</div>
+                </div>
+            </div>
+
+            <div style="background: var(--accent-gold-light); border-left: 3px solid var(--accent-gold-dark); padding: 8px 12px; border-radius: 0 6px 6px 0; margin-top: auto;">
+                <strong style="color: #92400E; font-size: 10.5px;">Migration Guarantee:</strong>
+                <p style="font-size: 10px; color: #78350F; margin-top: 2px;">
+                    Every NAW PropertyFlow deployment includes 100% complimentary technical data migration performed by our senior database architects.
+                </p>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow — Case Study & Migration Blueprint</span>
+            <span>Page 3 of 4</span>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         PAGE 4: RESULTS & HOW TO GET STARTED
+    ========================================================================== -->
+    <div class="page">
+        <div class="page-header">
+            <div class="header-brand"><span class="gold-dot"></span> NAW PropertyFlow</div>
+            <div class="header-doc-title">Case Study — Quantified ROI & Next Steps</div>
+        </div>
+
+        <div class="page-content">
+            <div class="badge-tag emerald">Quantified Impact</div>
+            <h2 class="section-title">Measurable 90-Day Business Outcomes</h2>
+            <p class="section-desc">Key operational metrics achieved following deployment of the NAW PropertyFlow operating backbone.</p>
+
+            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px;">
+                <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 6px; padding: 10px; text-align: center;">
+                    <div style="font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent-emerald);">+35%</div>
+                    <div style="font-size: 9px; color: var(--slate-600);">Collection Speed</div>
+                </div>
+                <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 6px; padding: 10px; text-align: center;">
+                    <div style="font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--accent-blue);">0</div>
+                    <div style="font-size: 9px; color: var(--slate-600);">Commission Disputes</div>
+                </div>
+                <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 6px; padding: 10px; text-align: center;">
+                    <div style="font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: #B45309;">45 Sec</div>
+                    <div style="font-size: 9px; color: var(--slate-600);">Deed Generation</div>
+                </div>
+                <div style="background: var(--slate-50); border: 1px solid var(--slate-200); border-radius: 6px; padding: 10px; text-align: center;">
+                    <div style="font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--primary-900);">2.8x</div>
+                    <div style="font-size: 9px; color: var(--slate-600);">Diaspora Trust Conversion</div>
+                </div>
+            </div>
+
+            <div style="background: linear-gradient(135deg, var(--primary-900) 0%, #0F325E 100%); color: var(--white); border-radius: 8px; padding: 14px 18px; margin-top: auto;">
+                <h3 style="font-size: 13px; color: var(--accent-gold); margin-bottom: 3px;">Ready to Transform Your Developer Operations?</h3>
+                <p style="font-size: 10px; color: #CBD5E1; margin-bottom: 10px; line-height: 1.4;">
+                    Schedule your free 30-minute Real Estate Operations Audit and claim complimentary spreadsheet data migration.
+                </p>
+                <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid rgba(255,255,255,0.15); padding-top: 8px; font-size: 10px;">
+                    <div>Call/WhatsApp: <strong>+234 810 135 8139</strong></div>
+                    <div>Email: <strong>transformation@nawpropertyflow.com.ng</strong></div>
+                    <div><strong>www.nawpropertyflow.com.ng</strong></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page-footer">
+            <span>NAW PropertyFlow — Case Study & Migration Blueprint</span>
+            <span>Page 4 of 4</span>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

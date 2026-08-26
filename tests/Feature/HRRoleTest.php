@@ -13,7 +13,41 @@ use Tests\TestCase;
 
 class HRRoleTest extends TestCase
 {
-    use RefreshDatabase;
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->artisan('migrate', [
+            '--path' => 'database/migrations/tenant',
+            '--realpath' => false,
+        ]);
+
+        \App\Models\CompanySetting::forceCreate([
+            'company_name' => 'RICAF Nigeria Limited',
+            'package_tier' => 'enterprise',
+            'email' => 'info@ricafltd.com'
+        ]);
+
+        Department::firstOrCreate(
+            ['name' => 'Admin'],
+            ['description' => 'Administration', 'is_active' => true]
+        );
+
+        Department::firstOrCreate(
+            ['name' => 'Sales'],
+            ['description' => 'Sales Department', 'is_active' => true]
+        );
+
+        $media = Department::firstOrCreate(
+            ['name' => 'Media'],
+            ['description' => 'Media Department', 'is_active' => true]
+        );
+
+        DepartmentMetric::firstOrCreate(
+            ['department_id' => $media->id, 'key' => 'videos_shot'],
+            ['label' => 'Videos Shot', 'metric_type' => 'count', 'target' => 10, 'is_active' => true]
+        );
+    }
 
     private function hrUser(): User
     {
@@ -224,5 +258,55 @@ class HRRoleTest extends TestCase
 
         $response2 = $this->actingAs($hr)->get(route('settings.company.edit'));
         $response2->assertStatus(403);
+    }
+
+    /** @test */
+    public function hr_cannot_access_roles_or_legal_vault_without_explicit_permissions(): void
+    {
+        $hr = $this->hrUser();
+
+        // HR cannot access Roles & Permissions Engine by default
+        $response1 = $this->actingAs($hr)->get(route('settings.roles.index'));
+        $response1->assertStatus(403);
+
+        // HR cannot access Title Deeds / Generated Documents by default
+        $response2 = $this->actingAs($hr)->get(route('generated-documents.index'));
+        $response2->assertStatus(403);
+    }
+
+    /** @test */
+    public function hr_can_access_payroll_and_department_targets(): void
+    {
+        $hr = $this->hrUser();
+
+        $response1 = $this->actingAs($hr)->get(route('payroll.index'));
+        $response1->assertStatus(200);
+
+        $response2 = $this->actingAs($hr)->get(route('hr.department-targets.index'));
+        $response2->assertStatus(200);
+
+        $response3 = $this->actingAs($hr)->get(route('hr.leaderboard'));
+        $response3->assertStatus(200);
+    }
+
+    /** @test */
+    public function hr_sidebar_renders_hr_section_and_hides_unauthorized_modules(): void
+    {
+        $hr = $this->hrUser();
+
+        $response = $this->actingAs($hr)->get(route('dashboard'));
+        $response->assertStatus(200);
+
+        // HR & Personnel Section visible
+        $response->assertSee('HR &amp; Personnel', false);
+        $response->assertSee('Leave Management');
+        $response->assertSee('Team &amp; Staff Access', false);
+        $response->assertSee('Department Targets');
+        $response->assertSee('Naira Payroll &amp; Salaries', false);
+
+        // Restricted sections hidden
+        $response->assertDontSee('Contracts &amp; Legal Vault', false);
+        $response->assertDontSee('Marketing &amp; Growth', false);
+        $response->assertDontSee('Multi-Branch Setup');
     }
 }

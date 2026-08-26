@@ -67,18 +67,21 @@
             @if(Auth::user()->isSuperAdmin() || Auth::user()->isCompanyAdmin())
                 <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">Executive Control Center</h1>
                 <p class="text-sm text-gray-500 mt-1">Cross-department operations, real estate inventory, financial inflows, and workforce status.</p>
-            @elseif(Auth::user()->hasPermission('finance.view_ledger') && !Auth::user()->hasPermission('leads.view_own'))
+            @elseif(Auth::user()->hasPermission('leads.view_all') || Auth::user()->hasPermission('leads.view_own'))
+                <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">Sales &amp; Deals Dashboard</h1>
+                <p class="text-sm text-gray-500 mt-1">Real-time leads tracking, client inspections, pipeline tasks, and commission targets.</p>
+            @elseif(Auth::user()->hasPermission('finance.view_ledger'))
                 <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">Financial &amp; Accounting Dashboard</h1>
                 <p class="text-sm text-gray-500 mt-1">Verified cash inflows, client payment audits, OPEX disbursements, and company P&amp;L.</p>
-            @elseif(Auth::user()->hasPermission('hr.view_staff') && !Auth::user()->hasPermission('leads.view_own'))
+            @elseif(Auth::user()->hasPermission('hr.manage_users') || Auth::user()->hasPermission('hr.manage_targets') || Auth::user()->hasPermission('hr.approve_leaves'))
                 <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">Human Resources Dashboard</h1>
                 <p class="text-sm text-gray-500 mt-1">Staff directory, leave approvals, daily attendance KPI compliance, and onboarding pipeline.</p>
-            @elseif(Auth::user()->hasPermission('media.manage_production') || Auth::user()->hasPermission('marketing.view'))
+            @elseif(Auth::user()->hasPermission('media.manage_production') || Auth::user()->hasPermission('marketing.view') || Auth::user()->hasPermission('marketing.send_broadcast'))
                 <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">Media &amp; Marketing Operations</h1>
                 <p class="text-sm text-gray-500 mt-1">Creative asset shoots, promotional campaigns, audience reach, and lead conversion channels.</p>
             @else
-                <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">Sales &amp; Deals Dashboard</h1>
-                <p class="text-sm text-gray-500 mt-1">Real-time leads tracking, client inspections, pipeline tasks, and commission targets.</p>
+                <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">Operations Dashboard</h1>
+                <p class="text-sm text-gray-500 mt-1">Real-time company metrics, project statuses, and task tracking.</p>
             @endif
         </div>
         <div class="flex space-x-3">
@@ -110,7 +113,7 @@
     {{-- 3. Capability-Driven Dynamic Counter Grid --}}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {{-- Finance & Accounting Counters --}}
-        @if(!empty($finance_data) && (Auth::user()->hasPermission('finance.view_ledger') && !Auth::user()->hasPermission('leads.view_own')))
+        @if(!empty($finance_data) && (Auth::user()->hasPermission('finance.view_ledger') && !Auth::user()->hasPermission('leads.view_own') && !Auth::user()->hasPermission('leads.view_all')))
             <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center justify-between">
                 <div>
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Monthly Inflows</span>
@@ -156,7 +159,7 @@
             </div>
 
         {{-- HR Counters --}}
-        @elseif(!empty($hr_data) && (Auth::user()->hasPermission('hr.view_staff') && !Auth::user()->hasPermission('leads.view_own')))
+        @elseif(!empty($hr_data) && (Auth::user()->hasPermission('hr.manage_users') || Auth::user()->hasPermission('hr.manage_targets') || Auth::user()->hasPermission('hr.approve_leaves')) && !Auth::user()->hasPermission('leads.view_own') && !Auth::user()->hasPermission('leads.view_all') && !Auth::user()->hasPermission('finance.view_ledger'))
             <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center justify-between">
                 <div>
                     <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Staff</span>

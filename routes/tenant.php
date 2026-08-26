@@ -143,10 +143,12 @@ Route::middleware([
             Route::get('documents/{document}/download', [DocumentController::class, 'download'])->name('documents.download');
             Route::delete('documents/{document}', [DocumentController::class, 'destroy'])->name('documents.destroy');
 
-            Route::get('generated-documents', [GeneratedDocumentController::class, 'index'])->name('generated-documents.index');
-            Route::get('generated-documents/{document}', [GeneratedDocumentController::class, 'show'])->name('generated-documents.show');
-            Route::get('generated-documents/{document}/download', [GeneratedDocumentController::class, 'download'])->name('generated-documents.download');
-            Route::post('generated-documents/{document}/email', [GeneratedDocumentController::class, 'email'])->name('generated-documents.email');
+            Route::middleware(['permission:properties.view,sales.record'])->group(function () {
+                Route::get('generated-documents', [GeneratedDocumentController::class, 'index'])->name('generated-documents.index');
+                Route::get('generated-documents/{document}', [GeneratedDocumentController::class, 'show'])->name('generated-documents.show');
+                Route::get('generated-documents/{document}/download', [GeneratedDocumentController::class, 'download'])->name('generated-documents.download');
+                Route::post('generated-documents/{document}/email', [GeneratedDocumentController::class, 'email'])->name('generated-documents.email');
+            });
 
             Route::middleware(['role:super_admin,company_admin'])->group(function () {
                 Route::resource('document-templates', DocumentTemplateController::class);
@@ -197,7 +199,7 @@ Route::middleware([
         });
 
         // Marketing & Campaigns
-        Route::middleware(['role:super_admin,company_admin,sales_manager', 'feature:marketing'])->group(function () {
+        Route::middleware(['permission:marketing.view,marketing.send_broadcast,marketing.manage_drip', 'feature:marketing'])->group(function () {
             Route::resource('campaigns', CampaignController::class)->except(['edit', 'update']);
             Route::post('campaigns/{campaign}/send', [CampaignController::class, 'send'])->name('campaigns.send');
             Route::post('campaigns/preview-audience', [CampaignController::class, 'previewAudience'])->name('campaigns.preview-audience');
@@ -223,7 +225,11 @@ Route::middleware([
             Route::get('hr/department-targets', [DepartmentTargetController::class, 'index'])->name('hr.department-targets.index');
             Route::post('hr/department-targets', [DepartmentTargetController::class, 'store'])->name('hr.department-targets.store');
 
-            Route::middleware(['role:super_admin,company_admin,hr,sales_manager'])->group(function () {
+            // Employee Payslip & Salary Balance Portal (All Staff)
+            Route::get('payroll/my-payslips', [\App\Http\Controllers\PayrollController::class, 'myPayslips'])->name('payroll.my-payslips');
+            Route::get('payroll/payslip/{payslip}/download', [\App\Http\Controllers\PayrollController::class, 'downloadPayslip'])->name('payroll.payslip.download');
+
+            Route::middleware(['permission:hr.view_staff,hr.manage_targets,hr.manage_users,hr.approve_leaves,finance.manage_payroll'])->group(function () {
                 Route::get('hr/leaderboard', [HRController::class, 'leaderboard'])->name('hr.leaderboard');
                 Route::get('hr/targets', [HRController::class, 'targets'])->name('hr.targets');
                 Route::post('hr/targets', [HRController::class, 'storeTarget'])->name('hr.targets.store');
@@ -235,11 +241,7 @@ Route::middleware([
                 Route::post('hr/staff/{user}/onboarding', [StaffProfileController::class, 'storeOnboardingTask'])->name('hr.staff.onboarding.store');
                 Route::delete('hr/staff/onboarding/{task}', [StaffProfileController::class, 'destroyOnboardingTask'])->name('hr.staff.onboarding.destroy');
 
-                // Employee Payslip & Salary Balance Portal (All Staff)
-                Route::get('payroll/my-payslips', [\App\Http\Controllers\PayrollController::class, 'myPayslips'])->name('payroll.my-payslips');
-                Route::get('payroll/payslip/{payslip}/download', [\App\Http\Controllers\PayrollController::class, 'downloadPayslip'])->name('payroll.payslip.download');
-
-                // Payroll & Compensation Management (HR / Admin)
+                // Payroll & Compensation Management (HR / Finance Desk)
                 Route::get('payroll', [\App\Http\Controllers\PayrollController::class, 'index'])->name('payroll.index');
                 Route::post('payroll', [\App\Http\Controllers\PayrollController::class, 'store'])->name('payroll.store');
                 Route::get('payroll/salaries', [\App\Http\Controllers\PayrollController::class, 'salaryStructures'])->name('payroll.salaries');
@@ -256,13 +258,15 @@ Route::middleware([
         });
 
         // Accounting & Operating Expenses (Finance Desk)
-        Route::middleware(['auth'])->group(function () {
+        Route::middleware(['permission:finance.view_ledger,finance.log_expenses,finance.approve_expenses'])->group(function () {
             Route::get('accounting/expenses', [\App\Http\Controllers\ExpenseController::class, 'index'])->name('accounting.expenses.index');
             Route::post('accounting/expenses', [\App\Http\Controllers\ExpenseController::class, 'store'])->name('accounting.expenses.store');
             Route::patch('accounting/expenses/{expense}/status', [\App\Http\Controllers\ExpenseController::class, 'updateStatus'])->name('accounting.expenses.status');
             Route::delete('accounting/expenses/{expense}', [\App\Http\Controllers\ExpenseController::class, 'destroy'])->name('accounting.expenses.destroy');
+        });
 
-            // Dynamic Roles & Granular Permissions Engine (Super Admin / Authorized HR)
+        // Dynamic Roles & Granular Permissions Engine (Super Admin / Authorized HR)
+        Route::middleware(['permission:system.manage_roles'])->group(function () {
             Route::get('settings/roles-permissions', [\App\Http\Controllers\RolePermissionController::class, 'index'])->name('settings.roles.index');
             Route::post('settings/roles-permissions', [\App\Http\Controllers\RolePermissionController::class, 'store'])->name('settings.roles.store');
             Route::get('settings/roles-permissions/{role}/edit', [\App\Http\Controllers\RolePermissionController::class, 'edit'])->name('settings.roles.edit');
