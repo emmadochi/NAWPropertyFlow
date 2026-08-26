@@ -187,7 +187,7 @@ Route::middleware([
         });
 
         // Reports
-        Route::middleware(['role:super_admin,company_admin,hr,sales_manager', 'feature:advanced_reports'])->group(function () {
+        Route::middleware(['permission:finance.view_ledger,hr.manage_targets', 'feature:advanced_reports'])->group(function () {
             Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
             Route::get('reports/departments', [DepartmentReportController::class, 'index'])->name('reports.departments.index');
             Route::get('reports/export/leads', [ReportController::class, 'exportLeads'])->name('reports.export.leads');

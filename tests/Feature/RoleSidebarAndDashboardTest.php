@@ -144,15 +144,19 @@ class RoleSidebarAndDashboardTest extends TestCase
         $response->assertSee('Site Inspections');
         $response->assertSee('Estates &amp; Inventory', false);
         $response->assertSee('Properties &amp; Schemes', false);
-        $response->assertSee('Financial &amp; Sales Reports', false);
 
         // Hidden Sections
+        $response->assertDontSee('Finance &amp; Accounts', false);
+        $response->assertDontSee('Expenses &amp; OPEX', false);
+        $response->assertDontSee('Financial &amp; Sales Reports', false);
         $response->assertDontSee('Contracts &amp; Legal Vault', false);
         $response->assertDontSee('Multi-Branch Setup');
         $response->assertDontSee('Company &amp; Letterhead', false);
         $response->assertDontSee('Activity Audit Trail');
 
         // Backend Route Protection
+        $this->actingAs($user)->get(route('reports.index'))->assertStatus(403);
+        $this->actingAs($user)->get(route('accounting.expenses.index'))->assertStatus(403);
         $this->actingAs($user)->get(route('settings.company.edit'))->assertStatus(403);
         $this->actingAs($user)->get(route('branches.index'))->assertStatus(403);
         $this->actingAs($user)->get(route('settings.roles.index'))->assertStatus(403);

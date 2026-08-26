@@ -418,9 +418,9 @@
 
 
                     {{-- 6. FINANCE & ACCOUNTS --}}
-                    @if(Auth::user()->hasPermission('finance.view_ledger') || Auth::user()->hasPermission('finance.log_expenses') || Auth::user()->hasPermission('finance.approve_expenses') || Auth::user()->isCompanyAdmin())
+                    @if(Auth::user()->hasPermission('finance.view_ledger') || Auth::user()->hasPermission('finance.approve_expenses') || Auth::user()->isCompanyAdmin())
                     <div class="mt-5 mb-1 text-[11px] font-extrabold text-gray-400 dark:text-slate-500 uppercase tracking-wider px-4">Finance &amp; Accounts</div>
-                    @if(Auth::user()->hasPermission('finance.log_expenses') || Auth::user()->hasPermission('finance.approve_expenses') || Auth::user()->hasPermission('finance.view_ledger') || Auth::user()->isCompanyAdmin())
+                    @if(Auth::user()->hasPermission('finance.approve_expenses') || Auth::user()->hasPermission('finance.view_ledger') || Auth::user()->isCompanyAdmin())
                     <a href="{{ route('accounting.expenses.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('accounting.expenses.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
@@ -429,7 +429,7 @@
                     </a>
                     @endif
                     @if($__cs?->hasFeature('advanced_reports'))
-                    @if(Auth::user()->hasPermission('finance.view_ledger') || Auth::user()->isCompanyAdmin() || Auth::user()->hasRole(['sales_manager']))
+                    @if(Auth::user()->hasPermission('finance.view_ledger') || Auth::user()->isCompanyAdmin())
                     <a href="{{ route('reports.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('reports.index') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>

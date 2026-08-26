@@ -242,7 +242,7 @@ class PermissionSeeder extends Seeder
                     'properties.view', 'units.manage',
                     'leads.view_all', 'leads.create', 'leads.edit', 'leads.reassign', 'sales.record',
                     'inspections.view_all', 'inspections.schedule', 'followups.manage',
-                    'finance.log_expenses', 'marketing.view', 'hr.view_staff'
+                    'marketing.view', 'hr.view_staff'
                 ],
             ],
             'project_manager' => [
