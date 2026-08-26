@@ -65,6 +65,27 @@ class PermissionSeeder extends Seeder
             ['module' => 'System & Administration', 'name' => 'Manage Custom Roles & Permissions', 'slug' => 'system.manage_roles', 'description' => 'Create custom roles and configure modular capabilities.'],
             ['module' => 'System & Administration', 'name' => 'View Audit Activity Logs', 'slug' => 'system.view_audit_logs', 'description' => 'Inspect complete immutable system activity history.'],
             ['module' => 'System & Administration', 'name' => 'Manage Company Settings', 'slug' => 'system.manage_settings', 'description' => 'Configure company logo, letterheads, branches & tier.'],
+
+            // 9. Construction Inventory & Procurement Module
+            ['module' => 'Construction Inventory', 'name' => 'View Stock Levels & Sites', 'slug' => 'inventory.view_stock', 'description' => 'View real-time site stock balances, batch lots and warehouse storage zones.'],
+            ['module' => 'Construction Inventory', 'name' => 'Manage Material Catalogue', 'slug' => 'inventory.manage_catalogue', 'description' => 'Create and edit master building material items, codes and standard costs.'],
+            ['module' => 'Construction Inventory', 'name' => 'Set Bill of Materials (BOM)', 'slug' => 'inventory.set_bom', 'description' => 'Define standard material consumption rates per unit of work (QS Engine).'],
+            ['module' => 'Construction Inventory', 'name' => 'Raise Material Requisition (MRF)', 'slug' => 'inventory.raise_mrf', 'description' => 'Submit material requests from site engineering for upcoming work.'],
+            ['module' => 'Construction Inventory', 'name' => 'Approve Material Requisition (MRF)', 'slug' => 'inventory.approve_mrf', 'description' => 'Audit and approve site material requisitions against budget/BOM.'],
+            ['module' => 'Construction Inventory', 'name' => 'Manage Suppliers & Directory', 'slug' => 'inventory.manage_suppliers', 'description' => 'Maintain vendor contacts, performance scores and bank details.'],
+            ['module' => 'Construction Inventory', 'name' => 'Create Purchase Orders (PO)', 'slug' => 'inventory.create_po', 'description' => 'Generate vendor purchase orders from approved MRFs.'],
+            ['module' => 'Construction Inventory', 'name' => 'Approve PO Tier 1 (Up to ₦500k)', 'slug' => 'inventory.approve_po_tier1', 'description' => 'Approve operational purchase orders within Project Manager threshold.'],
+            ['module' => 'Construction Inventory', 'name' => 'Approve PO Tier 2 (Up to ₦5M)', 'slug' => 'inventory.approve_po_tier2', 'description' => 'Executive approval for mid-value procurement orders.'],
+            ['module' => 'Construction Inventory', 'name' => 'Approve PO Tier 3 (Above ₦5M)', 'slug' => 'inventory.approve_po_tier3', 'description' => 'Board / MD level sign-off for high-value building procurement.'],
+            ['module' => 'Construction Inventory', 'name' => 'Receive Goods & Inspect (GRN)', 'slug' => 'inventory.receive_grn', 'description' => 'Log gate deliveries, record batch lots, capture GPS and photo proof.'],
+            ['module' => 'Construction Inventory', 'name' => 'Issue Material to Site (MIV)', 'slug' => 'inventory.issue_material', 'description' => 'Issue store materials to foremen with digital signature & BOM validation.'],
+            ['module' => 'Construction Inventory', 'name' => 'Log Waste, Loss & Offcuts', 'slug' => 'inventory.log_waste', 'description' => 'Record avoidable/unavoidable material waste and damage incidents.'],
+            ['module' => 'Construction Inventory', 'name' => 'Perform 3-Way Match & Invoices', 'slug' => 'inventory.match_invoice', 'description' => 'Reconcile PO vs GRN vs Supplier Invoice before payment.'],
+            ['module' => 'Construction Inventory', 'name' => 'Authorize Supplier Payment', 'slug' => 'inventory.approve_payment', 'description' => 'Grant final financial disbursement approval for matched invoices.'],
+            ['module' => 'Construction Inventory', 'name' => 'View Inventory Reports & Analytics', 'slug' => 'inventory.view_reports', 'description' => 'Access variance reports, waste heatmaps, cashflow projections & supplier scorecards.'],
+            ['module' => 'Construction Inventory', 'name' => 'View Anomaly & Fraud Flags', 'slug' => 'inventory.view_anomalies', 'description' => 'Inspect AI/system fraud flags, ghost delivery warnings and consumption spikes.'],
+            ['module' => 'Construction Inventory', 'name' => 'Resolve Anomaly Flags', 'slug' => 'inventory.resolve_anomalies', 'description' => 'Audit, escalate, and formally resolve or dismiss detected anomaly flags.'],
+            ['module' => 'Construction Inventory', 'name' => 'Manage Price Benchmarks', 'slug' => 'inventory.manage_benchmarks', 'description' => 'Record and manage market price indices across regional construction markets.'],
         ];
 
         foreach ($permissions as $perm) {
@@ -185,7 +206,9 @@ class PermissionSeeder extends Seeder
                     'properties.view',
                     'finance.view_ledger', 'finance.verify_payments', 'finance.log_expenses',
                     'finance.approve_expenses', 'finance.disburse_expenses', 'finance.manage_payroll',
-                    'hr.view_staff'
+                    'hr.view_staff',
+                    'inventory.view_stock', 'inventory.match_invoice', 'inventory.approve_payment',
+                    'inventory.view_reports', 'inventory.view_anomalies'
                 ],
             ],
             'architect' => [
@@ -204,7 +227,8 @@ class PermissionSeeder extends Seeder
                 'permissions' => [
                     'properties.view', 'properties.edit', 'units.manage',
                     'inspections.schedule', 'inspections.view_all',
-                    'finance.log_expenses'
+                    'finance.log_expenses',
+                    'inventory.view_stock', 'inventory.raise_mrf', 'inventory.issue_material', 'inventory.log_waste'
                 ],
             ],
             'legal_personnel' => [
@@ -222,7 +246,27 @@ class PermissionSeeder extends Seeder
                 'is_system' => false,
                 'permissions' => [
                     'properties.view', 'units.manage',
-                    'finance.log_expenses'
+                    'finance.log_expenses',
+                    'inventory.view_stock', 'inventory.manage_catalogue', 'inventory.manage_suppliers',
+                    'inventory.create_po', 'inventory.view_reports', 'inventory.manage_benchmarks'
+                ],
+            ],
+            'store_keeper' => [
+                'name' => 'Site Store Keeper',
+                'description' => 'Manages physical site store, gate delivery receipts (GRN), and foreman material issue vouchers (MIV).',
+                'is_system' => false,
+                'permissions' => [
+                    'inventory.view_stock', 'inventory.receive_grn', 'inventory.issue_material', 'inventory.log_waste'
+                ],
+            ],
+            'quantity_surveyor' => [
+                'name' => 'Quantity Surveyor (QS)',
+                'description' => 'Defines Bill of Materials (BOM) consumption benchmarks, audits material variances, and cost control.',
+                'is_system' => false,
+                'permissions' => [
+                    'properties.view',
+                    'inventory.view_stock', 'inventory.manage_catalogue', 'inventory.set_bom',
+                    'inventory.view_reports', 'inventory.manage_benchmarks', 'inventory.view_anomalies'
                 ],
             ],
             'driver' => [
@@ -251,7 +295,10 @@ class PermissionSeeder extends Seeder
                 'is_system' => false,
                 'permissions' => [
                     'properties.view', 'properties.create', 'properties.edit', 'units.manage',
-                    'finance.log_expenses'
+                    'finance.log_expenses',
+                    'inventory.view_stock', 'inventory.raise_mrf', 'inventory.approve_mrf',
+                    'inventory.approve_po_tier1', 'inventory.view_reports', 'inventory.view_anomalies',
+                    'inventory.resolve_anomalies'
                 ],
             ],
         ];

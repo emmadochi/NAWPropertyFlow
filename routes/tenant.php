@@ -274,6 +274,93 @@ Route::middleware([
             Route::delete('settings/roles-permissions/{role}', [\App\Http\Controllers\RolePermissionController::class, 'destroy'])->name('settings.roles.destroy');
         });
 
+        // Construction Inventory Setup & Master Data
+        Route::prefix('inventory')->name('inventory.')->group(function () {
+            // Executive Cockpit & Live Cost Valuation Dashboard
+            Route::middleware(['permission:inventory.view_reports,inventory.view_stock,finance.view_ledger'])->group(function () {
+                Route::get('dashboard', [\App\Http\Controllers\Inventory\InventoryDashboardController::class, 'index'])->name('dashboard');
+                Route::get('general-ledger', [\App\Http\Controllers\Inventory\InventoryDashboardController::class, 'generalLedger'])->name('general-ledger.index');
+            });
+
+            // Sites & Warehouses
+            Route::middleware(['permission:inventory.view_stock,inventory.manage_catalogue'])->group(function () {
+                Route::resource('sites', \App\Http\Controllers\Inventory\SiteController::class);
+            });
+
+            // Material Catalogue Master
+            Route::middleware(['permission:inventory.manage_catalogue,inventory.view_stock'])->group(function () {
+                Route::get('catalogue/api/search', [\App\Http\Controllers\Inventory\MaterialCatalogueController::class, 'apiSearch'])->name('catalogue.api.search');
+                Route::resource('catalogue', \App\Http\Controllers\Inventory\MaterialCatalogueController::class);
+            });
+
+            // Bill of Materials (BOM) QS Engine
+            Route::middleware(['permission:inventory.set_bom,inventory.view_stock,inventory.raise_mrf'])->group(function () {
+                Route::get('bom/suggest-qty', [\App\Http\Controllers\Inventory\BOMController::class, 'suggestQty'])->name('bom.suggest-qty');
+                Route::resource('bom', \App\Http\Controllers\Inventory\BOMController::class);
+            });
+
+            // Suppliers & Vendor Directory
+            Route::middleware(['permission:inventory.manage_suppliers,inventory.create_po'])->group(function () {
+                Route::resource('suppliers', \App\Http\Controllers\Inventory\SupplierController::class);
+                Route::post('suppliers/{supplier}/blacklist', [\App\Http\Controllers\Inventory\SupplierController::class, 'toggleBlacklist'])->name('suppliers.blacklist');
+            });
+
+            // Regional Market Price Benchmarks
+            Route::middleware(['permission:inventory.manage_benchmarks,inventory.set_bom'])->group(function () {
+                Route::get('benchmarks', [\App\Http\Controllers\Inventory\PriceBenchmarkController::class, 'index'])->name('benchmarks.index');
+                Route::post('benchmarks', [\App\Http\Controllers\Inventory\PriceBenchmarkController::class, 'store'])->name('benchmarks.store');
+                Route::delete('benchmarks/{benchmark}', [\App\Http\Controllers\Inventory\PriceBenchmarkController::class, 'destroy'])->name('benchmarks.destroy');
+            });
+
+            // Material Requisitions (MRF)
+            Route::middleware(['permission:inventory.raise_mrf,inventory.view_stock'])->group(function () {
+                Route::post('requisitions/{requisition}/approve', [\App\Http\Controllers\Inventory\RequisitionController::class, 'approve'])->name('requisitions.approve');
+                Route::post('requisitions/{requisition}/reject', [\App\Http\Controllers\Inventory\RequisitionController::class, 'reject'])->name('requisitions.reject');
+                Route::resource('requisitions', \App\Http\Controllers\Inventory\RequisitionController::class);
+            });
+
+            // Purchase Orders (PO) & Tiered Authorization
+            Route::middleware(['permission:inventory.create_po,inventory.approve_po_tier1,inventory.approve_po_tier2,inventory.approve_po_tier3,inventory.view_stock'])->group(function () {
+                Route::post('purchase-orders/{purchase_order}/approve', [\App\Http\Controllers\Inventory\PurchaseOrderController::class, 'approve'])->name('purchase-orders.approve');
+                Route::post('purchase-orders/{purchase_order}/reject', [\App\Http\Controllers\Inventory\PurchaseOrderController::class, 'reject'])->name('purchase-orders.reject');
+                Route::resource('purchase-orders', \App\Http\Controllers\Inventory\PurchaseOrderController::class);
+            });
+
+            // Goods Received Notes (GRN) & Gate Deliveries
+            Route::middleware(['permission:inventory.receive_goods,inventory.view_stock'])->group(function () {
+                Route::resource('grn', \App\Http\Controllers\Inventory\GRNController::class);
+            });
+
+            // Material Issue Vouchers (MIV) & Site Disbursements
+            Route::middleware(['permission:inventory.issue_materials,inventory.view_stock'])->group(function () {
+                Route::resource('miv', \App\Http\Controllers\Inventory\MIVController::class);
+            });
+
+            // Waste & Material Loss Registry
+            Route::middleware(['permission:inventory.log_waste,inventory.view_stock'])->group(function () {
+                Route::resource('waste', \App\Http\Controllers\Inventory\WasteLogController::class);
+            });
+
+            // 3-Way Match Supplier Invoices
+            Route::middleware(['permission:inventory.match_invoices,inventory.view_reports,finance.view_ledger'])->group(function () {
+                Route::post('invoices/{invoice}/match', [\App\Http\Controllers\Inventory\SupplierInvoiceController::class, 'runMatch'])->name('invoices.match');
+                Route::post('invoices/{invoice}/approve-payment', [\App\Http\Controllers\Inventory\SupplierInvoiceController::class, 'approvePayment'])->name('invoices.approve-payment');
+                Route::resource('invoices', \App\Http\Controllers\Inventory\SupplierInvoiceController::class);
+            });
+
+            // Fraud Radar & Anomaly Resolution
+            Route::middleware(['permission:inventory.view_anomalies,inventory.resolve_anomalies,system.manage_settings'])->group(function () {
+                Route::post('anomalies/{anomaly}/status', [\App\Http\Controllers\Inventory\AnomalyController::class, 'updateStatus'])->name('anomalies.update-status');
+                Route::resource('anomalies', \App\Http\Controllers\Inventory\AnomalyController::class);
+            });
+
+            // Inventory Thresholds & Geofence Settings (Company Admin / Super Admin)
+            Route::middleware(['permission:system.manage_settings'])->group(function () {
+                Route::get('settings', [\App\Http\Controllers\Inventory\CompanyInventorySettingController::class, 'edit'])->name('settings.edit');
+                Route::put('settings', [\App\Http\Controllers\Inventory\CompanyInventorySettingController::class, 'update'])->name('settings.update');
+            });
+        });
+
         // Customer Portal
         Route::middleware(['role:customer', 'feature:customer_portal'])->group(function () {
             Route::get('buyer/dashboard', [BuyerDashboardController::class, 'index'])->name('buyer.dashboard');
@@ -301,5 +388,21 @@ Route::middleware([
         Route::get('notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::get('api/global-search', [SearchController::class, 'search'])->name('api.global-search');
         Route::get('api/notifications', [NotificationController::class, 'getAlerts'])->name('api.notifications');
+    });
+
+    // Supplier Self-Service Partner Portal (Dedicated Guard)
+    Route::prefix('supplier')->name('supplier.')->group(function () {
+        Route::get('login', [\App\Http\Controllers\Inventory\SupplierPortal\SupplierAuthController::class, 'showLoginForm'])->name('login');
+        Route::post('login', [\App\Http\Controllers\Inventory\SupplierPortal\SupplierAuthController::class, 'login'])->name('login.submit');
+        Route::post('logout', [\App\Http\Controllers\Inventory\SupplierPortal\SupplierAuthController::class, 'logout'])->name('logout');
+
+        Route::middleware(['auth:supplier'])->group(function () {
+            Route::get('dashboard', [\App\Http\Controllers\Inventory\SupplierPortal\SupplierDashboardController::class, 'index'])->name('dashboard');
+            Route::get('purchase-orders', [\App\Http\Controllers\Inventory\SupplierPortal\SupplierDashboardController::class, 'purchaseOrders'])->name('purchase-orders.index');
+            Route::get('purchase-orders/{purchase_order}', [\App\Http\Controllers\Inventory\SupplierPortal\SupplierDashboardController::class, 'showPO'])->name('purchase-orders.show');
+            Route::get('invoices', [\App\Http\Controllers\Inventory\SupplierPortal\SupplierDashboardController::class, 'invoices'])->name('invoices.index');
+            Route::get('invoices/create', [\App\Http\Controllers\Inventory\SupplierPortal\SupplierDashboardController::class, 'createInvoice'])->name('invoices.create');
+            Route::post('invoices', [\App\Http\Controllers\Inventory\SupplierPortal\SupplierDashboardController::class, 'storeInvoice'])->name('invoices.store');
+        });
     });
 });

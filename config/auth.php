@@ -46,6 +46,10 @@ return [
             'driver'   => 'session',
             'provider' => 'system_admins',
         ],
+        'supplier' => [
+            'driver'   => 'session',
+            'provider' => 'supplier_users',
+        ],
     ],
 
     /*
@@ -73,6 +77,10 @@ return [
         'system_admins' => [
             'driver' => 'eloquent',
             'model'  => \App\Models\SystemAdmin::class,
+        ],
+        'supplier_users' => [
+            'driver' => 'eloquent',
+            'model'  => \App\Models\Inventory\SupplierUser::class,
         ],
     ],
 

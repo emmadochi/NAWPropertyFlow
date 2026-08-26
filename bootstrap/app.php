@@ -19,11 +19,17 @@ return Application::configure(basePath: dirname(__DIR__))
 
         // Dynamically redirect based on context
         $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
+            if ($request->is('supplier*')) {
+                return route('supplier.login');
+            }
             return route('login');
         });
 
         // Redirect authenticated users
         $middleware->redirectUsersTo(function (\Illuminate\Http\Request $request) {
+            if (auth('supplier')->check()) {
+                return route('supplier.dashboard');
+            }
             if (auth()->check() && auth()->user()->role === 'customer') {
                 return route('buyer.dashboard');
             }
