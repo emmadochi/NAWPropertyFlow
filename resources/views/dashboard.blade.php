@@ -67,6 +67,9 @@
             @if(Auth::user()->isSuperAdmin() || Auth::user()->isCompanyAdmin())
                 <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">Executive Control Center</h1>
                 <p class="text-sm text-gray-500 mt-1">Cross-department operations, real estate inventory, financial inflows, and workforce status.</p>
+            @elseif(Auth::user()->role === 'customer_service_rep')
+                <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">Customer Service &amp; Frontdesk Hub</h1>
+                <p class="text-sm text-gray-500 mt-1">Inbound prospect inquiries, client inspection bookings, follow-up calls, and property guidance.</p>
             @elseif(Auth::user()->hasPermission('leads.view_all') || Auth::user()->hasPermission('leads.view_own'))
                 <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">Sales &amp; Deals Dashboard</h1>
                 <p class="text-sm text-gray-500 mt-1">Real-time leads tracking, client inspections, pipeline tasks, and commission targets.</p>
@@ -85,7 +88,14 @@
             @endif
         </div>
         <div class="flex space-x-3">
-            @if(Auth::user()->hasPermission('leads.create'))
+            @if(Auth::user()->role === 'customer_service_rep')
+            <a href="{{ route('leads.index') }}" class="inline-flex items-center space-x-2 px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-500/10 hover:shadow-brand-600/20 transition-all">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+                </svg>
+                <span>Log New Inquiry</span>
+            </a>
+            @elseif(Auth::user()->hasPermission('leads.create'))
             <a href="{{ route('leads.index') }}" class="inline-flex items-center space-x-2 px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-500/10 hover:shadow-brand-600/20 transition-all">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
@@ -254,9 +264,9 @@
         @else
             <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm flex items-center justify-between">
                 <div>
-                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Leads</span>
+                    <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">{{ Auth::user()->role === 'customer_service_rep' ? 'Inbound Inquiries' : 'Total Leads' }}</span>
                     <h3 class="text-3xl font-extrabold text-dark-900 mt-1">{{ number_format($metrics['total_leads']) }}</h3>
-                    <span class="text-xs text-gray-500 block mt-1">Assigned leads</span>
+                    <span class="text-xs text-gray-500 block mt-1">{{ Auth::user()->role === 'customer_service_rep' ? 'Registered Prospects' : 'Assigned leads' }}</span>
                 </div>
                 <span class="p-4 bg-brand-50 text-brand-500 rounded-2xl">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
@@ -294,6 +304,13 @@
                             $myCommissions = \App\Models\Commission::where('user_id', Auth::id())->whereIn('status', ['approved', 'paid'])->sum('calculated_amount');
                         @endphp
                         <span class="text-xs text-brand-600 block mt-1 font-bold">₦{{ number_format($myCommissions, 2) }} Earned</span>
+                    @elseif(Auth::user()->role === 'customer_service_rep')
+                        <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Active Properties</span>
+                        @php
+                            $activePropsCount = \App\Models\Property::count();
+                        @endphp
+                        <h3 class="text-3xl font-extrabold text-emerald-600 mt-1">{{ number_format($activePropsCount) }}</h3>
+                        <span class="text-xs text-emerald-600 block mt-1 font-semibold">Available for Inquiries</span>
                     @else
                         <span class="text-xs font-bold text-gray-400 uppercase tracking-wider">Total Revenue</span>
                         <h3 class="text-2xl font-extrabold text-emerald-600 mt-1">₦{{ number_format($metrics['total_revenue'], 2) }}</h3>
@@ -301,7 +318,11 @@
                     @endif
                 </div>
                 <span class="p-4 bg-emerald-50 text-emerald-500 rounded-2xl">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16v1M10 6h4a2 2 0 110 4h-4V6z"></path></svg>
+                    @if(Auth::user()->role === 'customer_service_rep')
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    @else
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16v1M10 6h4a2 2 0 110 4h-4V6z"></path></svg>
+                    @endif
                 </span>
             </div>
         @endif
@@ -429,6 +450,58 @@
     @else
         <!-- Charts Section -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            @if(Auth::user()->role === 'customer_service_rep')
+            <!-- Inbound Inquiries & Client Requests Queue -->
+            <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm lg:col-span-2 space-y-4">
+                <div class="flex items-center justify-between pb-4 border-b border-gray-100">
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-900">Recent Inbound Client Inquiries</h3>
+                        <p class="text-xs text-gray-500">Incoming calls, WhatsApp chats, and website requests.</p>
+                    </div>
+                    <a href="{{ route('leads.index') }}" class="text-xs font-bold text-brand-600 hover:text-brand-700">Open Inquiries Pipeline &rarr;</a>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-gray-50/50 border-b border-gray-100">
+                                <th class="px-4 py-3 font-bold text-gray-500">Prospect / Client</th>
+                                <th class="px-4 py-3 font-bold text-gray-500">Channel</th>
+                                <th class="px-4 py-3 font-bold text-gray-500">Property Interest</th>
+                                <th class="px-4 py-3 font-bold text-gray-500">Status</th>
+                                <th class="px-4 py-3 font-bold text-gray-500 text-right">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @php
+                                $recentInbound = \App\Models\Lead::latest()->limit(5)->get();
+                            @endphp
+                            @forelse($recentInbound as $inbound)
+                            <tr class="hover:bg-gray-50/50">
+                                <td class="px-4 py-3 font-bold text-dark-900">
+                                    <a href="{{ route('leads.show', $inbound) }}" class="hover:text-brand-600">{{ $inbound->full_name }}</a>
+                                    <span class="block text-[10px] text-gray-400 font-normal">{{ $inbound->phone_number ?? 'No phone' }}</span>
+                                </td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-purple-50 text-purple-700">{{ $inbound->lead_source ?? 'Direct' }}</span>
+                                </td>
+                                <td class="px-4 py-3 text-gray-700 max-w-xs truncate">{{ $inbound->interested_property ?? 'General Scheme' }}</td>
+                                <td class="px-4 py-3">
+                                    <span class="px-2 py-0.5 text-[10px] font-bold rounded-md bg-amber-50 text-amber-700">{{ $inbound->status }}</span>
+                                </td>
+                                <td class="px-4 py-3 text-right">
+                                    <a href="{{ route('leads.show', $inbound) }}" class="px-2.5 py-1 bg-brand-50 hover:bg-brand-100 text-brand-600 rounded-lg text-xs font-bold transition-all">Attend &rarr;</a>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="5" class="px-4 py-8 text-center text-gray-400">No client inquiries received yet.</td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @else
             <!-- Monthly Performance Chart (Leads vs Sales) -->
             <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm lg:col-span-2 space-y-4">
                 <div class="flex items-center justify-between">
@@ -441,6 +514,7 @@
                     <canvas id="monthlyTrendChart"></canvas>
                 </div>
             </div>
+            @endif
 
             <!-- Lead Source Performance Chart -->
             <div class="bg-white rounded-2xl p-6 border border-gray-100 shadow-sm space-y-4">

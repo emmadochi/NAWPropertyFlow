@@ -328,6 +328,49 @@ class RoleSidebarAndDashboardTest extends TestCase
     }
 
     /** @test */
+    public function test_customer_service_rep_has_frontdesk_hub_without_revenue_bleed(): void
+    {
+        $user = $this->createUserWithRole('customer_service_rep');
+
+        $response = $this->actingAs($user)->get(route('dashboard'));
+        $response->assertStatus(200);
+
+        // Header & Hub Title
+        $response->assertSee('Customer Service &amp; Frontdesk Hub', false);
+        $response->assertSee('Log New Inquiry');
+        $response->assertSee('Inbound Inquiries');
+        $response->assertSee('Active Properties');
+
+        // Revenue Privacy Assertion (Customer Service does NOT see confidential ₦ total revenue)
+        $response->assertDontSee('Total Revenue');
+        $response->assertDontSee('Deals Won');
+
+        // Visible Sidebar
+        $response->assertSee('Sales &amp; CRM', false);
+        $response->assertSee('Leads Pipeline');
+        $response->assertSee('Follow-Ups');
+        $response->assertSee('Site Inspections');
+        $response->assertSee('Estates &amp; Inventory', false);
+        $response->assertSee('Properties &amp; Schemes', false);
+
+        // Hidden Modules
+        $response->assertDontSee('Finance &amp; Accounts', false);
+        $response->assertDontSee('Expenses &amp; OPEX', false);
+        $response->assertDontSee('Marketing &amp; Growth', false);
+        $response->assertDontSee('Leave Management');
+        $response->assertDontSee('Enterprise Config');
+
+        // Backend Route Protections
+        $this->actingAs($user)->get(route('leads.index'))->assertStatus(200);
+        $this->actingAs($user)->get(route('properties.index'))->assertStatus(200);
+        $this->actingAs($user)->get(route('accounting.expenses.index'))->assertStatus(403);
+        $this->actingAs($user)->get(route('reports.index'))->assertStatus(403);
+        $this->actingAs($user)->get(route('payroll.index'))->assertStatus(403);
+        $this->actingAs($user)->get(route('campaigns.index'))->assertStatus(403);
+        $this->actingAs($user)->get(route('settings.company.edit'))->assertStatus(403);
+    }
+
+    /** @test */
     public function test_customer_role_is_isolated_to_buyer_portal_only(): void
     {
         $customer = $this->createUserWithRole('customer');
