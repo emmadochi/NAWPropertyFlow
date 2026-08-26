@@ -85,7 +85,7 @@ Route::middleware([
 
     // Authenticated Routes
     Route::middleware(['auth'])->group(function () {
-        Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+        Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
         Route::post('/change-password', [AuthController::class, 'changePassword'])->name('password.change');
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         
@@ -394,7 +394,7 @@ Route::middleware([
     Route::prefix('supplier')->name('supplier.')->group(function () {
         Route::get('login', [\App\Http\Controllers\Inventory\SupplierPortal\SupplierAuthController::class, 'showLoginForm'])->name('login');
         Route::post('login', [\App\Http\Controllers\Inventory\SupplierPortal\SupplierAuthController::class, 'login'])->name('login.submit');
-        Route::post('logout', [\App\Http\Controllers\Inventory\SupplierPortal\SupplierAuthController::class, 'logout'])->name('logout');
+        Route::match(['get', 'post'], 'logout', [\App\Http\Controllers\Inventory\SupplierPortal\SupplierAuthController::class, 'logout'])->name('logout');
 
         Route::middleware(['auth:supplier'])->group(function () {
             Route::get('dashboard', [\App\Http\Controllers\Inventory\SupplierPortal\SupplierDashboardController::class, 'index'])->name('dashboard');
