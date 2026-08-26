@@ -227,47 +227,68 @@
                 <span class="quick-roles-title">⚡ 1-Click Role Switcher</span>
                 <span class="badge-sandbox">Interactive Demo</span>
             </div>
-            <div class="role-grid">
-                <button type="button" onclick="fillAndLogin('superadmin@propertyflow.com', 'password')" class="role-btn">
-                    <span class="role-icon">👑</span>
-                    Super Admin
-                </button>
-                <button type="button" onclick="fillAndLogin('manager@propertyflow.com', 'password')" class="role-btn">
-                    <span class="role-icon">📊</span>
-                    Manager
-                </button>
-                <button type="button" onclick="fillAndLogin('se1@propertyflow.com', 'password')" class="role-btn">
-                    <span class="role-icon">💼</span>
-                    Sales Agent
-                </button>
-                <button type="button" onclick="fillAndLogin('support@propertyflow.com', 'password')" class="role-btn">
-                    <span class="role-icon">🎧</span>
-                    Customer Care
-                </button>
-                <button type="button" onclick="fillAndLogin('hr@propertyflow.com', 'password')" class="role-btn">
-                    <span class="role-icon">👥</span>
-                    HR Lead
-                </button>
-                <button type="button" onclick="fillAndLogin('accountant@propertyflow.com', 'password')" class="role-btn">
-                    <span class="role-icon">💰</span>
-                    Accountant
-                </button>
-                <button type="button" onclick="fillAndLogin('marketing@propertyflow.com', 'password')" class="role-btn">
-                    <span class="role-icon">📢</span>
-                    Marketing
-                </button>
-                <button type="button" onclick="fillAndLogin('legal@propertyflow.com', 'password')" class="role-btn">
-                    <span class="role-icon">⚖️</span>
-                    Legal
-                </button>
-                <button type="button" onclick="fillAndLogin('media@propertyflow.com', 'password')" class="role-btn">
-                    <span class="role-icon">🎬</span>
-                    Media
-                </button>
-                <button type="button" onclick="fillAndLogin('client@propertyflow.com', 'password')" class="role-btn">
-                    <span class="role-icon">📱</span>
-                    Client/Buyer
-                </button>
+
+            <!-- 1. Construction & Site Management Roles -->
+            <div style="margin-bottom: 0.85rem;">
+                <div style="font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #b45309; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.3rem;">
+                    <span>🏗️ Construction &amp; Site Procurement</span>
+                </div>
+                <div class="role-grid">
+                    <button type="button" onclick="fillAndLogin('site.manager@propertyflow.com', 'password')" class="role-btn" style="border-color: #fed7aa; background-color: #fffaf5;">
+                        <span class="role-icon">🏗️</span>
+                        Site Manager
+                    </button>
+                    <button type="button" onclick="fillAndLogin('qs@propertyflow.com', 'password')" class="role-btn" style="border-color: #fed7aa; background-color: #fffaf5;">
+                        <span class="role-icon">📐</span>
+                        QS Estimator
+                    </button>
+                    <button type="button" onclick="fillAndLogin('storekeeper@propertyflow.com', 'password')" class="role-btn" style="border-color: #fed7aa; background-color: #fffaf5;">
+                        <span class="role-icon">📦</span>
+                        Storekeeper
+                    </button>
+                    <button type="button" onclick="fillAndLogin('accountant@propertyflow.com', 'password')" class="role-btn" style="border-color: #fed7aa; background-color: #fffaf5;">
+                        <span class="role-icon">💰</span>
+                        Accountant
+                    </button>
+                    <button type="button" onclick="fillAndLogin('admin@propertyflow.com', 'password')" class="role-btn" style="border-color: #fed7aa; background-color: #fffaf5;">
+                        <span class="role-icon">👑</span>
+                        Director
+                    </button>
+                </div>
+                <div style="margin-top: 0.4rem; text-align: center;">
+                    <a href="{{ route('supplier.login') }}" style="font-size: 0.7rem; font-weight: 700; color: #d97706; text-decoration: none; display: inline-flex; align-items: center; gap: 0.25rem;">
+                        <span>🚚 Open Supplier Partner Portal</span> &rarr;
+                    </a>
+                </div>
+            </div>
+
+            <!-- 2. Real Estate CRM & Agency Roles -->
+            <div>
+                <div style="font-size: 0.65rem; font-weight: 800; text-transform: uppercase; color: #475569; margin-bottom: 0.4rem; display: flex; align-items: center; gap: 0.3rem;">
+                    <span>🏢 Real Estate CRM &amp; Sales Agency</span>
+                </div>
+                <div class="role-grid">
+                    <button type="button" onclick="fillAndLogin('superadmin@propertyflow.com', 'password')" class="role-btn">
+                        <span class="role-icon">👑</span>
+                        Super Admin
+                    </button>
+                    <button type="button" onclick="fillAndLogin('manager@propertyflow.com', 'password')" class="role-btn">
+                        <span class="role-icon">📊</span>
+                        Sales Mgr
+                    </button>
+                    <button type="button" onclick="fillAndLogin('se1@propertyflow.com', 'password')" class="role-btn">
+                        <span class="role-icon">💼</span>
+                        Sales Exec
+                    </button>
+                    <button type="button" onclick="fillAndLogin('hr@propertyflow.com', 'password')" class="role-btn">
+                        <span class="role-icon">👥</span>
+                        HR Lead
+                    </button>
+                    <button type="button" onclick="fillAndLogin('client@propertyflow.com', 'password')" class="role-btn">
+                        <span class="role-icon">📱</span>
+                        Client/Buyer
+                    </button>
+                </div>
             </div>
         </div>
         @endif

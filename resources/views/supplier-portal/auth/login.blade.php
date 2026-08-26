@@ -48,6 +48,48 @@
                 Sign In to Supplier Portal
             </button>
         </form>
+
+        <!-- 1-Click Supplier Demo Switcher -->
+        <div class="pt-4 border-t border-slate-800 space-y-3">
+            <div class="flex items-center justify-between text-xs">
+                <span class="font-bold text-amber-500 uppercase tracking-wider">⚡ 1-Click Supplier Logins</span>
+                <span class="px-2 py-0.5 rounded-full bg-emerald-950/60 text-emerald-400 text-[10px] font-bold border border-emerald-800/40">Demo Accounts</span>
+            </div>
+
+            <div class="grid grid-cols-3 gap-2">
+                <button type="button" onclick="fillSupplierLogin('dangote@supplier.com', 'password123')" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-amber-950/30 border border-slate-700 hover:border-amber-500/50 text-left transition-all text-xs">
+                    <span class="block text-base mb-1">🏗️</span>
+                    <strong class="block text-white font-bold truncate">Dangote Ltd</strong>
+                    <span class="text-[10px] text-slate-400">Cement Supplier</span>
+                </button>
+
+                <button type="button" onclick="fillSupplierLogin('steel@supplier.com', 'password123')" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-amber-950/30 border border-slate-700 hover:border-amber-500/50 text-left transition-all text-xs">
+                    <span class="block text-base mb-1">🔩</span>
+                    <strong class="block text-white font-bold truncate">African Steel</strong>
+                    <span class="text-[10px] text-slate-400">Rebar Supplier</span>
+                </button>
+
+                <button type="button" onclick="fillSupplierLogin('blocks@supplier.com', 'password123')" class="p-2.5 rounded-xl bg-slate-800/80 hover:bg-amber-950/30 border border-slate-700 hover:border-amber-500/50 text-left transition-all text-xs">
+                    <span class="block text-base mb-1">🧱</span>
+                    <strong class="block text-white font-bold truncate">Apex Blocks</strong>
+                    <span class="text-[10px] text-slate-400">Masonry Supplier</span>
+                </button>
+            </div>
+
+            <div class="text-center pt-2">
+                <a href="{{ route('login') }}" class="text-xs text-slate-400 hover:text-brand-400 font-semibold transition-colors">
+                    &larr; Return to Main CRM Staff Login
+                </a>
+            </div>
+        </div>
     </div>
+
+    <script>
+        function fillSupplierLogin(email, password) {
+            document.querySelector('input[name="email"]').value = email;
+            document.querySelector('input[name="password"]').value = password;
+            document.querySelector('form').submit();
+        }
+    </script>
 </body>
 </html>
