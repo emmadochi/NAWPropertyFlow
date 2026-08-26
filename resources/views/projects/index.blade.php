@@ -9,7 +9,7 @@
             <h1 class="text-3xl font-extrabold text-dark-900 tracking-tight">Off-Plan Projects</h1>
             <p class="text-sm text-gray-500 mt-1">Track development phases, construction milestones, and total unit pipelines.</p>
         </div>
-        @if(Auth::user()->role !== 'sales_executive')
+        @if(Auth::user()->hasPermission('properties.create') || Auth::user()->isCompanyAdmin())
         <div>
             <button @click="addProjectOpen = true" class="inline-flex items-center space-x-2 px-5 py-3 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-500/10 hover:shadow-brand-600/20 transition-all">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -97,7 +97,7 @@
                         <a href="{{ route('projects.show', $project) }}" class="px-3 py-1.5 bg-gray-50 hover:bg-brand-50 text-gray-700 hover:text-brand-600 border border-gray-200 hover:border-brand-200 rounded-lg text-xs font-bold transition-all">
                             Manage
                         </a>
-                        @if(Auth::user()->role !== 'sales_executive')
+                        @if(Auth::user()->hasPermission('properties.edit') || Auth::user()->isCompanyAdmin())
                         <a href="{{ route('projects.edit', $project) }}" class="p-1.5 bg-gray-50 text-gray-600 hover:bg-gray-100 border border-gray-200 rounded-lg" title="Edit">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>

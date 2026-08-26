@@ -43,9 +43,9 @@ class PropertyController extends Controller
      */
     public function store(Request $request)
     {
-        // Only Admins or Managers can add properties
-        if (Auth::user()->role === 'sales_executive') {
-            abort(403, 'Unauthorized.');
+        // Only Admins or Users with properties.create permission (e.g. Project Managers / Architects) can add properties
+        if (!Auth::user()->hasPermission('properties.create') && !Auth::user()->isCompanyAdmin()) {
+            abort(403, 'Unauthorized. You do not have permission to add new properties.');
         }
 
         $validated = $request->validate([
@@ -99,8 +99,9 @@ class PropertyController extends Controller
      */
     public function update(Request $request, Property $property)
     {
-        if (Auth::user()->role === 'sales_executive') {
-            abort(403, 'Unauthorized.');
+        // Only Admins or Users with properties.edit permission can modify properties
+        if (!Auth::user()->hasPermission('properties.edit') && !Auth::user()->isCompanyAdmin()) {
+            abort(403, 'Unauthorized. You do not have permission to edit properties.');
         }
 
         $validated = $request->validate([

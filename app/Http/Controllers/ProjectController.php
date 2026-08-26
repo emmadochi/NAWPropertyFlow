@@ -21,11 +21,19 @@ class ProjectController extends Controller
 
     public function create()
     {
+        if (!auth()->user()->hasPermission('properties.create') && !auth()->user()->isCompanyAdmin()) {
+            abort(403, 'Unauthorized. You do not have permission to create masterplan projects.');
+        }
+
         return view('projects.create');
     }
 
     public function store(Request $request)
     {
+        if (!auth()->user()->hasPermission('properties.create') && !auth()->user()->isCompanyAdmin()) {
+            abort(403, 'Unauthorized. You do not have permission to create masterplan projects.');
+        }
+
         $validated = $request->validate([
             'name'                     => 'required|string|max:255',
             'developer'                => 'nullable|string|max:255',
@@ -69,11 +77,19 @@ class ProjectController extends Controller
 
     public function edit(Project $project)
     {
+        if (!auth()->user()->hasPermission('properties.edit') && !auth()->user()->isCompanyAdmin()) {
+            abort(403, 'Unauthorized. You do not have permission to edit masterplan projects.');
+        }
+
         return view('projects.edit', compact('project'));
     }
 
     public function update(Request $request, Project $project)
     {
+        if (!auth()->user()->hasPermission('properties.edit') && !auth()->user()->isCompanyAdmin()) {
+            abort(403, 'Unauthorized. You do not have permission to edit masterplan projects.');
+        }
+
         $validated = $request->validate([
             'name'                     => 'required|string|max:255',
             'developer'                => 'nullable|string|max:255',
@@ -81,7 +97,7 @@ class ProjectController extends Controller
             'type'                     => 'required|in:residential,commercial,mixed_use',
             'description'              => 'nullable|string',
             'start_date'               => 'nullable|date',
-            'expected_completion_date' => 'nullable|date',
+            'expected_completion_date' => 'nullable|date|after_or_equal:start_date',
             'actual_completion_date'   => 'nullable|date',
             'status'                   => 'required|in:planning,in_progress,completed,on_hold,cancelled',
             'total_units'              => 'nullable|integer|min:0',
@@ -99,6 +115,10 @@ class ProjectController extends Controller
 
     public function destroy(Project $project)
     {
+        if (!auth()->user()->hasPermission('properties.delete') && !auth()->user()->isCompanyAdmin()) {
+            abort(403, 'Unauthorized. You do not have permission to delete masterplan projects.');
+        }
+
         $project->delete();
         return redirect()->route('projects.index')
             ->with('success', 'Project deleted.');
