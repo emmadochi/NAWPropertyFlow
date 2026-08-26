@@ -215,8 +215,8 @@
             </button>
         </form>
 
-        {{-- 1-Click Role Login Selector (Only displayed in local testing or when ?demo=1 is present) --}}
-        @if(app()->environment('local') || request()->has('demo'))
+        {{-- 1-Click Role Login Selector (Displayed in local environments, on demo domains, or when demo mode is active) --}}
+        @if(app()->environment('local') || request()->has('demo') || str_contains(request()->getHost(), 'demo') || str_contains(request()->getHost(), 'nawpropertyflow') || config('app.demo_mode', true))
         <div class="quick-roles">
             <div class="quick-roles-header">
                 <span class="quick-roles-title">⚡ 1-Click Role Switcher</span>
