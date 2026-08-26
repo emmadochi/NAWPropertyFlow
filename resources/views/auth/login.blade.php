@@ -128,8 +128,13 @@
         }
         .role-grid {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(5, 1fr);
             gap: 0.4rem;
+        }
+        @media (max-width: 480px) {
+            .role-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
         }
         .role-btn {
             background-color: #f8fafc;
@@ -235,6 +240,10 @@
                     <span class="role-icon">💼</span>
                     Sales Agent
                 </button>
+                <button type="button" onclick="fillAndLogin('support@propertyflow.com', 'password')" class="role-btn">
+                    <span class="role-icon">🎧</span>
+                    Customer Care
+                </button>
                 <button type="button" onclick="fillAndLogin('hr@propertyflow.com', 'password')" class="role-btn">
                     <span class="role-icon">👥</span>
                     HR Lead
@@ -243,9 +252,13 @@
                     <span class="role-icon">💰</span>
                     Accountant
                 </button>
-                <button type="button" onclick="fillAndLogin('support@propertyflow.com', 'password')" class="role-btn">
-                    <span class="role-icon">🎧</span>
-                    Support
+                <button type="button" onclick="fillAndLogin('marketing@propertyflow.com', 'password')" class="role-btn">
+                    <span class="role-icon">📢</span>
+                    Marketing
+                </button>
+                <button type="button" onclick="fillAndLogin('legal@propertyflow.com', 'password')" class="role-btn">
+                    <span class="role-icon">⚖️</span>
+                    Legal
                 </button>
                 <button type="button" onclick="fillAndLogin('media@propertyflow.com', 'password')" class="role-btn">
                     <span class="role-icon">🎬</span>

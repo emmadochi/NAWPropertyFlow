@@ -81,7 +81,27 @@ class UserSeeder extends Seeder
                 'phone_number' => '+2348039990000',
                 'status' => 'active',
             ],
-            // 8. Media / Creative Manager
+            // 8. Marketing Lead
+            [
+                'name' => 'Aisha Bello (Marketing Lead)',
+                'email' => 'marketing@propertyflow.com',
+                'password' => Hash::make('password'),
+                'role' => 'marketing',
+                'department' => 'Marketing',
+                'phone_number' => '+2348035558888',
+                'status' => 'active',
+            ],
+            // 9. Legal Officer
+            [
+                'name' => 'Barrister Chidi Eze (Legal)',
+                'email' => 'legal@propertyflow.com',
+                'password' => Hash::make('password'),
+                'role' => 'legal_personnel',
+                'department' => 'Legal & Compliance',
+                'phone_number' => '+2348034449999',
+                'status' => 'active',
+            ],
+            // 10. Media / Creative Manager
             [
                 'name' => 'David Olatunji (Media Producer)',
                 'email' => 'media@propertyflow.com',
@@ -91,7 +111,7 @@ class UserSeeder extends Seeder
                 'phone_number' => '+2348038881111',
                 'status' => 'active',
             ],
-            // 9. Client / Investor (Customer Portal)
+            // 11. Client / Investor (Customer Portal)
             [
                 'name' => 'Chief Kenneth Ofori (Investor)',
                 'email' => 'client@propertyflow.com',
