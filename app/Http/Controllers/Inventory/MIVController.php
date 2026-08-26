@@ -50,7 +50,7 @@ class MIVController extends Controller
             : ($sites->first() ?? null);
 
         // Site engineers and foremen who can receive materials
-        $receivers = User::where('is_active', true)->orderBy('name')->get();
+        $receivers = User::where('status', 'active')->orderBy('name')->get();
 
         return view('inventory.miv.create', compact('sites', 'selectedSite', 'receivers'));
     }
