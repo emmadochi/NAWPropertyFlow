@@ -121,6 +121,36 @@ class UserSeeder extends Seeder
                 'phone_number' => '+2348021119999',
                 'status' => 'active',
             ],
+            // 12. Site Manager / Civil Engineer
+            [
+                'name' => 'Engr. Emeka Nwosu (Site Project Manager)',
+                'email' => 'site.manager@propertyflow.com',
+                'password' => Hash::make('password'),
+                'role' => 'site_engineer',
+                'department' => 'Site Civil Operations',
+                'phone_number' => '+2348033330003',
+                'status' => 'active',
+            ],
+            // 13. Quantity Surveyor (QS)
+            [
+                'name' => 'QS Babatunde Sanusi (Lead Cost Estimator)',
+                'email' => 'qs@propertyflow.com',
+                'password' => Hash::make('password'),
+                'role' => 'quantity_surveyor',
+                'department' => 'Quantity Survey & Estimation',
+                'phone_number' => '+2348032220002',
+                'status' => 'active',
+            ],
+            // 14. Site Storekeeper
+            [
+                'name' => 'Musa Aliyu (Site Materials Controller)',
+                'email' => 'storekeeper@propertyflow.com',
+                'password' => Hash::make('password'),
+                'role' => 'store_keeper',
+                'department' => 'Store & Logistics',
+                'phone_number' => '+2348034440004',
+                'status' => 'active',
+            ],
         ];
 
         foreach ($users as $user) {
