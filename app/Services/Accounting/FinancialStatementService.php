@@ -341,11 +341,13 @@ class FinancialStatementService
                 $net = 0;
             }
 
-            $balances[$acc->account_code] = [
-                'account_name' => $acc->account_name,
-                'account_type' => $acc->account_type,
-                'balance' => max(0, $net),
-            ];
+            if (abs($net) > 0.001) {
+                $balances[$acc->account_code] = [
+                    'account_name' => $acc->account_name,
+                    'account_type' => $acc->account_type,
+                    'balance' => $net,
+                ];
+            }
         }
 
         return $balances;

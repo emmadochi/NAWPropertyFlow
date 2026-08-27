@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Accounting;
 
+use App\Models\CompanySetting;
 use App\Models\Inventory\InventoryChartOfAccount;
 use App\Models\Inventory\InventoryJournalEntry;
 use App\Models\Role;
@@ -9,7 +10,9 @@ use App\Models\User;
 use App\Services\Accounting\AgingAnalysisService;
 use App\Services\Accounting\FinancialStatementService;
 use App\Services\Accounting\TaxComplianceService;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Database\Seeders\InventoryDemoSeeder;
+use Database\Seeders\PermissionSeeder;
+use Database\Seeders\UserSeeder;
 use Tests\TestCase;
 
 class EnterpriseAccountingSuiteTest extends TestCase
@@ -17,8 +20,20 @@ class EnterpriseAccountingSuiteTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        // Seed tenant demo data for tests
-        $this->artisan('db:seed', ['--class' => 'InventoryDemoSeeder']);
+
+        $this->artisan('migrate', [
+            '--path' => 'database/migrations/tenant',
+            '--realpath' => false,
+        ]);
+
+        $this->seed(PermissionSeeder::class);
+        $this->seed(UserSeeder::class);
+        $this->seed(InventoryDemoSeeder::class);
+
+        CompanySetting::updateOrCreate(
+            ['id' => 1],
+            ['company_name' => 'NAW Properties Ltd', 'package_tier' => 'enterprise']
+        );
     }
 
     public function test_balance_sheet_is_strictly_balanced_according_to_ifrs_equation(): void

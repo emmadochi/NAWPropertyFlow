@@ -120,9 +120,11 @@ class InventoryDemoSeeder extends Seeder
                 'po_tier1_max' => 5000000.00,
                 'po_tier2_max' => 20000000.00,
                 'price_variance_alert_pct' => 5.00,
-                'geofence_enforcement' => true,
-                'waste_threshold_pct' => 3.00,
-                'require_two_step_miv' => true,
+                'grn_geofence_strict' => true,
+                'cement_shelf_life_days' => 90,
+                'perfect_match_consecutive_limit' => 3,
+                'staff_pairing_occurrences_limit' => 5,
+                'waste_alert_multiplier' => 1.5,
             ]
         );
 
@@ -186,27 +188,27 @@ class InventoryDemoSeeder extends Seeder
         // 5. Material Catalogue Master
         $matCement = MaterialCatalogue::updateOrCreate(
             ['code' => 'CEM-DAN-50KG'],
-            ['name' => 'Dangote Falcon Cement 50kg', 'category' => 'cement', 'unit_of_measure' => 'bags', 'standard_unit_cost' => 8500.00, 'reorder_level' => 300, 'safety_stock_level' => 100, 'description' => 'Grade 42.5R Portland limestone cement.', 'is_active' => true]
+            ['name' => 'Dangote Falcon Cement 50kg', 'category' => 'cement', 'unit_of_measure' => 'bags', 'standard_unit_cost' => 8500.00, 'reorder_level' => 300, 'safety_stock_level' => 100, 'notes' => 'Grade 42.5R Portland limestone cement.', 'is_active' => true]
         );
         $matRebar = MaterialCatalogue::updateOrCreate(
             ['code' => 'STL-TMT-16MM'],
-            ['name' => 'High-Yield TMT Rebar 16mm', 'category' => 'steel', 'unit_of_measure' => 'tonnes', 'standard_unit_cost' => 1350000.00, 'reorder_level' => 15, 'safety_stock_level' => 5, 'description' => 'Fe500D high-yield steel reinforcement rods.', 'is_active' => true]
+            ['name' => 'High-Yield TMT Rebar 16mm', 'category' => 'steel', 'unit_of_measure' => 'tonnes', 'standard_unit_cost' => 1350000.00, 'reorder_level' => 15, 'safety_stock_level' => 5, 'notes' => 'Fe500D high-yield steel reinforcement rods.', 'is_active' => true]
         );
         $matBlocks = MaterialCatalogue::updateOrCreate(
             ['code' => 'BLK-9IN-VIB'],
-            ['name' => 'Vibrated 9-Inch Solid Sandcrete Blocks', 'category' => 'block', 'unit_of_measure' => 'pieces', 'standard_unit_cost' => 480.00, 'reorder_level' => 2000, 'safety_stock_level' => 500, 'description' => 'High-density vibrated load-bearing building blocks.', 'is_active' => true]
+            ['name' => 'Vibrated 9-Inch Solid Sandcrete Blocks', 'category' => 'block', 'unit_of_measure' => 'pieces', 'standard_unit_cost' => 480.00, 'reorder_level' => 2000, 'safety_stock_level' => 500, 'notes' => 'High-density vibrated load-bearing building blocks.', 'is_active' => true]
         );
         $matSand = MaterialCatalogue::updateOrCreate(
             ['code' => 'AGG-SAND-20T'],
-            ['name' => 'Sharp River Sand (20-Tonne Tipper)', 'category' => 'aggregate', 'unit_of_measure' => 'trips', 'standard_unit_cost' => 120000.00, 'reorder_level' => 10, 'safety_stock_level' => 3, 'description' => 'Washed coarse river sand for structural concrete cast.', 'is_active' => true]
+            ['name' => 'Sharp River Sand (20-Tonne Tipper)', 'category' => 'aggregate', 'unit_of_measure' => 'trips', 'standard_unit_cost' => 120000.00, 'reorder_level' => 10, 'safety_stock_level' => 3, 'notes' => 'Washed coarse river sand for structural concrete cast.', 'is_active' => true]
         );
         $matGranite = MaterialCatalogue::updateOrCreate(
             ['code' => 'AGG-GRN-30T'],
-            ['name' => '3/4 Clean Granite Aggregate (30-Tonne Tipper)', 'category' => 'aggregate', 'unit_of_measure' => 'trips', 'standard_unit_cost' => 280000.00, 'reorder_level' => 8, 'safety_stock_level' => 2, 'description' => 'Machine-crushed hard granite stone.', 'is_active' => true]
+            ['name' => '3/4 Clean Granite Aggregate (30-Tonne Tipper)', 'category' => 'aggregate', 'unit_of_measure' => 'trips', 'standard_unit_cost' => 280000.00, 'reorder_level' => 8, 'safety_stock_level' => 2, 'notes' => 'Machine-crushed hard granite stone.', 'is_active' => true]
         );
         $matTiles = MaterialCatalogue::updateOrCreate(
             ['code' => 'FIN-TILE-60X60'],
-            ['name' => 'Royal Porcelain Vitrified Floor Tiles (600x600mm)', 'category' => 'finishing', 'unit_of_measure' => 'cartons', 'standard_unit_cost' => 12500.00, 'reorder_level' => 150, 'safety_stock_level' => 40, 'description' => 'Polished non-slip vitrified porcelain tiles.', 'is_active' => true]
+            ['name' => 'Royal Porcelain Vitrified Floor Tiles (600x600mm)', 'category' => 'finishing', 'unit_of_measure' => 'cartons', 'standard_unit_cost' => 12500.00, 'reorder_level' => 150, 'safety_stock_level' => 40, 'notes' => 'Polished non-slip vitrified porcelain tiles.', 'is_active' => true]
         );
 
         // 6. Regional Price Benchmarks
@@ -245,7 +247,7 @@ class InventoryDemoSeeder extends Seeder
         // 8. Registered Suppliers & Portal Logins
         $supDangote = Supplier::updateOrCreate(
             ['code' => 'SUP-DAN-001'],
-            ['name' => 'Dangote Building Solutions Ltd', 'contact_person' => 'Alhaji Lawal Danjuma', 'email' => 'dangote@supplier.com', 'phone' => '+2348031122334', 'address' => 'Marble House, Kingsway Road, Ikoyi, Lagos', 'bank_name' => 'Access Bank Plc', 'bank_account_number' => '0012345678', 'bank_account_name' => 'Dangote Building Solutions Ltd', 'payment_terms_days' => 30, 'rating' => 4.9, 'is_active' => true]
+            ['name' => 'Dangote Building Solutions Ltd', 'contact_person' => 'Alhaji Lawal Danjuma', 'email' => 'dangote@supplier.com', 'phone' => '+2348031122334', 'address' => 'Marble House, Kingsway Road, Ikoyi, Lagos', 'bank_name' => 'Access Bank Plc', 'bank_account_number' => '0012345678', 'bank_account_name' => 'Dangote Building Solutions Ltd', 'payment_terms_days' => 30, 'performance_score' => 98.00, 'is_active' => true]
         );
         SupplierUser::updateOrCreate(
             ['email' => 'dangote@supplier.com'],
@@ -254,7 +256,7 @@ class InventoryDemoSeeder extends Seeder
 
         $supSteel = Supplier::updateOrCreate(
             ['code' => 'SUP-STL-002'],
-            ['name' => 'African Steel & Rebar Mills Ltd', 'contact_person' => 'Engr. Victor Obi', 'email' => 'steel@supplier.com', 'phone' => '+2348039988776', 'address' => 'Kilometer 12, Ikorodu Industrial Estate, Lagos', 'bank_name' => 'Zenith Bank Plc', 'bank_account_number' => '1019876543', 'bank_account_name' => 'African Steel & Rebar Mills Ltd', 'payment_terms_days' => 45, 'rating' => 4.7, 'is_active' => true]
+            ['name' => 'African Steel & Rebar Mills Ltd', 'contact_person' => 'Engr. Victor Obi', 'email' => 'steel@supplier.com', 'phone' => '+2348039988776', 'address' => 'Kilometer 12, Ikorodu Industrial Estate, Lagos', 'bank_name' => 'Zenith Bank Plc', 'bank_account_number' => '1019876543', 'bank_account_name' => 'African Steel & Rebar Mills Ltd', 'payment_terms_days' => 45, 'performance_score' => 95.00, 'is_active' => true]
         );
         SupplierUser::updateOrCreate(
             ['email' => 'steel@supplier.com'],
@@ -263,7 +265,7 @@ class InventoryDemoSeeder extends Seeder
 
         $supBlocks = Supplier::updateOrCreate(
             ['code' => 'SUP-BLK-003'],
-            ['name' => 'Apex Vibrated Concrete Products Ltd', 'contact_person' => 'Chief Emeka Nwachukwu', 'email' => 'blocks@supplier.com', 'phone' => '+2348025544332', 'address' => 'Plot 88, Idu Industrial Zone, Abuja', 'bank_name' => 'Guaranty Trust Bank (GTB)', 'bank_account_number' => '0147852369', 'bank_account_name' => 'Apex Vibrated Products Ltd', 'payment_terms_days' => 14, 'rating' => 4.8, 'is_active' => true]
+            ['name' => 'Apex Vibrated Concrete Products Ltd', 'contact_person' => 'Chief Emeka Nwachukwu', 'email' => 'blocks@supplier.com', 'phone' => '+2348025544332', 'address' => 'Plot 88, Idu Industrial Zone, Abuja', 'bank_name' => 'Guaranty Trust Bank (GTB)', 'bank_account_number' => '0147852369', 'bank_account_name' => 'Apex Vibrated Products Ltd', 'payment_terms_days' => 14, 'performance_score' => 97.00, 'is_active' => true]
         );
         SupplierUser::updateOrCreate(
             ['email' => 'blocks@supplier.com'],
@@ -565,6 +567,24 @@ class InventoryDemoSeeder extends Seeder
         );
 
         // 13. Property Sales Revenue & Corporate Overhead Journals
+        $je0 = InventoryJournalEntry::updateOrCreate(
+            ['entry_number' => 'JE-2026-00000'],
+            [
+                'entry_date' => now()->startOfYear()->toDateString(),
+                'description' => 'Opening capital contribution and corporate bank float',
+                'total_debit' => 25500000.00,
+                'total_credit' => 25500000.00,
+                'is_balanced' => true,
+                'posted_by_user_id' => $accountant->id,
+            ]
+        );
+        $je0->items()->delete();
+        $je0->items()->createMany([
+            ['account_code' => '1010', 'entry_type' => 'debit', 'amount' => 25000000.00, 'narration' => 'Zenith Bank opening operational cash float'],
+            ['account_code' => '1020', 'entry_type' => 'debit', 'amount' => 500000.00, 'narration' => 'Abuja site imprest & petty cash safe float'],
+            ['account_code' => '3010', 'entry_type' => 'credit', 'amount' => 25500000.00, 'narration' => 'Shareholder equity & paid-in capital contribution'],
+        ]);
+
         $je8 = InventoryJournalEntry::updateOrCreate(
             ['entry_number' => 'JE-2026-00008'],
             [
