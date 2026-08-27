@@ -64,6 +64,70 @@ Route::middleware([
         return view('welcome');
     })->name('landing');
 
+    // Direct Web Seeder Runner for Demo Testing
+    Route::get('/seed-demo-now', function () {
+        try {
+            // Run Role & Permission Seeder
+            $permissionSeeder = new \Database\Seeders\PermissionSeeder();
+            $permissionSeeder->run();
+
+            // Run Core User Accounts
+            $userSeeder = new \Database\Seeders\UserSeeder();
+            $userSeeder->run();
+
+            // Run Construction Inventory & Suppliers Demo Seeder
+            $inventorySeeder = new \Database\Seeders\InventoryDemoSeeder();
+            $inventorySeeder->run();
+
+            $totalUsers = \App\Models\User::count();
+            $usersList = \App\Models\User::select('name', 'email', 'role')->get();
+
+            return response('
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Database Seeded Successfully</title>
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <style>
+                    body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; display: flex; justify-content: center; }
+                    .card { background: #1e293b; border: 1px solid #334155; border-radius: 1.5rem; max-width: 600px; width: 100%; padding: 2rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+                    .badge { background: #059669; color: #fff; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin-bottom: 1rem; }
+                    h1 { margin: 0 0 0.5rem 0; font-size: 1.5rem; color: #fff; }
+                    p { color: #94a3b8; font-size: 0.875rem; line-height: 1.5; margin-bottom: 1.5rem; }
+                    .user-list { background: #0f172a; border-radius: 0.75rem; padding: 1rem; max-height: 220px; overflow-y: auto; margin-bottom: 1.5rem; font-size: 0.8rem; }
+                    .user-item { display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px solid #1e293b; }
+                    .btn { display: block; text-align: center; background: #f59e0b; color: #000; padding: 0.85rem; border-radius: 0.75rem; font-weight: bold; text-decoration: none; font-size: 0.9rem; }
+                    .btn:hover { background: #d97706; }
+                </style>
+            </head>
+            <body>
+                <div class="card">
+                    <span class="badge">✓ SEEDING COMPLETED</span>
+                    <h1>All Personas & Test Data Seeded!</h1>
+                    <p>Total of <strong>' . $totalUsers . ' user accounts</strong>, 3 construction site yards, 6 material categories, and double-entry journals are live in your database.</p>
+                    
+                    <div class="user-list">
+                        ' . $usersList->map(function ($u) {
+                            return '<div class="user-item"><span><strong>' . e($u->name) . '</strong> (' . e($u->role) . ')</span><code style="color:#f59e0b;">' . e($u->email) . '</code></div>';
+                        })->implode('') . '
+                    </div>
+
+                    <a href="/login" class="btn">Go to Login & Click Any Role &rarr;</a>
+                </div>
+            </body>
+            </html>
+            ', 200, ['Content-Type' => 'text/html']);
+        } catch (\Throwable $e) {
+            return response('
+            <div style="background:#450a0a; color:#fca5a5; padding:2rem; font-family:sans-serif; border-radius:1rem;">
+                <h2>Seeding Error:</h2>
+                <p><strong>' . e($e->getMessage()) . '</strong></p>
+                <p>File: ' . e($e->getFile()) . ' (Line: ' . $e->getLine() . ')</p>
+            </div>
+            ', 500, ['Content-Type' => 'text/html']);
+        }
+    })->name('tenant.seed.now');
+
     // Campaign Tracking (public, within tenant context)
     Route::get('campaigns/track/open/{token}', [CampaignController::class, 'trackOpen'])->name('campaigns.track.open');
     Route::get('campaigns/track/click/{token}', [CampaignController::class, 'trackClick'])->name('campaigns.track.click');
