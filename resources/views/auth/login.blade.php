@@ -225,7 +225,9 @@
         <div class="quick-roles">
             <div class="quick-roles-header">
                 <span class="quick-roles-title">⚡ 1-Click Role Switcher</span>
-                <span class="badge-sandbox">Interactive Demo</span>
+                <a href="{{ url('/seed-demo-now') }}" target="_blank" class="badge-sandbox" style="text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;">
+                    <span>🔄 Initialize / Seed Database</span>
+                </a>
             </div>
 
             <!-- 1. Construction & Site Management Roles -->
