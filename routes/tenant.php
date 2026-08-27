@@ -71,11 +71,17 @@ Route::middleware([
             $permissionSeeder = new \Database\Seeders\PermissionSeeder();
             $permissionSeeder->run();
 
-            // Run Core User Accounts
+            // Run Tenant Accounting Suite Migration
+            \Illuminate\Support\Facades\Artisan::call('migrate', [
+                '--path' => 'database/migrations/tenant/2026_08_27_200001_create_accounting_suite_tables.php',
+                '--force' => true
+            ]);
+
+            // Run Core CRM & Staff Personas Seeder
             $userSeeder = new \Database\Seeders\UserSeeder();
             $userSeeder->run();
 
-            // Run Construction Inventory & Suppliers Demo Seeder
+            // Run Construction Inventory, Suppliers & Enterprise Accounting Demo Seeder
             $inventorySeeder = new \Database\Seeders\InventoryDemoSeeder();
             $inventorySeeder->run();
 
@@ -427,6 +433,39 @@ Route::middleware([
             Route::middleware(['permission:system.manage_settings'])->group(function () {
                 Route::get('settings', [\App\Http\Controllers\Inventory\CompanyInventorySettingController::class, 'edit'])->name('settings.edit');
                 Route::put('settings', [\App\Http\Controllers\Inventory\CompanyInventorySettingController::class, 'update'])->name('settings.update');
+            });
+        });
+
+        // Enterprise Real Estate & Construction Accounting Suite
+        Route::prefix('accounting')->name('accounting.')->middleware(['permission:finance.view_ledger,inventory.view_reports,finance.view_payouts'])->group(function () {
+            // Financial Intelligence Cockpit
+            Route::get('dashboard', [\App\Http\Controllers\Accounting\FinancialStatementController::class, 'index'])->name('dashboard');
+
+            // Financial Statements
+            Route::prefix('statements')->name('statements.')->group(function () {
+                Route::get('balance-sheet', [\App\Http\Controllers\Accounting\FinancialStatementController::class, 'balanceSheet'])->name('balance-sheet');
+                Route::get('profit-and-loss', [\App\Http\Controllers\Accounting\FinancialStatementController::class, 'profitAndLoss'])->name('p-and-l');
+                Route::get('cash-flow', [\App\Http\Controllers\Accounting\FinancialStatementController::class, 'cashFlow'])->name('cash-flow');
+                Route::get('trial-balance', [\App\Http\Controllers\Accounting\FinancialStatementController::class, 'trialBalance'])->name('trial-balance');
+            });
+
+            // Multi-Bank Treasury & Automated Bank Reconciliation
+            Route::prefix('treasury')->name('treasury.')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Accounting\BankTreasuryController::class, 'index'])->name('index');
+                Route::post('accounts', [\App\Http\Controllers\Accounting\BankTreasuryController::class, 'storeAccount'])->name('store-account');
+                Route::post('import-statement', [\App\Http\Controllers\Accounting\BankTreasuryController::class, 'importStatement'])->name('import-statement');
+                Route::post('transactions/{transaction}/match', [\App\Http\Controllers\Accounting\BankTreasuryController::class, 'manualMatch'])->name('manual-match');
+            });
+
+            // Debtor & Creditor Aging Matrix (30 / 60 / 90+ Days)
+            Route::prefix('reports')->name('reports.')->group(function () {
+                Route::get('ar-aging', [\App\Http\Controllers\Accounting\AgingReportController::class, 'arAging'])->name('ar-aging');
+                Route::get('ap-aging', [\App\Http\Controllers\Accounting\AgingReportController::class, 'apAging'])->name('ap-aging');
+            });
+
+            // Tax & Statutory Compliance Hub (5% WHT & 7.5% VAT)
+            Route::prefix('tax')->name('tax.')->group(function () {
+                Route::get('/', [\App\Http\Controllers\Accounting\TaxComplianceController::class, 'index'])->name('index');
             });
         });
 

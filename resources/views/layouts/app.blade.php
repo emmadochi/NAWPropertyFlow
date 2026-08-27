@@ -550,6 +550,35 @@
                     {{-- 7. FINANCE & ACCOUNTS --}}
                     @if(Auth::user()->hasPermission('finance.view_ledger') || Auth::user()->hasPermission('finance.approve_expenses') || Auth::user()->isCompanyAdmin())
                     <div class="mt-5 mb-1 text-[11px] font-extrabold text-gray-400 dark:text-slate-500 uppercase tracking-wider px-4">Finance &amp; Accounts</div>
+
+                    <a href="{{ route('accounting.dashboard') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('accounting.dashboard') || request()->routeIs('accounting.statements.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span>Financial Statements &amp; P&amp;L</span>
+                    </a>
+
+                    <a href="{{ route('accounting.treasury.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('accounting.treasury.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z"></path>
+                        </svg>
+                        <span>Bank Treasury &amp; Recon</span>
+                    </a>
+
+                    <a href="{{ route('accounting.reports.ar-aging') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('accounting.reports.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                        </svg>
+                        <span>AR &amp; AP Aging Matrix</span>
+                    </a>
+
+                    <a href="{{ route('accounting.tax.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('accounting.tax.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span>Tax &amp; FIRS Hub (WHT/VAT)</span>
+                    </a>
+
                     @if(Auth::user()->hasPermission('finance.approve_expenses') || Auth::user()->hasPermission('finance.view_ledger') || Auth::user()->isCompanyAdmin())
                     <a href="{{ route('accounting.expenses.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('accounting.expenses.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -517,5 +517,105 @@ class InventoryDemoSeeder extends Seeder
             ['title' => 'Ghost Delivery Warning on GRN-2026-0003-SAMPLE'],
             ['site_id' => $siteGuzape->id, 'flag_type' => 'ghost_delivery', 'severity' => 'critical', 'description' => 'Delivery scan logged 1.8km away from Guzape Hills compound geofence perimeter.', 'flaggable_type' => GoodsReceivedNote::class, 'flaggable_id' => $grn3->id, 'status' => 'open']
         );
+
+        // 12. Corporate Bank Accounts & Treasury
+        $bankZenith = \App\Models\Accounting\BankAccount::updateOrCreate(
+            ['account_number' => '1014529001'],
+            [
+                'account_name' => 'Zenith Main Operations Account',
+                'bank_name' => 'Zenith Bank Plc',
+                'currency' => 'NGN',
+                'opening_balance' => 25000000.00,
+                'current_balance' => 20300000.00,
+                'gl_account_code' => '1010',
+                'is_active' => true,
+                'is_default' => true,
+                'notes' => 'Primary corporate operational disbursement account for contractors, site requisitions, and overheads.',
+            ]
+        );
+
+        $bankGtb = \App\Models\Accounting\BankAccount::updateOrCreate(
+            ['account_number' => '0148892003'],
+            [
+                'account_name' => 'GTBank Property Collections & Escrow',
+                'bank_name' => 'Guaranty Trust Bank (GTB)',
+                'currency' => 'NGN',
+                'opening_balance' => 0.00,
+                'current_balance' => 65000000.00,
+                'gl_account_code' => '1015',
+                'is_active' => true,
+                'is_default' => false,
+                'notes' => 'Dedicated buyer collections account for off-plan installment milestones.',
+            ]
+        );
+
+        $bankPetty = \App\Models\Accounting\BankAccount::updateOrCreate(
+            ['account_number' => 'FLOAT-ABJ-01'],
+            [
+                'account_name' => 'Abuja Site Imprest & Petty Cash Vault',
+                'bank_name' => 'Petty Cash Safe Float',
+                'currency' => 'NGN',
+                'opening_balance' => 500000.00,
+                'current_balance' => 500000.00,
+                'gl_account_code' => '1020',
+                'is_active' => true,
+                'is_default' => false,
+                'notes' => 'Emergency logistics, daily mason incidentals, and site safety supplies.',
+            ]
+        );
+
+        // 13. Property Sales Revenue & Corporate Overhead Journals
+        $je8 = InventoryJournalEntry::updateOrCreate(
+            ['entry_number' => 'JE-2026-00008'],
+            [
+                'entry_date' => now()->subDays(7)->toDateString(),
+                'site_id' => $siteHutu->id,
+                'project_id' => $proj1->id,
+                'description' => 'Realize sales proceeds: 4-Bedroom Smart Terrace Unit B4 (Hutu Prestige Estate)',
+                'total_debit' => 65000000.00,
+                'total_credit' => 65000000.00,
+                'is_balanced' => true,
+                'posted_by_user_id' => $accountant->id,
+            ]
+        );
+        $je8->items()->delete();
+        $je8->items()->createMany([
+            ['account_code' => '1015', 'entry_type' => 'debit', 'amount' => 65000000.00, 'narration' => 'Buyer bank transfer deposit into GTBank Collections'],
+            ['account_code' => '4100', 'entry_type' => 'credit', 'amount' => 65000000.00, 'narration' => 'Residential property sales revenue realized'],
+        ]);
+
+        $je9 = InventoryJournalEntry::updateOrCreate(
+            ['entry_number' => 'JE-2026-00009'],
+            [
+                'entry_date' => now()->subDays(5)->toDateString(),
+                'description' => 'Disburse monthly executive and site engineering staff payroll',
+                'total_debit' => 3500000.00,
+                'total_credit' => 3500000.00,
+                'is_balanced' => true,
+                'posted_by_user_id' => $accountant->id,
+            ]
+        );
+        $je9->items()->delete();
+        $je9->items()->createMany([
+            ['account_code' => '6100', 'entry_type' => 'debit', 'amount' => 3500000.00, 'narration' => 'Corporate and site staff payroll expense'],
+            ['account_code' => '1010', 'entry_type' => 'credit', 'amount' => 3500000.00, 'narration' => 'Salary EFT disbursement from Zenith Operations'],
+        ]);
+
+        $je10 = InventoryJournalEntry::updateOrCreate(
+            ['entry_number' => 'JE-2026-00010'],
+            [
+                'entry_date' => now()->subDays(3)->toDateString(),
+                'description' => 'Digital advertising, billboard marketing & project launch expo',
+                'total_debit' => 1200000.00,
+                'total_credit' => 1200000.00,
+                'is_balanced' => true,
+                'posted_by_user_id' => $accountant->id,
+            ]
+        );
+        $je10->items()->delete();
+        $je10->items()->createMany([
+            ['account_code' => '6300', 'entry_type' => 'debit', 'amount' => 1200000.00, 'narration' => 'Digital ad spend & highway billboard signage'],
+            ['account_code' => '1010', 'entry_type' => 'credit', 'amount' => 1200000.00, 'narration' => 'Media vendor payment via Zenith Bank'],
+        ]);
     }
 }
