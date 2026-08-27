@@ -15,11 +15,35 @@ class UserController extends Controller
      */
     public function index()
     {
+        // Self-healing: Ensure job_title and is_department_head columns exist
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'job_title')) {
+            try {
+                \Illuminate\Support\Facades\Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('job_title')->nullable()->after('role');
+                    $table->boolean('is_department_head')->default(false)->after('job_title');
+                });
+            } catch (\Throwable $e) {
+                // Ignore
+            }
+        }
+
         $users       = User::with(['branch', 'departmentRelation', 'roleRelation'])->orderBy('name', 'asc')->get();
         $branches    = \App\Models\Branch::orderBy('name', 'asc')->get();
         $departments = \App\Models\Department::where('is_active', true)->orderBy('name', 'asc')->get();
         $roles       = \App\Models\Role::orderBy('name', 'asc')->get();
-        return view('settings.index', compact('users', 'branches', 'departments', 'roles'));
+
+        $specialistTitles = [
+            'Media and Creative' => ['Media Officer / Manager', 'Lead Graphic Designer', 'Senior Video Editor', 'Content Creator & Copywriter', 'Drone Pilot & Videographer', '3D Visualizer & Motion Designer', 'Social Media Specialist'],
+            'Project Management' => ['Project Manager / Lead', 'Site Engineer', 'Quantity Surveyor (QS)', 'Site Storekeeper / Yard Officer', 'Site Supervisor / Foreman', 'Procurement Specialist'],
+            'Accounting' => ['Head of Finance & Accounts', 'Staff Accountant', 'Treasury & Billing Officer', 'Cashier', 'Internal Auditor', 'Tax & Compliance Associate'],
+            'Marketing & Sales' => ['Sales Manager', 'Senior Sales Executive / Realtor', 'Digital Marketer / Media Buyer', 'Telemarketing Representative', 'Lead Acquisition Specialist'],
+            'Admin' => ['Head of Administration', 'HR Officer', 'Front Desk / Customer Service Executive', 'Executive Assistant', 'Operations Officer'],
+            'Legal' => ['Head of Legal & Company Secretary', 'Legal Officer / Contract Drafter', 'Regulatory Compliance Officer'],
+            'Logistics' => ['Logistics Manager', 'Site Inspection Driver', 'Dispatch Officer', 'Fleet Supervisor'],
+            'Procurement' => ['Procurement Manager', 'Vendor Sourcing Specialist', 'Material Buyer']
+        ];
+
+        return view('settings.index', compact('users', 'branches', 'departments', 'roles', 'specialistTitles'));
     }
 
     /**
@@ -33,12 +57,16 @@ class UserController extends Controller
             'password'        => 'required|string|min:6',
             'role'            => 'required|string',
             'role_id'         => 'nullable|exists:roles,id',
+            'job_title'       => 'nullable|string|max:255',
+            'is_department_head' => 'nullable',
             'department_id'   => 'nullable|exists:departments,id',
             'department'      => 'nullable|string',
             'phone_number'    => 'nullable|string|max:30',
             'commission_rate' => 'nullable|numeric|min:0|max:100',
             'branch_id'       => 'nullable|exists:branches,id',
         ]);
+
+        $validated['is_department_head'] = $request->has('is_department_head') || $request->boolean('is_department_head');
 
         // Enforce hierarchy rules
         if (!Auth::user()->hasRole(['super_admin', 'company_admin'])) {
@@ -119,6 +147,8 @@ class UserController extends Controller
         $validated = $request->validate([
             'role' => 'required|string',
             'role_id' => 'nullable|exists:roles,id',
+            'job_title' => 'nullable|string|max:255',
+            'is_department_head' => 'nullable',
             'department_id' => 'nullable|exists:departments,id',
             'department'    => 'nullable|string',
             'status' => 'required|string|in:active,inactive',
@@ -126,6 +156,8 @@ class UserController extends Controller
             'commission_rate' => 'nullable|numeric|min:0|max:100',
             'branch_id' => 'nullable|exists:branches,id',
         ]);
+
+        $validated['is_department_head'] = $request->has('is_department_head') || $request->boolean('is_department_head');
 
         // Link role_id if matched
         if (empty($validated['role_id'])) {
