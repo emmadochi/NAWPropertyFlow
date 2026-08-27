@@ -219,8 +219,12 @@ class LeadController extends Controller
         }
         $officers = $officersQuery->orderBy('name', 'asc')->get();
         $branches = \App\Models\Branch::orderBy('name', 'asc')->get();
+        $paymentPlanDurations = \App\Models\PaymentPlanDuration::where('is_active', true)
+            ->orderBy('sort_order', 'asc')
+            ->orderBy('duration_months', 'asc')
+            ->get();
 
-        return view('leads.show', compact('lead', 'properties', 'officers', 'branches', 'timeline'));
+        return view('leads.show', compact('lead', 'properties', 'officers', 'branches', 'timeline', 'paymentPlanDurations'));
     }
 
     /**

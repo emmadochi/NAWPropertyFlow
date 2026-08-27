@@ -107,6 +107,12 @@ class SalesService
 
             $paymentPlan = $this->paymentService->createPlan($sale, [
                 'plan_type' => $planType,
+                'payment_plan_duration_id' => $data['payment_plan_duration_id'] ?? null,
+                'duration_months' => $data['installment_months'] ?? null,
+                'base_deal_value' => $data['base_deal_value'] ?? null,
+                'interest_rate_pct' => $data['interest_rate_pct'] ?? 0,
+                'interest_amount' => $data['interest_amount'] ?? 0,
+                'total_amount' => $sale->deal_value,
                 'number_of_installments' => count($milestones),
                 'milestones' => $milestones,
                 'notes' => $data['notes'] ?? ("Closed deal with " . ($planType === 'outright' ? 'full payment' : 'installment structure') . "."),

@@ -766,16 +766,49 @@
              x-data="{
                 selectedPropertyId: '{{ $lead->property_interest_id ?? '' }}',
                 paymentType: 'installment',
-                dealValue: {{ $lead->propertyInterest ? $lead->propertyInterest->price : 0 }},
+                baseDealValue: {{ $lead->propertyInterest ? $lead->propertyInterest->price : 0 }},
+                selectedDurationId: '{{ $paymentPlanDurations->where('duration_months', '>', 0)->first()?->id ?? '' }}',
+                durations: {{ json_encode($paymentPlanDurations) }},
                 initialDeposit: 0,
-                spreadMonths: 6,
+                
+                getSelectedDuration() {
+                    return this.durations.find(d => d.id == this.selectedDurationId) || null;
+                },
+                getInterestRate() {
+                    if (this.paymentType === 'outright') return 0;
+                    const d = this.getSelectedDuration();
+                    return d ? (parseFloat(d.interest_rate_pct) || 0) : 0;
+                },
+                getInterestAmount() {
+                    const base = parseFloat(this.baseDealValue) || 0;
+                    const rate = this.getInterestRate();
+                    return Math.round((base * rate) / 100);
+                },
+                getTotalDealValue() {
+                    const base = parseFloat(this.baseDealValue) || 0;
+                    return base + this.getInterestAmount();
+                },
+                getSpreadMonths() {
+                    if (this.paymentType === 'outright') return 1;
+                    const d = this.getSelectedDuration();
+                    return d ? (parseInt(d.duration_months) || 1) : 1;
+                },
                 calcBalance() {
-                    return Math.max(0, (parseFloat(this.dealValue) || 0) - (parseFloat(this.initialDeposit) || 0));
+                    const total = this.getTotalDealValue();
+                    const deposit = parseFloat(this.initialDeposit) || 0;
+                    return Math.max(0, total - deposit);
                 },
                 calcMonthly() {
                     const bal = this.calcBalance();
-                    const m = parseInt(this.spreadMonths) || 1;
-                    return m > 0 ? (bal / m).toFixed(2) : 0;
+                    const d = this.getSelectedDuration();
+                    const installments = d && d.number_of_installments > 1 ? (d.number_of_installments - 1) : this.getSpreadMonths();
+                    return installments > 0 ? (bal / installments).toFixed(2) : 0;
+                },
+                onDurationChange() {
+                    const d = this.getSelectedDuration();
+                    if (d && this.baseDealValue > 0) {
+                        this.initialDeposit = Math.round((this.getTotalDealValue() * (parseFloat(d.initial_deposit_pct) || 30)) / 100);
+                    }
                 }
              }">
             <div class="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-slate-700">
@@ -794,6 +827,12 @@
             <form action="{{ route('sales.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 <input type="hidden" name="lead_id" value="{{ $lead->id }}">
+                <input type="hidden" name="deal_value" :value="getTotalDealValue()">
+                <input type="hidden" name="base_deal_value" :value="baseDealValue">
+                <input type="hidden" name="interest_rate_pct" :value="getInterestRate()">
+                <input type="hidden" name="interest_amount" :value="getInterestAmount()">
+                <input type="hidden" name="payment_plan_duration_id" :value="selectedDurationId">
+                <input type="hidden" name="installment_months" :value="getSpreadMonths()">
                 
                 <div class="space-y-3">
                     <div>
@@ -824,8 +863,8 @@
 
                     <div class="grid grid-cols-2 gap-3">
                         <div>
-                            <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Total Deal Value (₦) *</label>
-                            <input type="number" name="deal_value" x-model="dealValue" step="0.01" required
+                            <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Base Property Price (₦) *</label>
+                            <input type="number" x-model.number="baseDealValue" step="0.01" required
                                    class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-xs font-extrabold text-brand-600 focus:border-brand-500 outline-none">
                         </div>
                         <div>
@@ -862,26 +901,36 @@
                                 </div>
                                 <div>
                                     <label class="block text-[10px] font-bold text-gray-600 dark:text-slate-300 mb-1">Balance Spread Duration</label>
-                                    <select name="installment_months" x-model="spreadMonths"
+                                    <select name="selected_duration_id" x-model="selectedDurationId" @change="onDurationChange()"
                                             class="w-full px-3 py-2 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-800 text-xs font-semibold text-gray-800 dark:text-white focus:border-brand-500 outline-none">
-                                        <option value="3">3 Months Spread</option>
-                                        <option value="6">6 Months Spread</option>
-                                        <option value="12">12 Months (1 Year)</option>
-                                        <option value="18">18 Months Spread</option>
-                                        <option value="24">24 Months (2 Years)</option>
+                                        @foreach($paymentPlanDurations->where('duration_months', '>', 0) as $dur)
+                                        <option value="{{ $dur->id }}">{{ $dur->name }} ({{ $dur->duration_months }}M @if($dur->interest_rate_pct > 0)+{{ $dur->interest_rate_pct }}% Int.@else Interest-Free @endif)</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
 
                             <!-- Live Calculation Helper Box -->
-                            <div class="bg-white dark:bg-slate-800 p-2.5 rounded-xl border border-gray-200 dark:border-slate-700 text-[11px] space-y-1">
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500">Remaining Balance:</span>
+                            <div class="bg-white dark:bg-slate-800 p-3 rounded-xl border border-gray-200 dark:border-slate-700 text-[11px] space-y-1.5 shadow-sm">
+                                <div class="flex justify-between items-center text-gray-500">
+                                    <span>Base Property Price:</span>
+                                    <span class="font-bold text-slate-800 dark:text-white">₦<span x-text="Number(baseDealValue).toLocaleString()"></span></span>
+                                </div>
+                                <div class="flex justify-between items-center text-amber-600" x-show="getInterestRate() > 0">
+                                    <span>+ Interest Surcharge (<span x-text="getInterestRate()"></span>%):</span>
+                                    <span class="font-extrabold">+₦<span x-text="Number(getInterestAmount()).toLocaleString()"></span></span>
+                                </div>
+                                <div class="flex justify-between items-center pt-1 border-t border-gray-100 dark:border-slate-700">
+                                    <span class="font-extrabold text-slate-900 dark:text-white">Total Contract Sum:</span>
+                                    <span class="font-black text-brand-600 text-xs">₦<span x-text="Number(getTotalDealValue()).toLocaleString()"></span></span>
+                                </div>
+                                <div class="flex justify-between items-center text-gray-500">
+                                    <span>Remaining Balance:</span>
                                     <span class="font-extrabold text-rose-600">₦<span x-text="calcBalance().toLocaleString()"></span></span>
                                 </div>
-                                <div class="flex justify-between">
-                                    <span class="text-gray-500">Est. Monthly Installment:</span>
-                                    <span class="font-bold text-gray-800 dark:text-white">₦<span x-text="Number(calcMonthly()).toLocaleString()"></span> / month</span>
+                                <div class="flex justify-between items-center text-gray-500">
+                                    <span>Est. Monthly Installment:</span>
+                                    <span class="font-bold text-emerald-600 dark:text-emerald-400">₦<span x-text="Number(calcMonthly()).toLocaleString()"></span> / month</span>
                                 </div>
                             </div>
                         </div>
