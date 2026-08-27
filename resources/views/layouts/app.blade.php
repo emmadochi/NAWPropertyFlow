@@ -418,7 +418,7 @@
 
 
                     {{-- 6. CONSTRUCTION INVENTORY & PROCUREMENT --}}
-                    @if(Auth::user()->hasPermission('inventory.view_stock') || Auth::user()->hasPermission('inventory.manage_catalogue') || Auth::user()->hasPermission('inventory.set_bom') || Auth::user()->hasPermission('inventory.manage_suppliers') || Auth::user()->isCompanyAdmin())
+                    @if($__cs?->hasFeature('inventory') && (Auth::user()->hasPermission('inventory.view_stock') || Auth::user()->hasPermission('inventory.manage_catalogue') || Auth::user()->hasPermission('inventory.set_bom') || Auth::user()->hasPermission('inventory.manage_suppliers') || Auth::user()->isCompanyAdmin()))
                     <div class="mt-5 mb-1 text-[11px] font-extrabold text-gray-400 dark:text-slate-500 uppercase tracking-wider px-4">Construction Inventory</div>
                     
                     @if(Auth::user()->hasPermission('inventory.view_reports') || Auth::user()->hasPermission('inventory.view_stock') || Auth::user()->isCompanyAdmin())
@@ -548,7 +548,7 @@
 
 
                     {{-- 7. FINANCE & ACCOUNTS --}}
-                    @if(Auth::user()->hasPermission('finance.view_ledger') || Auth::user()->hasPermission('finance.approve_expenses') || Auth::user()->isCompanyAdmin())
+                    @if($__cs?->hasFeature('accounting') && (Auth::user()->hasPermission('finance.view_ledger') || Auth::user()->hasPermission('finance.approve_expenses') || Auth::user()->isCompanyAdmin()))
                     <div class="mt-5 mb-1 text-[11px] font-extrabold text-gray-400 dark:text-slate-500 uppercase tracking-wider px-4">Finance &amp; Accounts</div>
 
                     <a href="{{ route('accounting.dashboard') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('accounting.dashboard') || request()->routeIs('accounting.statements.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
@@ -684,19 +684,39 @@
                         <span>Company &amp; Letterhead</span>
                     </a>
 
+                    @if($__cs?->hasFeature('payment_plans'))
                     <a href="{{ route('settings.payment-plans.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('settings.payment-plans.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                         <span>Payment Plans &amp; Interest</span>
                     </a>
+                    @endif
 
+                    @if($__cs?->hasFeature('inventory'))
                     <a href="{{ route('inventory.settings.edit') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('inventory.settings.*') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
                         </svg>
                         <span>Inventory Settings &amp; Tiers</span>
                     </a>
+                    @endif
+
+                    {{-- Developer Platform Master Hub (Super Admins / Platform Owner) --}}
+                    @if(Auth::user()->isSuperAdmin() || Auth::user()->role === 'super_admin')
+                    <div class="mt-4 pt-3 border-t border-gray-100 dark:border-slate-800">
+                        <div class="mb-1 text-[10.5px] font-extrabold text-amber-500 uppercase tracking-wider px-4 flex items-center space-x-1">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clip-rule="evenodd"/></svg>
+                            <span>Platform Developer</span>
+                        </div>
+                        <a href="{{ route('developer.modules.index') }}" class="flex items-center space-x-3 px-4 py-2 rounded-xl font-bold text-xs transition-all {{ request()->routeIs('developer.modules.*') ? 'bg-amber-500/15 text-amber-600 border border-amber-500/30 dark:bg-amber-500/20 dark:text-amber-300' : 'text-amber-600 dark:text-amber-400 hover:bg-amber-500/10 border border-transparent' }}">
+                            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                            </svg>
+                            <span>Developer Switchboard</span>
+                        </a>
+                    </div>
+                    @endif
                     @endif
 
                     @endif {{-- end administration role gate --}}

@@ -80,6 +80,10 @@ Route::middleware([
                 '--path' => 'database/migrations/tenant/2026_08_27_210001_create_payment_plan_durations_table.php',
                 '--force' => true
             ]);
+            \Illuminate\Support\Facades\Artisan::call('migrate', [
+                '--path' => 'database/migrations/tenant/2026_08_27_220001_add_enabled_modules_to_company_settings_table.php',
+                '--force' => true
+            ]);
 
             // Run Core CRM & Staff Personas Seeder
             $userSeeder = new \Database\Seeders\UserSeeder();
@@ -265,6 +269,11 @@ Route::middleware([
             Route::put('settings/payment-plans/{paymentPlan}', [\App\Http\Controllers\PaymentPlanDurationController::class, 'update'])->name('settings.payment-plans.update');
             Route::post('settings/payment-plans/{paymentPlan}/toggle', [\App\Http\Controllers\PaymentPlanDurationController::class, 'toggle'])->name('settings.payment-plans.toggle');
             Route::delete('settings/payment-plans/{paymentPlan}', [\App\Http\Controllers\PaymentPlanDurationController::class, 'destroy'])->name('settings.payment-plans.destroy');
+
+            // Developer Master Module Switchboard
+            Route::get('developer/modules', [\App\Http\Controllers\DeveloperModuleController::class, 'index'])->name('developer.modules.index');
+            Route::post('developer/modules', [\App\Http\Controllers\DeveloperModuleController::class, 'update'])->name('developer.modules.update');
+            Route::post('developer/modules/reset', [\App\Http\Controllers\DeveloperModuleController::class, 'resetToTier'])->name('developer.modules.reset');
         });
 
         // Reports
