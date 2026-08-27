@@ -56,7 +56,9 @@ class InspectionController extends Controller
         $leads = $leads->get();
 
         $properties = Property::orderBy('name', 'asc')->get();
-        $officers = User::whereIn('role', ['sales_executive', 'sales_manager'])->orderBy('name', 'asc')->get();
+        $officers = User::where('role', '!=', 'customer')->where(function($q) {
+            $q->where('status', 'active')->orWhereNull('status');
+        })->orderBy('name', 'asc')->get();
 
         return view('inspections.index', compact('inspections', 'leads', 'properties', 'officers'));
     }

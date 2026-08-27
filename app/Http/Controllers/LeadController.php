@@ -50,7 +50,9 @@ class LeadController extends Controller
         // Data for dropdowns in modals & filters
         $properties = Property::orderBy('name', 'asc')->get();
         
-        $officersQuery = User::whereIn('role', ['sales_executive', 'sales_manager']);
+        $officersQuery = User::where('role', '!=', 'customer')->where(function($q) {
+            $q->where('status', 'active')->orWhereNull('status');
+        });
         if ($user->role === 'sales_manager' || $user->role === 'sales_executive') {
             $officersQuery->where('branch_id', $user->branch_id);
         } else {
@@ -204,7 +206,9 @@ class LeadController extends Controller
                      ->where('reserved_by_lead_id', $lead->id);
               });
         }])->orderBy('name', 'asc')->get();
-        $officersQuery = User::whereIn('role', ['sales_executive', 'sales_manager']);
+        $officersQuery = User::where('role', '!=', 'customer')->where(function($q) {
+            $q->where('status', 'active')->orWhereNull('status');
+        });
         if ($user->role === 'sales_manager' || $user->role === 'sales_executive') {
             $officersQuery->where('branch_id', $user->branch_id);
         } else {

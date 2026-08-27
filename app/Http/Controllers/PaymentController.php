@@ -23,7 +23,8 @@ class PaymentController extends Controller
      */
     public function createPlan(Sale $sale)
     {
-        return view('payments.plan', compact('sale'));
+        $durations = \App\Models\PaymentPlanDuration::active()->get();
+        return view('payments.plan', compact('sale', 'durations'));
     }
 
     /**
@@ -32,7 +33,13 @@ class PaymentController extends Controller
     public function storePlan(Request $request, Sale $sale)
     {
         $validated = $request->validate([
+            'payment_plan_duration_id' => 'nullable|exists:payment_plan_durations,id',
+            'duration_months' => 'nullable|integer|min:0',
             'plan_type' => 'required|in:outright,installment,mortgage',
+            'base_deal_value' => 'nullable|numeric|min:0',
+            'interest_rate_pct' => 'nullable|numeric|min:0|max:100',
+            'interest_amount' => 'nullable|numeric|min:0',
+            'total_amount' => 'nullable|numeric|min:0',
             'number_of_installments' => 'nullable|integer|min:1',
             'milestones' => 'nullable|array',
             'milestones.*.label' => 'required|string',

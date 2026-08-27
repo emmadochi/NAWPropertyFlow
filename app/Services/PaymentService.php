@@ -35,13 +35,23 @@ class PaymentService
                 $sale->paymentPlan->delete();
             }
 
+            $baseAmount = isset($data['base_deal_value']) ? (float)$data['base_deal_value'] : (float)$sale->deal_value;
+            $interestRate = isset($data['interest_rate_pct']) ? (float)$data['interest_rate_pct'] : 0.00;
+            $interestAmount = isset($data['interest_amount']) ? (float)$data['interest_amount'] : round(($baseAmount * $interestRate) / 100, 2);
+            $totalAmount = isset($data['total_amount']) ? (float)$data['total_amount'] : ($baseAmount + $interestAmount);
+
             $plan = PaymentPlan::create([
                 'sale_id' => $sale->id,
-                'plan_type' => $data['plan_type'],
-                'total_amount' => $sale->deal_value,
+                'payment_plan_duration_id' => $data['payment_plan_duration_id'] ?? null,
+                'duration_months' => $data['duration_months'] ?? null,
+                'plan_type' => $data['plan_type'] ?? 'installment',
+                'base_deal_value' => $baseAmount,
+                'interest_rate_pct' => $interestRate,
+                'interest_amount' => $interestAmount,
+                'total_amount' => $totalAmount,
                 'amount_paid' => 0,
-                'balance' => $sale->deal_value,
-                'number_of_installments' => $data['number_of_installments'] ?? 1,
+                'balance' => $totalAmount,
+                'number_of_installments' => $data['number_of_installments'] ?? (isset($data['milestones']) ? count($data['milestones']) : 1),
                 'notes' => $data['notes'] ?? null,
                 'status' => 'active',
             ]);

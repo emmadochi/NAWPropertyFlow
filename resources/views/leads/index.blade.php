@@ -154,9 +154,9 @@
             @if(Auth::user()->role !== 'sales_executive')
             <div class="w-full md:w-48">
                 <select name="assigned_to" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 focus:ring-2 focus:ring-brand-100 outline-none text-sm text-gray-700 bg-white">
-                    <option value="">All Officers</option>
+                    <option value="">All Officers / Staff</option>
                     @foreach($officers as $officer)
-                    <option value="{{ $officer->id }}" {{ request('assigned_to') == $officer->id ? 'selected' : '' }}>{{ $officer->name }}</option>
+                    <option value="{{ $officer->id }}" {{ request('assigned_to') == $officer->id ? 'selected' : '' }}>{{ $officer->name }} ({{ ucwords(str_replace('_', ' ', $officer->role)) }})</option>
                     @endforeach
                 </select>
             </div>
@@ -327,7 +327,7 @@
                                         class="text-xs bg-gray-50 border border-gray-200 rounded-lg p-1.5 focus:outline-none focus:ring-1 focus:ring-brand-500 font-medium">
                                     <option value="">Unassigned</option>
                                     @foreach($officers as $officer)
-                                    <option value="{{ $officer->id }}" {{ $lead->assigned_to == $officer->id ? 'selected' : '' }}>{{ $officer->name }}</option>
+                                    <option value="{{ $officer->id }}" {{ $lead->assigned_to == $officer->id ? 'selected' : '' }}>{{ $officer->name }} ({{ ucwords(str_replace('_', ' ', $officer->role)) }})</option>
                                     @endforeach
                                 </select>
                             </form>
@@ -478,12 +478,12 @@
 
                     @if(Auth::user()->role !== 'sales_executive')
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Assign Sales Officer</label>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Assign Staff / Officer</label>
                         <select name="assigned_to"
                                 class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 outline-none text-sm text-gray-700 bg-white">
                             <option value="">Unassigned</option>
                             @foreach($officers as $officer)
-                            <option value="{{ $officer->id }}">{{ $officer->name }} ({{ str_replace('_', ' ', $officer->role) }})</option>
+                            <option value="{{ $officer->id }}">{{ $officer->name }} ({{ ucwords(str_replace('_', ' ', $officer->role)) }})</option>
                             @endforeach
                         </select>
                     </div>

@@ -71,9 +71,13 @@ Route::middleware([
             $permissionSeeder = new \Database\Seeders\PermissionSeeder();
             $permissionSeeder->run();
 
-            // Run Tenant Accounting Suite Migration
+            // Run Tenant Accounting Suite & Payment Plan Durations Migrations
             \Illuminate\Support\Facades\Artisan::call('migrate', [
                 '--path' => 'database/migrations/tenant/2026_08_27_200001_create_accounting_suite_tables.php',
+                '--force' => true
+            ]);
+            \Illuminate\Support\Facades\Artisan::call('migrate', [
+                '--path' => 'database/migrations/tenant/2026_08_27_210001_create_payment_plan_durations_table.php',
                 '--force' => true
             ]);
 
@@ -254,6 +258,13 @@ Route::middleware([
             Route::patch('settings/departments/{department}/toggle', [DepartmentController::class, 'toggle'])->name('departments.toggle');
             Route::post('settings/departments/{department}/metrics', [DepartmentController::class, 'storeMetric'])->name('departments.metrics.store');
             Route::patch('settings/departments/metrics/{metric}/toggle', [DepartmentController::class, 'toggleMetric'])->name('departments.metrics.toggle');
+
+            // Payment Plan Durations & Interest Rates
+            Route::get('settings/payment-plans', [\App\Http\Controllers\PaymentPlanDurationController::class, 'index'])->name('settings.payment-plans.index');
+            Route::post('settings/payment-plans', [\App\Http\Controllers\PaymentPlanDurationController::class, 'store'])->name('settings.payment-plans.store');
+            Route::put('settings/payment-plans/{paymentPlan}', [\App\Http\Controllers\PaymentPlanDurationController::class, 'update'])->name('settings.payment-plans.update');
+            Route::post('settings/payment-plans/{paymentPlan}/toggle', [\App\Http\Controllers\PaymentPlanDurationController::class, 'toggle'])->name('settings.payment-plans.toggle');
+            Route::delete('settings/payment-plans/{paymentPlan}', [\App\Http\Controllers\PaymentPlanDurationController::class, 'destroy'])->name('settings.payment-plans.destroy');
         });
 
         // Reports
