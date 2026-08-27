@@ -117,8 +117,8 @@ class InventoryDemoSeeder extends Seeder
         CompanyInventorySetting::updateOrCreate(
             ['id' => 1],
             [
-                'po_tier1_max' => 5000000.00,    // <= ₦5m Site Manager
-                'po_tier2_max' => 20000000.00,   // <= ₦20m Project Director
+                'po_tier1_max' => 5000000.00,
+                'po_tier2_max' => 20000000.00,
                 'price_variance_alert_pct' => 5.00,
                 'geofence_enforcement' => true,
                 'waste_threshold_pct' => 3.00,
@@ -183,7 +183,7 @@ class InventoryDemoSeeder extends Seeder
             ]
         );
 
-        // 5. Material Catalogue Master (matches enum in 2026_08_26_100003_create_material_catalogue_table)
+        // 5. Material Catalogue Master
         $matCement = MaterialCatalogue::updateOrCreate(
             ['code' => 'CEM-DAN-50KG'],
             ['name' => 'Dangote Falcon Cement 50kg', 'category' => 'cement', 'unit_of_measure' => 'bags', 'standard_unit_cost' => 8500.00, 'reorder_level' => 300, 'safety_stock_level' => 100, 'description' => 'Grade 42.5R Portland limestone cement.', 'is_active' => true]
@@ -211,18 +211,35 @@ class InventoryDemoSeeder extends Seeder
 
         // 6. Regional Price Benchmarks
         PriceBenchmark::updateOrCreate(
-            ['material_id' => $matCement->id, 'region_state' => 'Abuja (FCT)'],
-            ['average_unit_price' => 8500.00, 'min_price' => 8200.00, 'max_price' => 8900.00, 'source' => 'Abuja Builders Merchant Survey Q3 2026', 'survey_date' => now()->toDateString(), 'recorded_by_user_id' => $qs->id]
+            ['material_id' => $matCement->id, 'city' => 'abuja'],
+            [
+                'unit_price' => 8500.00,
+                'source_market_name' => 'Dei-Dei Building Materials Market, Abuja',
+                'recorded_date' => now()->toDateString(),
+                'entered_by_user_id' => $qs->id,
+                'notes' => 'Abuja Builders Merchant Survey Q3 2026',
+            ]
         );
         PriceBenchmark::updateOrCreate(
-            ['material_id' => $matRebar->id, 'region_state' => 'Lagos'],
-            ['average_unit_price' => 1350000.00, 'min_price' => 1300000.00, 'max_price' => 1420000.00, 'source' => 'Lagos Steel Importers Association', 'survey_date' => now()->toDateString(), 'recorded_by_user_id' => $qs->id]
+            ['material_id' => $matRebar->id, 'city' => 'lagos'],
+            [
+                'unit_price' => 1350000.00,
+                'source_market_name' => 'Orile Iganmu Steel Depot, Lagos',
+                'recorded_date' => now()->toDateString(),
+                'entered_by_user_id' => $qs->id,
+                'notes' => 'Lagos Steel Importers Association Survey',
+            ]
         );
 
         // 7. Quantity Surveyor BOM Templates
         BomTemplate::updateOrCreate(
-            ['activity_name' => 'Grade 25 Concrete Slab Casting (1 m3)'],
-            ['material_id' => $matCement->id, 'unit_of_work' => 'm3', 'standard_coefficient' => 7.00, 'waste_allowance_pct' => 3.00, 'specifications' => '1:2:4 Mix Ratio for 25 N/mm2 structural deck slab.', 'created_by_user_id' => $qs->id]
+            ['project_id' => null, 'material_id' => $matCement->id, 'activity_name' => 'Grade 25 Concrete Slab Casting (1 m3)'],
+            [
+                'qty_per_unit' => 7.0000,
+                'unit_of_work' => 'm³',
+                'allowable_variance_pct' => 5.00,
+                'set_by_user_id' => $qs->id,
+            ]
         );
 
         // 8. Registered Suppliers & Portal Logins
@@ -256,11 +273,21 @@ class InventoryDemoSeeder extends Seeder
         // 9. Operational Cycle #1: Hutu Prestige Cement
         $mrf1 = MaterialRequisition::updateOrCreate(
             ['ref_number' => 'MRF-2026-0001'],
-            ['site_id' => $siteHutu->id, 'requested_by_user_id' => $siteManager->id, 'approved_by_user_id' => $qs->id, 'status' => 'approved', 'priority' => 'high', 'notes' => '1,000 bags cement for Block A & B 1st Floor Slab Concreting.', 'approved_at' => now()]
+            [
+                'site_id' => $siteHutu->id,
+                'project_id' => $proj1->id,
+                'requested_by_user_id' => $siteManager->id,
+                'activity_name' => 'Block A & B 1st Floor Slab Concreting',
+                'required_date' => now()->addDays(2)->toDateString(),
+                'approved_by_user_id' => $qs->id,
+                'status' => 'approved',
+                'notes' => '1,000 bags cement for Block A & B 1st Floor Slab Concreting.',
+                'approved_at' => now(),
+            ]
         );
         MaterialRequisitionItem::updateOrCreate(
             ['requisition_id' => $mrf1->id, 'material_id' => $matCement->id],
-            ['qty_requested' => 1000, 'qty_approved' => 1000, 'unit_of_measure' => 'bags', 'estimated_unit_cost' => 8500.00]
+            ['qty_requested' => 1000, 'qty_approved' => 1000]
         );
 
         $po1 = PurchaseOrder::updateOrCreate(
@@ -274,11 +301,11 @@ class InventoryDemoSeeder extends Seeder
 
         $grn1 = GoodsReceivedNote::updateOrCreate(
             ['ref_number' => 'GRN-2026-0001'],
-            ['purchase_order_id' => $po1->id, 'site_id' => $siteHutu->id, 'received_by_user_id' => $storekeeper->id, 'delivery_date' => now()->subDays(5)->toDateString(), 'delivery_time' => '09:15', 'waybill_number' => 'WB-DAN-77881', 'driver_name' => 'Musa Garba', 'driver_phone' => '+2348039911223', 'vehicle_plate' => 'KJA-892-XA', 'delivery_gps_lat' => 9.0821000, 'delivery_gps_lng' => 7.4810500, 'geofence_check_passed' => true, 'status' => 'accepted', 'remarks' => '1,000 bags verified dry and intact by Storekeeper.']
+            ['purchase_order_id' => $po1->id, 'site_id' => $siteHutu->id, 'received_by_user_id' => $storekeeper->id, 'delivery_date' => now()->subDays(5)->toDateString(), 'delivery_time' => '09:15', 'waybill_number' => 'WB-DAN-77881', 'driver_name' => 'Musa Garba', 'driver_phone' => '+2348039911223', 'vehicle_plate' => 'KJA-892-XA', 'delivery_gps_lat' => 9.0821000, 'delivery_gps_lng' => 7.4810500, 'geofence_check_passed' => true, 'status' => 'complete', 'remarks' => '1,000 bags verified dry and intact by Storekeeper.']
         );
         GrnItem::updateOrCreate(
             ['grn_id' => $grn1->id, 'material_id' => $matCement->id],
-            ['qty_received' => 1000, 'qty_rejected' => 0, 'batch_number' => 'LOT-DAN-001', 'unit_price_confirmed' => 8500.00]
+            ['qty_ordered' => 1000, 'qty_received' => 1000, 'qty_rejected' => 0, 'batch_number' => 'LOT-DAN-001', 'unit_price_confirmed' => 8500.00]
         );
 
         $stkCement = SiteStock::updateOrCreate(
@@ -350,7 +377,7 @@ class InventoryDemoSeeder extends Seeder
 
         $inv1 = SupplierInvoice::updateOrCreate(
             ['invoice_number' => 'INV-DAN-8891'],
-            ['supplier_id' => $supDangote->id, 'purchase_order_id' => $po1->id, 'goods_received_note_id' => $grn1->id, 'invoice_date' => now()->subDays(4)->toDateString(), 'due_date' => now()->addDays(26)->toDateString(), 'total_amount' => 8500000.00, 'tax_amount' => 0.00, 'payment_status' => 'approved_for_payment', 'matched_by_user_id' => $accountant->id, 'matched_at' => now()->subDays(4), 'discrepancy_notes' => '3-Way Match verified successfully with zero price or quantity variance.', 'payment_approved_by_user_id' => $accountant->id, 'payment_approved_at' => now()->subDays(3)]
+            ['supplier_id' => $supDangote->id, 'purchase_order_id' => $po1->id, 'goods_received_note_id' => $grn1->id, 'invoice_date' => now()->subDays(4)->toDateString(), 'due_date' => now()->addDays(26)->toDateString(), 'subtotal_amount' => 8500000.00, 'total_amount' => 8500000.00, 'tax_amount' => 0.00, 'payment_status' => 'approved_for_payment', 'matched_by_user_id' => $accountant->id, 'matched_at' => now()->subDays(4), 'discrepancy_notes' => '3-Way Match verified successfully with zero price or quantity variance.', 'payment_approved_by_user_id' => $accountant->id, 'payment_approved_at' => now()->subDays(3)]
         );
 
         $je4 = InventoryJournalEntry::updateOrCreate(
@@ -381,11 +408,11 @@ class InventoryDemoSeeder extends Seeder
 
         $grn2 = GoodsReceivedNote::updateOrCreate(
             ['ref_number' => 'GRN-2026-0002'],
-            ['purchase_order_id' => $po2->id, 'site_id' => $siteEko->id, 'received_by_user_id' => $storekeeper->id, 'delivery_date' => now()->subDays(6)->toDateString(), 'delivery_time' => '14:20', 'waybill_number' => 'WB-STL-9001', 'driver_name' => 'Chinedu Eze', 'driver_phone' => '+2348058822334', 'vehicle_plate' => 'LND-452-BB', 'delivery_gps_lat' => 6.4181000, 'delivery_gps_lng' => 3.4150800, 'geofence_check_passed' => true, 'status' => 'accepted', 'remarks' => '20 tonnes 16mm rebar bundles verified with tensile test cert.']
+            ['purchase_order_id' => $po2->id, 'site_id' => $siteEko->id, 'received_by_user_id' => $storekeeper->id, 'delivery_date' => now()->subDays(6)->toDateString(), 'delivery_time' => '14:20', 'waybill_number' => 'WB-STL-9001', 'driver_name' => 'Chinedu Eze', 'driver_phone' => '+2348058822334', 'vehicle_plate' => 'LND-452-BB', 'delivery_gps_lat' => 6.4181000, 'delivery_gps_lng' => 3.4150800, 'geofence_check_passed' => true, 'status' => 'complete', 'remarks' => '20 tonnes 16mm rebar bundles verified with tensile test cert.']
         );
         GrnItem::updateOrCreate(
             ['grn_id' => $grn2->id, 'material_id' => $matRebar->id],
-            ['qty_received' => 20, 'qty_rejected' => 0, 'batch_number' => 'LOT-STL-002', 'unit_price_confirmed' => 1350000.00]
+            ['qty_ordered' => 20, 'qty_received' => 20, 'qty_rejected' => 0, 'batch_number' => 'LOT-STL-002', 'unit_price_confirmed' => 1350000.00]
         );
 
         $stkSteel = SiteStock::updateOrCreate(
@@ -434,7 +461,7 @@ class InventoryDemoSeeder extends Seeder
 
         $inv2 = SupplierInvoice::updateOrCreate(
             ['invoice_number' => 'INV-STL-9902'],
-            ['supplier_id' => $supSteel->id, 'purchase_order_id' => $po2->id, 'goods_received_note_id' => $grn2->id, 'invoice_date' => now()->subDays(2)->toDateString(), 'due_date' => now()->addDays(43)->toDateString(), 'total_amount' => 29700000.00, 'tax_amount' => 0.00, 'payment_status' => 'disputed', 'matched_by_user_id' => $accountant->id, 'matched_at' => now()->subDays(2), 'discrepancy_notes' => 'Price Discrepancy: Invoice billed ₦29,700,000.00 vs verified PO/GRN expected ₦27,000,000.00 (Variance: ₦2,700,000.00 / 10.00%).']
+            ['supplier_id' => $supSteel->id, 'purchase_order_id' => $po2->id, 'goods_received_note_id' => $grn2->id, 'invoice_date' => now()->subDays(2)->toDateString(), 'due_date' => now()->addDays(43)->toDateString(), 'subtotal_amount' => 29700000.00, 'total_amount' => 29700000.00, 'tax_amount' => 0.00, 'payment_status' => 'disputed', 'matched_by_user_id' => $accountant->id, 'matched_at' => now()->subDays(2), 'discrepancy_notes' => 'Price Discrepancy: Invoice billed ₦29,700,000.00 vs verified PO/GRN expected ₦27,000,000.00 (Variance: ₦2,700,000.00 / 10.00%).']
         );
 
         InventoryAnomalyFlag::updateOrCreate(
@@ -454,11 +481,11 @@ class InventoryDemoSeeder extends Seeder
 
         $grn3 = GoodsReceivedNote::updateOrCreate(
             ['ref_number' => 'GRN-2026-0003'],
-            ['purchase_order_id' => $po3->id, 'site_id' => $siteGuzape->id, 'received_by_user_id' => $storekeeper->id, 'delivery_date' => now()->subDays(1)->toDateString(), 'delivery_time' => '11:00', 'waybill_number' => 'WB-BLK-5002', 'driver_name' => 'Kabiru Bello', 'driver_phone' => '+2348037711445', 'vehicle_plate' => 'ABC-123-XY', 'delivery_gps_lat' => 9.0351000, 'delivery_gps_lng' => 7.5120500, 'geofence_check_passed' => true, 'status' => 'accepted', 'remarks' => '5,000 sandcrete blocks verified cured and stacked.']
+            ['purchase_order_id' => $po3->id, 'site_id' => $siteGuzape->id, 'received_by_user_id' => $storekeeper->id, 'delivery_date' => now()->subDays(1)->toDateString(), 'delivery_time' => '11:00', 'waybill_number' => 'WB-BLK-5002', 'driver_name' => 'Kabiru Bello', 'driver_phone' => '+2348037711445', 'vehicle_plate' => 'ABC-123-XY', 'delivery_gps_lat' => 9.0351000, 'delivery_gps_lng' => 7.5120500, 'geofence_check_passed' => true, 'status' => 'complete', 'remarks' => '5,000 sandcrete blocks verified cured and stacked.']
         );
         GrnItem::updateOrCreate(
             ['grn_id' => $grn3->id, 'material_id' => $matBlocks->id],
-            ['qty_received' => 5000, 'qty_rejected' => 0, 'batch_number' => 'LOT-BLK-003', 'unit_price_confirmed' => 480.00]
+            ['qty_ordered' => 5000, 'qty_received' => 5000, 'qty_rejected' => 0, 'batch_number' => 'LOT-BLK-003', 'unit_price_confirmed' => 480.00]
         );
 
         $stkBlocks = SiteStock::updateOrCreate(
