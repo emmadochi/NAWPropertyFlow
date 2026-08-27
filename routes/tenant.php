@@ -340,6 +340,11 @@ Route::middleware([
 
         // Construction Inventory Setup & Master Data
         Route::prefix('inventory')->name('inventory.')->group(function () {
+            // Visual Step-by-Step Layman Guide (Printable to PDF)
+            Route::get('guide', function () {
+                return view('inventory.guide.index');
+            })->name('guide');
+
             // Executive Cockpit & Live Cost Valuation Dashboard
             Route::middleware(['permission:inventory.view_reports,inventory.view_stock,finance.view_ledger'])->group(function () {
                 Route::get('dashboard', [\App\Http\Controllers\Inventory\InventoryDashboardController::class, 'index'])->name('dashboard');
