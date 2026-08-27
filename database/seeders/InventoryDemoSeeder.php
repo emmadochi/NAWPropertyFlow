@@ -183,7 +183,7 @@ class InventoryDemoSeeder extends Seeder
             ]
         );
 
-        // 5. Material Catalogue Master
+        // 5. Material Catalogue Master (matches enum in 2026_08_26_100003_create_material_catalogue_table)
         $matCement = MaterialCatalogue::updateOrCreate(
             ['code' => 'CEM-DAN-50KG'],
             ['name' => 'Dangote Falcon Cement 50kg', 'category' => 'cement', 'unit_of_measure' => 'bags', 'standard_unit_cost' => 8500.00, 'reorder_level' => 300, 'safety_stock_level' => 100, 'description' => 'Grade 42.5R Portland limestone cement.', 'is_active' => true]
@@ -194,7 +194,7 @@ class InventoryDemoSeeder extends Seeder
         );
         $matBlocks = MaterialCatalogue::updateOrCreate(
             ['code' => 'BLK-9IN-VIB'],
-            ['name' => 'Vibrated 9-Inch Solid Sandcrete Blocks', 'category' => 'masonry', 'unit_of_measure' => 'pieces', 'standard_unit_cost' => 480.00, 'reorder_level' => 2000, 'safety_stock_level' => 500, 'description' => 'High-density vibrated load-bearing building blocks.', 'is_active' => true]
+            ['name' => 'Vibrated 9-Inch Solid Sandcrete Blocks', 'category' => 'block', 'unit_of_measure' => 'pieces', 'standard_unit_cost' => 480.00, 'reorder_level' => 2000, 'safety_stock_level' => 500, 'description' => 'High-density vibrated load-bearing building blocks.', 'is_active' => true]
         );
         $matSand = MaterialCatalogue::updateOrCreate(
             ['code' => 'AGG-SAND-20T'],
@@ -281,13 +281,19 @@ class InventoryDemoSeeder extends Seeder
             ['qty_received' => 1000, 'qty_rejected' => 0, 'batch_number' => 'LOT-DAN-001', 'unit_price_confirmed' => 8500.00]
         );
 
-        StockBatch::updateOrCreate(
-            ['batch_number' => 'LOT-DAN-001'],
-            ['site_id' => $siteHutu->id, 'material_id' => $matCement->id, 'grn_id' => $grn1->id, 'initial_qty' => 1000, 'current_qty' => 585, 'unit_cost' => 8500.00, 'received_date' => now()->subDays(5)->toDateString(), 'status' => 'active']
-        );
-        SiteStock::updateOrCreate(
+        $stkCement = SiteStock::updateOrCreate(
             ['site_id' => $siteHutu->id, 'material_id' => $matCement->id],
-            ['qty_on_hand' => 585, 'qty_reserved' => 0, 'reorder_status' => 'healthy']
+            ['qty_on_hand' => 585, 'qty_reserved' => 0, 'qty_quarantined' => 0]
+        );
+        StockBatch::updateOrCreate(
+            ['site_stock_id' => $stkCement->id, 'batch_number' => 'LOT-DAN-001'],
+            [
+                'qty_received' => 1000,
+                'qty_remaining' => 585,
+                'received_on_grn_id' => $grn1->id,
+                'qc_status' => 'pass',
+                'qc_notes' => 'Factory certified Grade 42.5R Portland cement.',
+            ]
         );
 
         $je1 = InventoryJournalEntry::updateOrCreate(
@@ -321,12 +327,20 @@ class InventoryDemoSeeder extends Seeder
 
         $waste1 = WasteLog::updateOrCreate(
             ['description' => '15 bags cement damaged by sudden rainstorm during site staging.'],
-            ['site_id' => $siteHutu->id, 'material_id' => $matCement->id, 'qty' => 15, 'waste_type' => 'weather_damage', 'activity_name' => 'Offloading & Internal Staging', 'weather_condition' => 'Heavy Rain', 'logged_by_user_id' => $storekeeper->id]
+            [
+                'site_id' => $siteHutu->id,
+                'material_id' => $matCement->id,
+                'qty' => 15,
+                'waste_type' => 'loss',
+                'activity_name' => 'Offloading & Internal Staging',
+                'weather_condition' => 'Heavy Rain',
+                'logged_by_user_id' => $storekeeper->id,
+            ]
         );
 
         $je3 = InventoryJournalEntry::updateOrCreate(
             ['entry_number' => 'JE-2026-00003'],
-            ['entry_date' => now()->subDays(2)->toDateString(), 'reference_type' => WasteLog::class, 'reference_id' => $waste1->id, 'site_id' => $siteHutu->id, 'project_id' => $proj1->id, 'description' => "Material loss write-off: 15 bags Dangote Cement (weather_damage)", 'total_debit' => 127500.00, 'total_credit' => 127500.00, 'is_balanced' => true, 'posted_by_user_id' => $storekeeper->id]
+            ['entry_date' => now()->subDays(2)->toDateString(), 'reference_type' => WasteLog::class, 'reference_id' => $waste1->id, 'site_id' => $siteHutu->id, 'project_id' => $proj1->id, 'description' => "Material loss write-off: 15 bags Dangote Cement (loss)", 'total_debit' => 127500.00, 'total_credit' => 127500.00, 'is_balanced' => true, 'posted_by_user_id' => $storekeeper->id]
         );
         $je3->items()->delete();
         $je3->items()->createMany([
@@ -374,13 +388,19 @@ class InventoryDemoSeeder extends Seeder
             ['qty_received' => 20, 'qty_rejected' => 0, 'batch_number' => 'LOT-STL-002', 'unit_price_confirmed' => 1350000.00]
         );
 
-        StockBatch::updateOrCreate(
-            ['batch_number' => 'LOT-STL-002'],
-            ['site_id' => $siteEko->id, 'material_id' => $matRebar->id, 'grn_id' => $grn2->id, 'initial_qty' => 20, 'current_qty' => 12, 'unit_cost' => 1350000.00, 'received_date' => now()->subDays(6)->toDateString(), 'status' => 'active']
-        );
-        SiteStock::updateOrCreate(
+        $stkSteel = SiteStock::updateOrCreate(
             ['site_id' => $siteEko->id, 'material_id' => $matRebar->id],
-            ['qty_on_hand' => 12, 'qty_reserved' => 0, 'reorder_status' => 'healthy']
+            ['qty_on_hand' => 12, 'qty_reserved' => 0, 'qty_quarantined' => 0]
+        );
+        StockBatch::updateOrCreate(
+            ['site_stock_id' => $stkSteel->id, 'batch_number' => 'LOT-STL-002'],
+            [
+                'qty_received' => 20,
+                'qty_remaining' => 12,
+                'received_on_grn_id' => $grn2->id,
+                'qc_status' => 'pass',
+                'qc_notes' => 'Tensile strength test certificate verified.',
+            ]
         );
 
         $je5 = InventoryJournalEntry::updateOrCreate(
@@ -441,13 +461,19 @@ class InventoryDemoSeeder extends Seeder
             ['qty_received' => 5000, 'qty_rejected' => 0, 'batch_number' => 'LOT-BLK-003', 'unit_price_confirmed' => 480.00]
         );
 
-        StockBatch::updateOrCreate(
-            ['batch_number' => 'LOT-BLK-003'],
-            ['site_id' => $siteGuzape->id, 'material_id' => $matBlocks->id, 'grn_id' => $grn3->id, 'initial_qty' => 5000, 'current_qty' => 5000, 'unit_cost' => 480.00, 'received_date' => now()->subDays(1)->toDateString(), 'status' => 'active']
-        );
-        SiteStock::updateOrCreate(
+        $stkBlocks = SiteStock::updateOrCreate(
             ['site_id' => $siteGuzape->id, 'material_id' => $matBlocks->id],
-            ['qty_on_hand' => 5000, 'qty_reserved' => 0, 'reorder_status' => 'healthy']
+            ['qty_on_hand' => 5000, 'qty_reserved' => 0, 'qty_quarantined' => 0]
+        );
+        StockBatch::updateOrCreate(
+            ['site_stock_id' => $stkBlocks->id, 'batch_number' => 'LOT-BLK-003'],
+            [
+                'qty_received' => 5000,
+                'qty_remaining' => 5000,
+                'received_on_grn_id' => $grn3->id,
+                'qc_status' => 'pass',
+                'qc_notes' => 'Cured and load-bearing test verified.',
+            ]
         );
 
         $je7 = InventoryJournalEntry::updateOrCreate(
