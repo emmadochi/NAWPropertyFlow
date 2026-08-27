@@ -117,6 +117,7 @@
     <!-- Main Module Switchboard Form -->
     <form action="{{ route('developer.modules.update') }}" method="POST" class="space-y-8">
         @csrf
+        <input type="hidden" name="modules_json" :value="JSON.stringify(activeModules)">
 
         @foreach($categories as $categoryName => $modules)
         <div class="space-y-4">
@@ -164,9 +165,8 @@
                                     <input type="checkbox" 
                                            name="modules[]" 
                                            value="{{ $key }}" 
-                                           class="sr-only peer"
-                                           :checked="hasModule('{{ $key }}')"
-                                           @change="toggleModule('{{ $key }}')">
+                                           x-model="activeModules"
+                                           class="sr-only peer">
                                     <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer dark:bg-slate-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-brand-500"></div>
                                 </label>
                             @endif

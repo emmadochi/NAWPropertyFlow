@@ -47,15 +47,36 @@ class DeveloperModuleController extends Controller
             abort(403, 'Unauthorized. Developer Master credentials required.');
         }
 
-        $companySetting = CompanySetting::first();
-        if (!$companySetting) {
-            return back()->with('error', 'Company profile not initialized.');
+        // Self-healing: Ensure enabled_modules column exists even if migration wasn't run via terminal
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('company_settings', 'enabled_modules')) {
+            try {
+                \Illuminate\Support\Facades\Schema::table('company_settings', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->json('enabled_modules')->nullable()->after('package_tier');
+                });
+            } catch (\Throwable $e) {
+                // Column might have been added concurrently
+            }
         }
 
-        // Get array of checked module keys
-        $modules = $request->input('modules', []);
+        $companySetting = CompanySetting::first() ?? CompanySetting::create([
+            'company_name' => 'RICAF Nigeria Limited',
+            'package_tier' => 'enterprise',
+        ]);
+
+        // Prioritize modules_json if sent by Alpine, fallback to array
+        $modules = [];
+        if ($request->filled('modules_json')) {
+            $decoded = json_decode($request->input('modules_json'), true);
+            if (is_array($decoded)) {
+                $modules = $decoded;
+            }
+        }
         
-        // Ensure CRM is always kept active as the foundation
+        if (empty($modules) && $request->has('modules')) {
+            $modules = $request->input('modules', []);
+        }
+
+        // Ensure CRM is always kept active as the base
         if (!in_array('crm', $modules)) {
             $modules[] = 'crm';
         }
@@ -68,8 +89,13 @@ class DeveloperModuleController extends Controller
 
         $companySetting->save();
 
-        // Bust cache across the system
+        // Bust all possible cache keys across the platform
         Cache::forget('active_company_setting');
+        try {
+            Cache::flush();
+        } catch (\Throwable $e) {
+            // Ignore if cache flush is restricted
+        }
 
         return back()->with('success', 'Tenant feature flags updated successfully. The workspace interface has been realigned.');
     }
