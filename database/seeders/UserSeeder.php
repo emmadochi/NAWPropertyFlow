@@ -10,6 +10,19 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        if (\Illuminate\Support\Facades\Schema::hasTable('users')) {
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'job_title')) {
+                \Illuminate\Support\Facades\Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->string('job_title')->nullable()->after('department');
+                });
+            }
+            if (!\Illuminate\Support\Facades\Schema::hasColumn('users', 'is_department_head')) {
+                \Illuminate\Support\Facades\Schema::table('users', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    $table->boolean('is_department_head')->default(false)->after('job_title');
+                });
+            }
+        }
+
         $users = [
             // 1. Super Admin
             [
