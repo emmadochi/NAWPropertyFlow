@@ -405,10 +405,11 @@ Route::middleware([
                 Route::resource('sites', \App\Http\Controllers\Inventory\SiteController::class);
             });
 
-            // Material Catalogue Master
+            // Material Catalogue Master & Categories
             Route::middleware(['permission:inventory.manage_catalogue,inventory.view_stock'])->group(function () {
                 Route::get('catalogue/api/search', [\App\Http\Controllers\Inventory\MaterialCatalogueController::class, 'apiSearch'])->name('catalogue.api.search');
                 Route::resource('catalogue', \App\Http\Controllers\Inventory\MaterialCatalogueController::class);
+                Route::resource('categories', \App\Http\Controllers\Inventory\MaterialCategoryController::class)->names('categories');
             });
 
             // Bill of Materials (BOM) QS Engine

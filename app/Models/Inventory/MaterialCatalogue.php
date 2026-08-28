@@ -35,6 +35,11 @@ class MaterialCatalogue extends Model
         'is_active' => 'boolean',
     ];
 
+    public function categoryRef()
+    {
+        return $this->belongsTo(MaterialCategory::class, 'category', 'slug');
+    }
+
     public function siteStocks(): HasMany
     {
         return $this->hasMany(SiteStock::class, 'material_id');

@@ -61,15 +61,16 @@ class InventoryDashboardController extends Controller
             ->values();
 
         // 6. Material Categories Valuation Breakdown
+        $categoryNames = \App\Models\Inventory\MaterialCategory::getActiveList();
         $categoriesBreakdown = MaterialCatalogue::with('siteStocks')
             ->get()
             ->groupBy('category')
-            ->map(function ($items, $cat) {
+            ->map(function ($items, $cat) use ($categoryNames) {
                 $catVal = $items->sum(function ($m) {
                     return $m->siteStocks->sum('qty_on_hand') * (float)$m->standard_unit_cost;
                 });
                 return [
-                    'category' => ucfirst($cat),
+                    'category' => $categoryNames[$cat] ?? ucwords(str_replace('_', ' ', $cat)),
                     'value' => $catVal,
                 ];
             })

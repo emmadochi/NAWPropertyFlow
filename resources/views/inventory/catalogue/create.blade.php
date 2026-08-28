@@ -3,7 +3,51 @@
 @section('title', 'Add Material to Catalogue')
 
 @section('content')
-<div class="max-w-4xl mx-auto space-y-6">
+<div x-data="{
+    categoryModalOpen: false,
+    newCatName: '',
+    newCatDesc: '',
+    isCreatingCat: false,
+    catError: null,
+    categories: @js($categories),
+    selectedCategory: '{{ old('category', '') }}',
+    async submitNewCategory() {
+        if (!this.newCatName.trim()) return;
+        this.isCreatingCat = true;
+        this.catError = null;
+
+        try {
+            const res = await fetch('{{ route('inventory.categories.store') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({
+                    name: this.newCatName,
+                    description: this.newCatDesc,
+                    is_active: true
+                })
+            });
+
+            const data = await res.json();
+            if (res.ok && data.success) {
+                this.categories[data.category.slug] = data.category.name;
+                this.selectedCategory = data.category.slug;
+                this.newCatName = '';
+                this.newCatDesc = '';
+                this.categoryModalOpen = false;
+            } else {
+                this.catError = data.message || 'Failed to add category. Please check input.';
+            }
+        } catch (e) {
+            this.catError = 'An error occurred while creating the category.';
+        } finally {
+            this.isCreatingCat = false;
+        }
+    }
+}" class="max-w-4xl mx-auto space-y-6">
     <div class="flex items-center justify-between">
         <div>
             <div class="flex items-center gap-2">
@@ -49,12 +93,18 @@
 
             <!-- Category -->
             <div class="space-y-1">
-                <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300">Category <span class="text-rose-500">*</span></label>
-                <select name="category" required class="w-full py-2.5 px-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                <div class="flex items-center justify-between">
+                    <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300">Category <span class="text-rose-500">*</span></label>
+                    <button type="button" @click="categoryModalOpen = true" class="text-xs font-bold text-brand-600 hover:text-brand-700 dark:text-brand-400 flex items-center gap-1 transition-colors">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        <span>New Category</span>
+                    </button>
+                </div>
+                <select name="category" x-model="selectedCategory" required class="w-full py-2.5 px-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:outline-none">
                     <option value="">Select Category</option>
-                    @foreach($categories as $key => $label)
-                        <option value="{{ $key }}" {{ old('category') == $key ? 'selected' : '' }}>{{ $label }}</option>
-                    @endforeach
+                    <template x-for="(label, key) in categories" :key="key">
+                        <option :value="key" x-text="label" :selected="selectedCategory === key"></option>
+                    </template>
                 </select>
             </div>
 
@@ -121,5 +171,48 @@
             </button>
         </div>
     </form>
+
+    <!-- Quick Add Category Modal -->
+    <div x-show="categoryModalOpen" style="display: none;" 
+         class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4"
+         x-transition:enter="transition ease-out duration-200"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-150"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+        <div @click.away="categoryModalOpen = false" class="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-3xl p-6 max-w-md w-full shadow-2xl space-y-5">
+            <div class="flex items-center justify-between border-b border-gray-100 dark:border-slate-800 pb-3">
+                <h3 class="text-base font-bold text-slate-900 dark:text-white">Add New Material Category</h3>
+                <button type="button" @click="categoryModalOpen = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-white">&times;</button>
+            </div>
+
+            <template x-if="catError">
+                <div class="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold" x-text="catError"></div>
+            </template>
+
+            <form @submit.prevent="submitNewCategory" class="space-y-4">
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300">Category Name <span class="text-rose-500">*</span></label>
+                    <input type="text" x-model="newCatName" placeholder="e.g. Roofing & Waterproofing" required
+                           class="w-full py-2.5 px-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-bold uppercase text-slate-600 dark:text-slate-300">Description / Sub-Items (Optional)</label>
+                    <textarea x-model="newCatDesc" rows="2" placeholder="e.g. Zinc sheets, bitumen felt, aluminium roofing caps..."
+                              class="w-full py-2 px-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl text-sm text-slate-800 dark:text-white focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                </div>
+
+                <div class="flex items-center justify-end gap-3 pt-3 border-t border-gray-100 dark:border-slate-800">
+                    <button type="button" @click="categoryModalOpen = false" class="px-4 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-slate-800 dark:text-slate-300 text-slate-700 rounded-xl text-xs font-bold transition-all">Cancel</button>
+                    <button type="submit" :disabled="isCreatingCat" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white rounded-xl text-xs font-bold shadow-sm shadow-brand-500/30 transition-all">
+                        <span x-show="!isCreatingCat">Create Category</span>
+                        <span x-show="isCreatingCat">Saving...</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 @endsection

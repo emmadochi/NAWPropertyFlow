@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Inventory;
 
 use App\Http\Controllers\Controller;
 use App\Models\Inventory\MaterialCatalogue;
+use App\Models\Inventory\MaterialCategory;
 use Illuminate\Http\Request;
 
 class MaterialCatalogueController extends Controller
@@ -29,36 +30,14 @@ class MaterialCatalogueController extends Controller
         }
 
         $materials = $query->orderBy('name')->paginate(20);
-        $categories = [
-            'cement' => 'Cement & Binders',
-            'steel' => 'Steel & Reinforcements',
-            'aggregate' => 'Aggregates & Sand',
-            'timber' => 'Timber & Formwork',
-            'block' => 'Blocks & Bricks',
-            'finishing' => 'Finishing & Tiles',
-            'plumbing' => 'Plumbing & Pipes',
-            'electrical' => 'Electrical & Conduits',
-            'equipment_consumable' => 'Equipment Consumables (Diesel/Oil)',
-            'other' => 'Other Materials',
-        ];
+        $categories = MaterialCategory::getActiveList();
 
         return view('inventory.catalogue.index', compact('materials', 'categories'));
     }
 
     public function create()
     {
-        $categories = [
-            'cement' => 'Cement & Binders',
-            'steel' => 'Steel & Reinforcements',
-            'aggregate' => 'Aggregates & Sand',
-            'timber' => 'Timber & Formwork',
-            'block' => 'Blocks & Bricks',
-            'finishing' => 'Finishing & Tiles',
-            'plumbing' => 'Plumbing & Pipes',
-            'electrical' => 'Electrical & Conduits',
-            'equipment_consumable' => 'Equipment Consumables (Diesel/Oil)',
-            'other' => 'Other Materials',
-        ];
+        $categories = MaterialCategory::getActiveList();
 
         return view('inventory.catalogue.create', compact('categories'));
     }
@@ -68,7 +47,7 @@ class MaterialCatalogueController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:30|unique:material_catalogue,code',
-            'category' => 'required|in:cement,steel,aggregate,timber,block,finishing,plumbing,electrical,equipment_consumable,other',
+            'category' => 'required|string|max:100',
             'unit_of_measure' => 'required|string|max:30',
             'standard_unit_cost' => 'required|numeric|min:0',
             'reorder_level' => 'required|numeric|min:0',
@@ -91,18 +70,7 @@ class MaterialCatalogueController extends Controller
     public function edit(MaterialCatalogue $catalogue)
     {
         $material = $catalogue;
-        $categories = [
-            'cement' => 'Cement & Binders',
-            'steel' => 'Steel & Reinforcements',
-            'aggregate' => 'Aggregates & Sand',
-            'timber' => 'Timber & Formwork',
-            'block' => 'Blocks & Bricks',
-            'finishing' => 'Finishing & Tiles',
-            'plumbing' => 'Plumbing & Pipes',
-            'electrical' => 'Electrical & Conduits',
-            'equipment_consumable' => 'Equipment Consumables (Diesel/Oil)',
-            'other' => 'Other Materials',
-        ];
+        $categories = MaterialCategory::getActiveList();
 
         return view('inventory.catalogue.edit', compact('material', 'categories'));
     }
@@ -113,7 +81,7 @@ class MaterialCatalogueController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'code' => 'required|string|max:30|unique:material_catalogue,code,' . $material->id,
-            'category' => 'required|in:cement,steel,aggregate,timber,block,finishing,plumbing,electrical,equipment_consumable,other',
+            'category' => 'required|string|max:100',
             'unit_of_measure' => 'required|string|max:30',
             'standard_unit_cost' => 'required|numeric|min:0',
             'reorder_level' => 'required|numeric|min:0',
