@@ -16,6 +16,10 @@ class Sale extends Model
         'property_unit_id',
         'sales_officer_id',
         'deal_value',
+        'base_deal_value',
+        'interest_amount',
+        'vat_amount',
+        'tax_amount',
         'units_purchased',
         'status',
         'payment_receipt',
@@ -24,6 +28,10 @@ class Sale extends Model
 
     protected $casts = [
         'deal_value' => 'decimal:2',
+        'base_deal_value' => 'decimal:2',
+        'interest_amount' => 'decimal:2',
+        'vat_amount' => 'decimal:2',
+        'tax_amount' => 'decimal:2',
         'units_purchased' => 'integer',
         'deal_closed_at' => 'datetime',
     ];

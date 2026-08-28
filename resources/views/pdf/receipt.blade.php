@@ -86,36 +86,110 @@
     <table class="info-table">
         <thead>
             <tr>
-                <th style="width: 50%;">Description</th>
+                <th style="width: 45%;">Description</th>
                 <th style="width: 25%; text-align: right;">Amount Due</th>
-                <th style="width: 25%; text-align: right;">Amount Paid</th>
+                <th style="width: 30%; text-align: right;">Amount Paid (This Receipt)</th>
             </tr>
         </thead>
         <tbody>
             <tr>
                 <td>
                     <strong>{{ $milestone->label }}</strong><br>
-                    <span style="font-size: 11px; color: #64748b;">Installment milestone payment for {{ $property->name }} - Unit Purchase</span>
+                    <span style="font-size: 11px; color: #64748b;">
+                        Property: {{ $property->name }} @if(!empty($sale->propertyUnit)) - Unit #{{ $sale->propertyUnit->unit_number }} @endif
+                    </span>
                 </td>
                 <td style="text-align: right;">₦{{ number_format($milestone->amount_due, 2) }}</td>
-                <td style="text-align: right; font-weight: bold;">₦{{ number_format($milestone->amount_paid, 2) }}</td>
+                <td style="text-align: right; font-weight: bold; color: #059669;">₦{{ number_format($milestone->amount_paid, 2) }}</td>
             </tr>
         </tbody>
     </table>
 
+    @php
+        $hasInterest = ($paymentPlan->interest_amount && $paymentPlan->interest_amount > 0) || ($paymentPlan->interest_rate_pct && $paymentPlan->interest_rate_pct > 0);
+        $hasVat = ($paymentPlan->vat_amount && $paymentPlan->vat_amount > 0) || ($sale->vat_amount && $sale->vat_amount > 0);
+        $hasTax = ($paymentPlan->tax_amount && $paymentPlan->tax_amount > 0) || ($sale->tax_amount && $sale->tax_amount > 0);
+    @endphp
+
     <table class="grid" style="border: none;">
         <tr>
-            <td class="col-50">
+            <td class="col-50" style="padding-right: 15px;">
                 <div class="stamp">Payment Confirmed</div>
+
+                @if($hasInterest || $hasVat || $hasTax)
+                <div style="margin-top: 20px; background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 11px; color: #475569;">
+                    <strong style="color: #0f172a; display: block; margin-bottom: 6px; text-transform: uppercase; font-size: 10px; letter-spacing: 0.5px;">Contract Pricing Structure:</strong>
+                    
+                    @if($paymentPlan->base_deal_value && $paymentPlan->base_deal_value > 0)
+                    <div style="margin-bottom: 4px; overflow: hidden;">
+                        <span>Base Property Value:</span>
+                        <strong style="float: right; color: #1e293b;">₦{{ number_format($paymentPlan->base_deal_value, 2) }}</strong>
+                    </div>
+                    @endif
+
+                    @if($hasInterest)
+                    <div style="margin-bottom: 4px; color: #b45309; overflow: hidden;">
+                        <span>+ Tenure Interest ({{ $paymentPlan->interest_rate_pct ?? '0' }}% Surcharge):</span>
+                        <strong style="float: right;">+₦{{ number_format($paymentPlan->interest_amount, 2) }}</strong>
+                    </div>
+                    @endif
+
+                    @if($hasVat)
+                    <div style="margin-bottom: 4px; color: #0369a1; overflow: hidden;">
+                        <span>+ Value Added Tax (VAT {{ $paymentPlan->vat_rate_pct ?? '7.5' }}%):</span>
+                        <strong style="float: right;">+₦{{ number_format($paymentPlan->vat_amount ?? $sale->vat_amount, 2) }}</strong>
+                    </div>
+                    @endif
+
+                    @if($hasTax)
+                    <div style="margin-bottom: 4px; color: #4338ca; overflow: hidden;">
+                        <span>Statutory Tax / WHT:</span>
+                        <strong style="float: right;">₦{{ number_format($paymentPlan->tax_amount ?? $sale->tax_amount, 2) }}</strong>
+                    </div>
+                    @endif
+                </div>
+                @endif
             </td>
             <td class="col-50">
                 <div class="total-box">
-                    <div class="total-row">
-                        <span class="total-label">Total Sale Value:</span>
-                        <span class="total-val">₦{{ number_format($paymentPlan->total_amount, 2) }}</span>
+                    @if($paymentPlan->base_deal_value && $paymentPlan->base_deal_value > 0 && ($hasInterest || $hasVat || $hasTax))
+                    <div class="total-row" style="font-size: 11px;">
+                        <span class="total-label" style="color: #64748b;">Base Price:</span>
+                        <span class="total-val">₦{{ number_format($paymentPlan->base_deal_value, 2) }}</span>
+                    </div>
+                    @endif
+
+                    @if($hasInterest)
+                    <div class="total-row" style="font-size: 11px; color: #b45309;">
+                        <span class="total-label" style="color: #b45309;">+ Interest ({{ $paymentPlan->interest_rate_pct }}%):</span>
+                        <span class="total-val" style="color: #b45309;">+₦{{ number_format($paymentPlan->interest_amount, 2) }}</span>
+                    </div>
+                    @endif
+
+                    @if($hasVat)
+                    <div class="total-row" style="font-size: 11px; color: #0369a1;">
+                        <span class="total-label" style="color: #0369a1;">+ VAT ({{ $paymentPlan->vat_rate_pct ?? '7.5' }}%):</span>
+                        <span class="total-val" style="color: #0369a1;">+₦{{ number_format($paymentPlan->vat_amount ?? $sale->vat_amount, 2) }}</span>
+                    </div>
+                    @endif
+
+                    @if($hasTax)
+                    <div class="total-row" style="font-size: 11px; color: #4338ca;">
+                        <span class="total-label" style="color: #4338ca;">Tax:</span>
+                        <span class="total-val" style="color: #4338ca;">₦{{ number_format($paymentPlan->tax_amount ?? $sale->tax_amount, 2) }}</span>
+                    </div>
+                    @endif
+
+                    <div class="total-row" style="border-top: 1px solid #ffe6b3; padding-top: 6px; margin-top: 4px;">
+                        <span class="total-label" style="font-weight: bold; color: #0f172a;">Total Contract Value:</span>
+                        <span class="total-val" style="font-weight: bold; color: #0f172a;">₦{{ number_format($paymentPlan->total_amount, 2) }}</span>
                     </div>
                     <div class="total-row">
-                        <span class="total-label">Total Amount Paid:</span>
+                        <span class="total-label" style="color: #059669; font-weight: bold;">Amount Paid (Receipt):</span>
+                        <span class="total-val" style="color: #059669; font-weight: bold;">₦{{ number_format($milestone->amount_paid, 2) }}</span>
+                    </div>
+                    <div class="total-row">
+                        <span class="total-label">Total Paid to Date:</span>
                         <span class="total-val">₦{{ number_format($paymentPlan->amount_paid, 2) }}</span>
                     </div>
                     <div class="total-row">

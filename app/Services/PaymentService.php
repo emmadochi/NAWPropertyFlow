@@ -38,7 +38,10 @@ class PaymentService
             $baseAmount = isset($data['base_deal_value']) ? (float)$data['base_deal_value'] : (float)$sale->deal_value;
             $interestRate = isset($data['interest_rate_pct']) ? (float)$data['interest_rate_pct'] : 0.00;
             $interestAmount = isset($data['interest_amount']) ? (float)$data['interest_amount'] : round(($baseAmount * $interestRate) / 100, 2);
-            $totalAmount = isset($data['total_amount']) ? (float)$data['total_amount'] : ($baseAmount + $interestAmount);
+            $vatRate = isset($data['vat_rate_pct']) ? (float)$data['vat_rate_pct'] : 0.00;
+            $vatAmount = isset($data['vat_amount']) ? (float)$data['vat_amount'] : 0.00;
+            $taxAmount = isset($data['tax_amount']) ? (float)$data['tax_amount'] : 0.00;
+            $totalAmount = isset($data['total_amount']) ? (float)$data['total_amount'] : ($baseAmount + $interestAmount + $vatAmount);
 
             $plan = PaymentPlan::create([
                 'sale_id' => $sale->id,
@@ -48,6 +51,9 @@ class PaymentService
                 'base_deal_value' => $baseAmount,
                 'interest_rate_pct' => $interestRate,
                 'interest_amount' => $interestAmount,
+                'vat_rate_pct' => $vatRate,
+                'vat_amount' => $vatAmount,
+                'tax_amount' => $taxAmount,
                 'total_amount' => $totalAmount,
                 'amount_paid' => 0,
                 'balance' => $totalAmount,

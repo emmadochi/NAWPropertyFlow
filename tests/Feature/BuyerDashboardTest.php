@@ -18,15 +18,23 @@ use Illuminate\Support\Facades\Hash;
 
 class BuyerDashboardTest extends TestCase
 {
-    use RefreshDatabase;
-
     protected $salesExecutive;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->salesExecutive = User::factory()->create([
+        $this->artisan('migrate', [
+            '--path' => 'database/migrations/tenant',
+            '--realpath' => false,
+        ]);
+
+        $this->seed(\Database\Seeders\PermissionSeeder::class);
+
+        $this->salesExecutive = User::create([
+            'name' => 'Sales Executive',
+            'email' => 'se_test_' . uniqid() . '@example.com',
+            'password' => bcrypt('password'),
             'role' => 'sales_executive',
             'status' => 'active'
         ]);
