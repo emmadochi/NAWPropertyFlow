@@ -3,17 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NAW PropertyFlow - Enterprise Construction Inventory & Financial Operations Guide</title>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <title>Enterprise Construction Inventory & Financial Operations Master Manual - NAW PropertyFlow</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #0f172a;
+            --primary-light: #1e293b;
             --accent: #f59e0b;
             --accent-dark: #d97706;
             --emerald: #10b981;
+            --emerald-bg: #ecfdf5;
             --blue: #3b82f6;
-            --purple: #8b5cf6;
+            --blue-bg: #eff6ff;
             --rose: #f43f5e;
+            --rose-bg: #fff1f2;
             --slate-50: #f8fafc;
             --slate-100: #f1f5f9;
             --slate-200: #e2e8f0;
@@ -31,29 +34,68 @@
         }
 
         body {
-            background-color: #f1f5f9;
+            background-color: #0f172a;
             color: #1e293b;
             line-height: 1.6;
-            padding: 2rem 1rem;
+            padding: 2.5rem 1rem;
         }
 
         .document-container {
-            max-width: 900px;
+            max-width: 960px;
             margin: 0 auto;
             background: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 20px 40px -15px rgba(0,0,0,0.08);
-            border: 1px solid #e2e8f0;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            border: 1px solid #334155;
             overflow: hidden;
+        }
+
+        /* Top Actions Bar */
+        .print-btn-bar {
+            max-width: 960px;
+            margin: 0 auto 1.5rem auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+        }
+
+        .doc-tag {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .print-btn {
+            background: var(--accent);
+            color: #0f172a;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            box-shadow: 0 10px 20px -5px rgba(245, 158, 11, 0.4);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s ease;
+        }
+
+        .print-btn:hover {
+            background: var(--accent-dark);
+            transform: translateY(-2px);
         }
 
         /* Cover Header */
         .cover-header {
-            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            background: linear-gradient(135deg, #090d16 0%, #0f172a 50%, #1e293b 100%);
             color: #ffffff;
-            padding: 3.5rem 3rem 2.5rem;
+            padding: 4rem 3.5rem 3rem;
             position: relative;
-            border-bottom: 4px solid var(--accent);
+            border-bottom: 5px solid var(--accent);
         }
 
         .brand-badge {
@@ -66,46 +108,53 @@
             padding: 6px 14px;
             border-radius: 9999px;
             font-size: 0.75rem;
-            font-weight: 700;
-            letter-spacing: 0.5px;
+            font-weight: 800;
+            letter-spacing: 0.75px;
             text-transform: uppercase;
             margin-bottom: 1.25rem;
         }
 
         .cover-title {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.25rem;
+            font-size: 2.35rem;
             font-weight: 700;
             line-height: 1.2;
-            margin-bottom: 0.75rem;
+            margin-bottom: 0.85rem;
             color: #ffffff;
         }
 
         .cover-subtitle {
-            font-size: 1.05rem;
+            font-size: 1.1rem;
             color: #94a3b8;
-            max-width: 680px;
+            max-width: 720px;
             font-weight: 400;
+            line-height: 1.6;
         }
 
         .meta-strip {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1.5rem;
-            margin-top: 2rem;
-            padding-top: 1.5rem;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1rem;
+            margin-top: 2.5rem;
+            padding-top: 2rem;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             font-size: 0.85rem;
-            color: #cbd5e1;
+        }
+
+        .meta-item {
+            color: #94a3b8;
         }
 
         .meta-item strong {
+            display: block;
             color: #ffffff;
+            font-size: 0.95rem;
+            margin-top: 2px;
         }
 
         /* Content Area */
         .content-body {
-            padding: 3rem;
+            padding: 3.5rem 3.5rem;
         }
 
         .section-block {
@@ -116,7 +165,7 @@
         .section-header {
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             margin-bottom: 1.5rem;
             padding-bottom: 0.75rem;
             border-bottom: 2px solid #f1f5f9;
@@ -126,10 +175,10 @@
             background: var(--accent);
             color: #0f172a;
             font-weight: 800;
-            font-size: 0.85rem;
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
+            font-size: 0.9rem;
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -137,12 +186,25 @@
 
         .section-title {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.4rem;
+            font-size: 1.45rem;
             font-weight: 700;
             color: var(--primary);
         }
 
-        /* Cards & Grids */
+        /* Callout Cards */
+        .callout-box {
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-left: 4px solid var(--accent);
+            border-radius: 12px;
+            padding: 1.25rem 1.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: #78350f;
+            line-height: 1.6;
+        }
+
+        /* Grid Cards */
         .feature-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
@@ -153,36 +215,45 @@
         .card {
             background: #f8fafc;
             border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 1.25rem;
+            border-radius: 14px;
+            padding: 1.35rem;
         }
 
-        .card.highlight {
-            background: #fffbeb;
-            border-color: #fde68a;
+        .card.dark {
+            background: #0f172a;
+            border-color: #1e293b;
+            color: #f8fafc;
+        }
+
+        .card.dark .card-title {
+            color: #f59e0b;
+        }
+
+        .card.dark .card-desc {
+            color: #94a3b8;
         }
 
         .card-title {
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 700;
             color: var(--primary);
-            margin-bottom: 0.35rem;
+            margin-bottom: 0.4rem;
             display: flex;
             align-items: center;
             gap: 8px;
         }
 
         .card-desc {
-            font-size: 0.85rem;
+            font-size: 0.875rem;
             color: var(--slate-600);
-            line-height: 1.5;
+            line-height: 1.55;
         }
 
-        /* Step-by-Step Flow */
+        /* Step Timeline */
         .flow-step {
             position: relative;
-            padding-left: 45px;
-            margin-bottom: 1.5rem;
+            padding-left: 50px;
+            margin-bottom: 1.75rem;
         }
 
         .flow-step:last-child {
@@ -192,9 +263,9 @@
         .flow-step::before {
             content: '';
             position: absolute;
-            left: 17px;
-            top: 35px;
-            bottom: -20px;
+            left: 19px;
+            top: 40px;
+            bottom: -22px;
             width: 2px;
             background: #e2e8f0;
         }
@@ -207,14 +278,14 @@
             position: absolute;
             left: 0;
             top: 2px;
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
             background: #ffffff;
             border: 2px solid var(--accent);
             color: var(--primary);
-            font-weight: 700;
-            font-size: 0.85rem;
+            font-weight: 800;
+            font-size: 0.9rem;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -224,43 +295,65 @@
         .flow-content {
             background: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 1.25rem;
+            border-radius: 14px;
+            padding: 1.35rem 1.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02);
         }
 
         .flow-heading {
-            font-size: 1rem;
+            font-size: 1.05rem;
             font-weight: 700;
             color: var(--primary);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 0.35rem;
+            margin-bottom: 0.5rem;
         }
 
         .flow-role-tag {
-            font-size: 0.7rem;
-            font-weight: 700;
-            padding: 3px 8px;
-            border-radius: 6px;
-            background: #e0f2fe;
-            color: #0369a1;
+            font-size: 0.72rem;
+            font-weight: 800;
+            padding: 4px 10px;
+            border-radius: 8px;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
+        .tag-engineer { background: #e0f2fe; color: #0369a1; }
+        .tag-qs { background: #fef3c7; color: #92400e; }
+        .tag-store { background: #dcfce7; color: #15803d; }
+        .tag-finance { background: #ede9fe; color: #6d28d9; }
+        .tag-supplier { background: #ffe4e6; color: #be123c; }
 
         .flow-text {
-            font-size: 0.85rem;
+            font-size: 0.875rem;
             color: var(--slate-600);
-            line-height: 1.5;
+            line-height: 1.6;
         }
 
-        /* Interactive Tables */
+        /* Code/Journal Box */
+        .journal-box {
+            background: #090d16;
+            color: #f8fafc;
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            margin-top: 0.85rem;
+            line-height: 1.7;
+            border: 1px solid #1e293b;
+        }
+
+        .journal-debit { color: #34d399; font-weight: 700; }
+        .journal-credit { color: #60a5fa; font-weight: 700; }
+        .journal-dim { color: #64748b; }
+
+        /* Tables */
         .data-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.85rem;
-            margin-top: 1rem;
-            border-radius: 8px;
+            font-size: 0.875rem;
+            margin-top: 1.25rem;
+            border-radius: 10px;
             overflow: hidden;
             border: 1px solid #e2e8f0;
         }
@@ -268,15 +361,16 @@
         .data-table th {
             background: #0f172a;
             color: #ffffff;
-            padding: 10px 14px;
+            padding: 12px 16px;
             text-align: left;
-            font-weight: 600;
+            font-weight: 700;
             font-size: 0.8rem;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .data-table td {
-            padding: 10px 14px;
+            padding: 12px 16px;
             border-bottom: 1px solid #f1f5f9;
             color: var(--slate-600);
         }
@@ -291,40 +385,56 @@
 
         .pill-badge {
             display: inline-block;
-            padding: 2px 8px;
+            padding: 3px 10px;
             border-radius: 9999px;
-            font-size: 0.72rem;
-            font-weight: 700;
+            font-size: 0.75rem;
+            font-weight: 800;
         }
         .pill-emerald { background: #d1fae5; color: #065f46; }
         .pill-amber { background: #fef3c7; color: #92400e; }
         .pill-blue { background: #dbeafe; color: #1e40af; }
+        .pill-rose { background: #ffe4e6; color: #9f1239; }
 
-        /* Print Controls */
-        .print-btn-bar {
+        /* Visual Diagram Box */
+        .diagram-box {
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            border-radius: 14px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
             text-align: center;
-            margin-bottom: 2rem;
         }
 
-        .print-btn {
-            background: var(--accent);
-            color: #0f172a;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 0.95rem;
-            cursor: pointer;
-            box-shadow: 0 10px 15px -3px rgba(245, 158, 11, 0.3);
-            display: inline-flex;
+        .diagram-grid {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr auto 1fr;
             align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
+            gap: 10px;
         }
 
-        .print-btn:hover {
-            background: var(--accent-dark);
-            transform: translateY(-1px);
+        .diagram-node {
+            background: #ffffff;
+            border: 2px solid #0f172a;
+            border-radius: 10px;
+            padding: 1rem 0.75rem;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: #0f172a;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        .diagram-node small {
+            display: block;
+            font-size: 0.72rem;
+            color: #64748b;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .diagram-arrow {
+            font-size: 1.25rem;
+            color: #f59e0b;
+            font-weight: 900;
         }
 
         @media print {
@@ -336,22 +446,27 @@
                 box-shadow: none;
                 border: none;
                 max-width: 100%;
+                border-radius: 0;
             }
             .print-btn-bar {
                 display: none;
             }
             .cover-header {
-                padding: 2rem 2rem 1.5rem;
+                padding: 2.5rem 2.5rem 2rem;
             }
             .content-body {
-                padding: 2rem;
+                padding: 2rem 2.5rem;
             }
         }
     </style>
 </head>
 <body>
 
+    <!-- Print Top Action Bar -->
     <div class="print-btn-bar">
+        <div class="doc-tag">
+            <span style="color:#f59e0b;">●</span> NAW PropertyFlow Enterprise Documentation
+        </div>
         <button onclick="window.print()" class="print-btn">
             🖨️ Print / Save as PDF
         </button>
@@ -361,276 +476,343 @@
         
         <!-- Document Cover Header -->
         <div class="cover-header">
-            <div class="brand-badge">⚡ Executive Operations Briefing</div>
+            <div class="brand-badge">⚡ Enterprise Operations Guide</div>
             <h1 class="cover-title">Construction Inventory & Financial Suite</h1>
-            <p class="cover-subtitle">A comprehensive, end-to-end operational guide to multi-site material logistics, 3-way match fraud prevention, and double-entry financial accounting.</p>
+            <p class="cover-subtitle">A practical, step-by-step master operational guide to multi-site material logistics, 3-way match fraud radar, and double-entry real estate accounting.</p>
             
             <div class="meta-strip">
-                <div class="meta-item">Target Platform: <strong>NAW PropertyFlow CRM</strong></div>
-                <div class="meta-item">Audience: <strong>Executive Board & Managing Partners</strong></div>
-                <div class="meta-item">Date: <strong>August 2026</strong></div>
-                <div class="meta-item">Security Level: <strong>Commercial-in-Confidence</strong></div>
+                <div class="meta-item">Application
+                    <strong>NAW PropertyFlow CRM</strong>
+                </div>
+                <div class="meta-item">Document Class
+                    <strong>Standard Operating Procedure</strong>
+                </div>
+                <div class="meta-item">Effective Date
+                    <strong>August 2026</strong>
+                </div>
+                <div class="meta-item">Target Audience
+                    <strong>Board of Directors & Executives</strong>
+                </div>
             </div>
         </div>
 
         <!-- Document Body -->
         <div class="content-body">
 
-            <!-- Executive Summary -->
+            <!-- Executive Pitch -->
             <div class="section-block">
                 <div class="section-header">
                     <div class="section-number">1</div>
-                    <h2 class="section-title">Executive Overview & Business Value</h2>
+                    <h2 class="section-title">The Business Value & Problem Solved</h2>
                 </div>
-                <p style="font-size: 0.9rem; color: #475569; margin-bottom: 1.25rem; line-height: 1.6;">
-                    Real estate development firms in Nigeria suffer up to <strong>15% to 25% capital leakage</strong> on site materials through untracked supplier price spikes, ghost deliveries, phantom invoices, and lack of real-time multi-site inventory synchronization. The <strong>NAW PropertyFlow Enterprise Suite</strong> solves this by interconnecting site engineering with double-entry corporate accounting under strict digital audit controls.
-                </p>
+
+                <div class="callout-box">
+                    <strong>💡 Executive Summary:</strong> Real estate development firms across Nigeria lose between <strong>15% to 25% of their construction budget</strong> due to untracked site material diversion, ghost deliveries, double-invoicing, supplier price inflation, and delays in paper-based bookkeeping. The <strong>NAW PropertyFlow Construction Inventory & Financial Suite</strong> connects physical site operations directly to corporate double-entry accounting with 100% digital audit trails.
+                </div>
 
                 <div class="feature-grid">
-                    <div class="card highlight">
-                        <div class="card-title">🛡️ 3-Way Fraud Radar</div>
-                        <div class="card-desc">Automatically cross-references Purchase Orders (PO), Goods Received Notes (GRN), and Supplier Invoices. No payment is released until quantities, pricing, and deliveries match 100%.</div>
+                    <div class="card dark">
+                        <div class="card-title">🛡️ 3-Way Match Fraud Radar</div>
+                        <div class="card-desc">Cross-references Purchase Orders (PO), Goods Received Notes (GRN), and Supplier Invoices. No payment is released if price, quantity, or delivery proof differs by even ₦1.00.</div>
                     </div>
-                    <div class="card highlight">
+                    <div class="card dark">
                         <div class="card-title">📍 GPS Geofenced Site Deliveries</div>
-                        <div class="card-desc">Storekeepers cannot log fake deliveries from off-site. The mobile engine verifies their physical coordinates within a 300m radius of the site yard.</div>
+                        <div class="card-desc">Storekeepers cannot log deliveries remotely. The mobile GPS engine requires physical presence within a 300-meter radius of the construction yard.</div>
                     </div>
                     <div class="card">
-                        <div class="card-title">📊 Double-Entry General Ledger</div>
-                        <div class="card-desc">Every delivery, material issuance, sales deposit, or expense generates balanced Debit/Credit journal postings directly linked to your Chart of Accounts.</div>
+                        <div class="card-title">📊 Automated General Ledger</div>
+                        <div class="card-desc">Every delivery, material issuance, or vendor payment creates balanced Debit/Credit journal postings directly in the corporate Chart of Accounts.</div>
                     </div>
                     <div class="card">
-                        <div class="card-title">💳 Dynamic Spread & Tax Breakdown</div>
-                        <div class="card-desc">Automated interest calculation on 3M, 6M, 9M, 12M+ installment spreads, with itemized VAT (7.5%) and tax on digitally signed PDF receipts.</div>
+                        <div class="card-title">💳 Dynamic Payment Plan Calculator</div>
+                        <div class="card-desc">Automatic interest calculation across 3M, 6M, 9M, 12M+ tenures with itemized VAT (7.5%), tax, and digitally stamped PDF receipts.</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Workflow 1: Construction Procurement & Site Inventory -->
+            <!-- 6 Key Personas -->
             <div class="section-block">
                 <div class="section-header">
                     <div class="section-number">2</div>
-                    <h2 class="section-title">End-to-End Construction Procurement Workflow</h2>
-                </div>
-                <p style="font-size: 0.9rem; color: #475569; margin-bottom: 1.5rem;">
-                    How materials move from engineering requisition to supplier delivery and site consumption:
-                </p>
-
-                <!-- Flow Steps -->
-                <div class="flow-step">
-                    <div class="flow-icon">1</div>
-                    <div class="flow-content">
-                        <div class="flow-heading">
-                            <span>Material Requisition (MRF) Submission</span>
-                            <span class="flow-role-tag">Site Engineer</span>
-                        </div>
-                        <div class="flow-text">
-                            The Site Engineer logs needed materials (e.g. 500 bags of Dangote Falcon Cement) for a specific site activity (e.g. 2nd Floor Slab Casting). The system checks against the <strong>Quantity Surveyor's Bill of Materials (BOM)</strong> template. If requested quantity exceeds allowable variance (+5%), an instant audit flag is raised.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flow-step">
-                    <div class="flow-icon">2</div>
-                    <div class="flow-content">
-                        <div class="flow-heading">
-                            <span>Purchase Order (PO) & Market Price Benchmarking</span>
-                            <span class="flow-role-tag">Quantity Surveyor / MD</span>
-                        </div>
-                        <div class="flow-text">
-                            The QS reviews the requisition and generates an official PO. The system automatically benchmarks the requested unit price against current regional market prices (e.g. Dei-Dei Market Abuja or Orile Lagos). Tiered authorization rules ensure POs above ₦5M or ₦20M require Managing Director sign-off.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flow-step">
-                    <div class="flow-icon">3</div>
-                    <div class="flow-content">
-                        <div class="flow-heading">
-                            <span>GPS Geofenced Goods Receipt (GRN) & Batch Logging</span>
-                            <span class="flow-role-tag">Site Storekeeper</span>
-                        </div>
-                        <div class="flow-text">
-                            When the supplier's truck arrives at the yard, the Storekeeper inspects the physical goods, records the batch number, manufacturing date (with 90-day cement shelf-life countdown), and captures a live photo. The system confirms the Storekeeper is physically within the geofence perimeter before logging the GRN.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flow-step">
-                    <div class="flow-icon">4</div>
-                    <div class="flow-content">
-                        <div class="flow-heading">
-                            <span>Material Issue Voucher (MIV) & Site Wastage Tracking</span>
-                            <span class="flow-role-tag">Site Supervisor</span>
-                        </div>
-                        <div class="flow-text">
-                            Materials are released to site sub-contractors with a digital MIV. If damaged bags or broken blocks exceed standard waste thresholds (1.5x multiplier), a waste log is flagged to site civil management.
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Workflow 2: Financial Operations, 3-Way Match & Accounting -->
-            <div class="section-block">
-                <div class="section-header">
-                    <div class="section-number">3</div>
-                    <h2 class="section-title">Financial Settlement & Double-Entry Accounting Operations</h2>
-                </div>
-                <p style="font-size: 0.9rem; color: #475569; margin-bottom: 1.5rem;">
-                    How the finance department verifies invoices and executes audited payouts:
-                </p>
-
-                <div class="flow-step">
-                    <div class="flow-icon">A</div>
-                    <div class="flow-content">
-                        <div class="flow-heading">
-                            <span>Digital Supplier Invoice Submission</span>
-                            <span class="flow-role-tag">Supplier Portal</span>
-                        </div>
-                        <div class="flow-text">
-                            Registered vendors (e.g. Dangote Building Solutions) log into their private <strong>Supplier Portal</strong>, view approved POs, and upload their tax invoice PDF referencing the PO number.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flow-step">
-                    <div class="flow-icon">B</div>
-                    <div class="flow-content">
-                        <div class="flow-heading">
-                            <span>Automated 3-Way Reconciliation Audit</span>
-                            <span class="flow-role-tag">Financial Controller</span>
-                        </div>
-                        <div class="flow-text">
-                            The accounting engine compares:
-                            <ul style="margin-top: 6px; padding-left: 20px; font-size: 0.82rem; color: #334155;">
-                                <li><strong>1. Purchase Order:</strong> Approved price & quantity.</li>
-                                <li><strong>2. Goods Received Note:</strong> Actual verified site delivery.</li>
-                                <li><strong>3. Supplier Invoice:</strong> Billed amount.</li>
-                            </ul>
-                            If price discrepancy exceeds ±₦500 or quantity billed exceeds delivered quantity, the system blocks payment and alerts the Accountant.
-                        </div>
-                    </div>
-                </div>
-
-                <div class="flow-step">
-                    <div class="flow-icon">C</div>
-                    <div class="flow-content">
-                        <div class="flow-heading">
-                            <span>Double-Entry General Ledger Posting</span>
-                            <span class="flow-role-tag">Automated Ledger</span>
-                        </div>
-                        <div class="flow-text">
-                            Upon disbursement, the system automatically posts the balanced journal:
-                            <div style="background:#0f172a; color:#f8fafc; padding: 10px 14px; border-radius: 8px; font-family: monospace; font-size: 0.8rem; margin-top: 8px;">
-                                [DEBIT]  1300 - Site Materials Inventory (Asset) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ₦4,250,000.00<br>
-                                [CREDIT] 1010 - Corporate Bank Account (Asset) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ₦4,250,000.00
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Workflow 3: Client Sales, Dynamic Spread & PDF Receipting -->
-            <div class="section-block">
-                <div class="section-header">
-                    <div class="section-number">4</div>
-                    <h2 class="section-title">Client Revenue & Payment Plan Operations</h2>
+                    <h2 class="section-title">Stakeholder Persona Matrix</h2>
                 </div>
                 <p style="font-size: 0.9rem; color: #475569; margin-bottom: 1.25rem;">
-                    How sales installments, interest spread surcharges, and official receipts operate:
+                    The platform enforces strict Role-Based Access Control (RBAC) across 6 key roles:
                 </p>
 
                 <table class="data-table">
                     <thead>
                         <tr>
-                            <th>Payment Spread Tenure</th>
-                            <th>Spread Interest Surcharge</th>
-                            <th>Min. Initial Commitment</th>
-                            <th>Statutory Tax & VAT</th>
+                            <th>Role / Persona</th>
+                            <th>Primary Responsibility</th>
+                            <th>Anti-Fraud & Audit Controls</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>1. Site Engineer</strong></td>
+                            <td>Submits Material Requisitions (MRF) for specific building milestones.</td>
+                            <td>Cannot exceed QS Bill of Materials (BOM) without variance approval.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>2. Quantity Surveyor (QS)</strong></td>
+                            <td>Sets material ratios, checks market price benchmarks, and creates POs.</td>
+                            <td>Audited against regional price benchmarks (Abuja Dei-Dei / Lagos Orile).</td>
+                        </tr>
+                        <tr>
+                            <td><strong>3. Managing Director (MD)</strong></td>
+                            <td>Authorizes high-value Purchase Orders and corporate disbursements.</td>
+                            <td>Tiered authorization: 1-click approval for POs exceeding ₦5M / ₦20M.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>4. Site Storekeeper</strong></td>
+                            <td>Inspects delivered goods, logs batches, and issues materials on site.</td>
+                            <td>GPS Geofence locked (300m radius) + 90-day cement shelf-life tracker.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>5. Financial Controller</strong></td>
+                            <td>Audits 3-way matching, approves payouts, and monitors balance sheets.</td>
+                            <td>Zero manual data entry; automated balanced journal generation.</td>
+                        </tr>
+                        <tr>
+                            <td><strong>6. Verified Supplier</strong></td>
+                            <td>Uploads digital PDF invoices and tracks payment status.</td>
+                            <td>Access limited strictly to private Supplier Portal with PO matching.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Procurement & Inventory Flow -->
+            <div class="section-block">
+                <div class="section-header">
+                    <div class="section-number">3</div>
+                    <h2 class="section-title">End-to-End Site Procurement Flow (Step-by-Step)</h2>
+                </div>
+
+                <!-- Step 1 -->
+                <div class="flow-step">
+                    <div class="flow-icon">1</div>
+                    <div class="flow-content">
+                        <div class="flow-heading">
+                            <span>Step 1: Bill of Materials (BOM) Standard Definition</span>
+                            <span class="flow-role-tag tag-qs">Quantity Surveyor</span>
+                        </div>
+                        <div class="flow-text">
+                            The Quantity Surveyor establishes the engineering standard for each structural activity before building begins.
+                            <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:10px 14px; border-radius:8px; margin-top:8px; font-size:0.82rem;">
+                                <strong>Example (Grade 25 Concrete Slab - 1 m³):</strong><br>
+                                • 7.0 Bags Dangote Falcon Cement (50kg) @ ₦8,500/bag<br>
+                                • 0.5 Trips Coarse River Sand @ ₦120,000/trip<br>
+                                • 0.8 Trips 3/4 Clean Granite Stone @ ₦280,000/trip<br>
+                                • Allowable Site Tolerance: <strong>±5.00%</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="flow-step">
+                    <div class="flow-icon">2</div>
+                    <div class="flow-content">
+                        <div class="flow-heading">
+                            <span>Step 2: Material Requisition Form (MRF) Submission</span>
+                            <span class="flow-role-tag tag-engineer">Site Engineer</span>
+                        </div>
+                        <div class="flow-text">
+                            When work begins on the <em>1st Floor Suspended Slab Casting</em> at Hutu Prestige Estate, the Site Engineer logs into the mobile portal and requests <strong>500 bags of cement</strong>.
+                            <ul style="margin-top:6px; padding-left:20px; font-size:0.82rem; color:#334155;">
+                                <li>The system verifies that 500 bags match the remaining casting volume ($71.4\text{ m}^3 \times 7\text{ bags}$).</li>
+                                <li>If the engineer enters `700 bags`, the system blocks submission with an <strong>Over-Allocation Red Alert (+40%)</strong> requiring civil justification.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="flow-step">
+                    <div class="flow-icon">3</div>
+                    <div class="flow-content">
+                        <div class="flow-heading">
+                            <span>Step 3: Purchase Order (PO) & Tiered Authorization</span>
+                            <span class="flow-role-tag tag-qs">QS & Managing Director</span>
+                        </div>
+                        <div class="flow-text">
+                            The QS converts the approved MRF into an official <strong>Purchase Order (PO-2026-0042)</strong> assigned to <em>Dangote Building Solutions Ltd</em>.
+                            <ul style="margin-top:6px; padding-left:20px; font-size:0.82rem; color:#334155;">
+                                <li><strong>Price Benchmark Check:</strong> Quoted ₦8,500/bag is compared with Dei-Dei Market index (₦8,500). Variance = 0%.</li>
+                                <li><strong>Total Value:</strong> $500 \times ₦8,500 = \mathbf{₦4,250,000.00}$.</li>
+                                <li><strong>Approval Tier:</strong> Under ₦5,000,000 threshold $\rightarrow$ Authorized instantly by QS/Project Manager.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="flow-step">
+                    <div class="flow-icon">4</div>
+                    <div class="flow-content">
+                        <div class="flow-heading">
+                            <span>Step 4: GPS Geofenced Goods Receipt (GRN) on Site</span>
+                            <span class="flow-role-tag tag-store">Site Storekeeper</span>
+                        </div>
+                        <div class="flow-text">
+                            The supplier's flatbed truck arrives at Katampe Extension Site Yard.
+                            <ul style="margin-top:6px; padding-left:20px; font-size:0.82rem; color:#334155;">
+                                <li><strong>Geofence Verification:</strong> The Storekeeper's mobile browser confirms GPS presence within 300m of Plot 402 Katampe Extension ($9.0820^\circ\text{ N}, 7.4810^\circ\text{ E}$).</li>
+                                <li><strong>Batch & Quality Inspection:</strong> Physical tally (500 bags), Batch No: <code>DAN-ABJ-882</code>, Live photo of stacked pallets uploaded.</li>
+                                <li><strong>Shelf-Life Countdown:</strong> System initiates a 90-day timer for cement freshness.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="flow-step">
+                    <div class="flow-icon">5</div>
+                    <div class="flow-content">
+                        <div class="flow-heading">
+                            <span>Step 5: Material Issuance (MIV) & Wastage Tracking</span>
+                            <span class="flow-role-tag tag-store">Storekeeper & Sub-contractor</span>
+                        </div>
+                        <div class="flow-text">
+                            When site masons withdraw 200 bags for today's casting, the Storekeeper generates a digital <strong>Material Issue Voucher (MIV)</strong>.
+                            <ul style="margin-top:6px; padding-left:20px; font-size:0.82rem; color:#334155;">
+                                <li>Site stock automatically reduces from 500 bags to 300 bags in real time.</li>
+                                <li>If damaged bags exceed standard site tolerance (1.5x multiplier), an automated **Wastage Alert** is routed to Project Directors.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Financial Settlement & 3-Way Match -->
+            <div class="section-block">
+                <div class="section-header">
+                    <div class="section-number">4</div>
+                    <h2 class="section-title">Financial Settlement & 3-Way Match Fraud Radar</h2>
+                </div>
+
+                <div class="diagram-box">
+                    <div style="font-weight:700; color:#0f172a; margin-bottom:1rem; font-size:0.95rem;">THE 3-WAY MATCHING RECONCILIATION RADAR</div>
+                    <div class="diagram-grid">
+                        <div class="diagram-node">
+                            1. PURCHASE ORDER (PO)
+                            <small>Contracted: 500 Bags @ ₦8,500</small>
+                        </div>
+                        <div class="diagram-arrow">➔</div>
+                        <div class="diagram-node" style="border-color:#10b981; background:#f0fdf4;">
+                            2. GOODS RECEIPT (GRN)
+                            <small>Site Verified: 500 Bags</small>
+                        </div>
+                        <div class="diagram-arrow">➔</div>
+                        <div class="diagram-node" style="border-color:#3b82f6; background:#eff6ff;">
+                            3. SUPPLIER INVOICE
+                            <small>Billed: ₦4,250,000.00</small>
+                        </div>
+                    </div>
+                    <div style="margin-top:1rem; font-size:0.82rem; color:#059669; font-weight:700;">
+                        ✓ Quantities Match (100%) • ✓ Unit Price Matches (100%) • ✓ GPS Geofence Verified &rarr; PAYMENT CLEARED
+                    </div>
+                </div>
+
+                <!-- Journal Entry -->
+                <div class="flow-step">
+                    <div class="flow-icon">★</div>
+                    <div class="flow-content">
+                        <div class="flow-heading">
+                            <span>Double-Entry General Ledger Automation</span>
+                            <span class="flow-role-tag tag-finance">Financial Controller</span>
+                        </div>
+                        <div class="flow-text">
+                            Upon releasing supplier payment via bank transfer, the system automatically posts balanced journals without manual bookkeeping:
+                        </div>
+                        <div class="journal-box">
+                            <span class="journal-dim">// 1. Recording Materials Received into Site Assets</span><br>
+                            <span class="journal-debit">[DEBIT]  Account #1300 - Site Materials Inventory (Current Asset)</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ₦4,250,000.00<br>
+                            <span class="journal-credit">[CREDIT] Account #1010 - Corporate Operations Bank Account (Asset)</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ₦4,250,000.00<br><br>
+                            <span class="journal-dim">// 2. When Materials Are Consumed On 1st Floor Slab (MIV Issuance)</span><br>
+                            <span class="journal-debit">[DEBIT]  Account #5100 - Direct Project Construction Cost (COGS)</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ₦1,700,000.00<br>
+                            <span class="journal-credit">[CREDIT] Account #1300 - Site Materials Inventory (Current Asset)</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; ₦1,700,000.00
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Client Sales & Dynamic Spread -->
+            <div class="section-block">
+                <div class="section-header">
+                    <div class="section-number">5</div>
+                    <h2 class="section-title">Client Sales, Dynamic Spread & Official PDF Receipts</h2>
+                </div>
+                <p style="font-size: 0.9rem; color: #475569; margin-bottom: 1.25rem;">
+                    Configurable installment spreads with live interest calculations and transparent statutory breakdowns:
+                </p>
+
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Tenure Option</th>
+                            <th>Interest Spread Surcharge</th>
+                            <th>Initial Commitment</th>
+                            <th>Statutory VAT & Tax Breakdown</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><strong>Outright (0 Months)</strong></td>
-                            <td><span class="pill-badge pill-emerald">0.00% (No Surcharge)</span></td>
+                            <td><span class="pill-badge pill-emerald">0.00% (No Interest)</span></td>
                             <td>100% Full Payment</td>
-                            <td>7.5% Standard VAT (Where applicable)</td>
+                            <td>Itemized on PDF Receipt</td>
                         </tr>
                         <tr>
                             <td><strong>3 Months Spread</strong></td>
-                            <td><span class="pill-badge pill-emerald">0.00% Interest Free</span></td>
+                            <td><span class="pill-badge pill-emerald">0.00% (Interest Free)</span></td>
                             <td>30% Deposit</td>
                             <td>Itemized on PDF Receipt</td>
                         </tr>
                         <tr>
                             <td><strong>6 Months Spread</strong></td>
-                            <td><span class="pill-badge pill-amber">+5.00% Interest</span></td>
+                            <td><span class="pill-badge pill-amber">+5.00% Surcharge</span></td>
                             <td>25% Deposit</td>
                             <td>Itemized on PDF Receipt</td>
                         </tr>
                         <tr>
                             <td><strong>9 Months Spread</strong></td>
-                            <td><span class="pill-badge pill-amber">+7.50% Interest</span></td>
+                            <td><span class="pill-badge pill-amber">+7.50% Surcharge</span></td>
                             <td>20% Deposit</td>
                             <td>Itemized on PDF Receipt</td>
                         </tr>
                         <tr>
                             <td><strong>12 Months Spread</strong></td>
-                            <td><span class="pill-badge pill-blue">+10.00% Interest</span></td>
+                            <td><span class="pill-badge pill-blue">+10.00% Surcharge</span></td>
                             <td>20% Deposit</td>
                             <td>Itemized on PDF Receipt</td>
                         </tr>
                         <tr>
-                            <td><strong>18 - 24 Months Spread</strong></td>
-                            <td><span class="pill-badge pill-blue">+15.00% - +20.00% Interest</span></td>
+                            <td><strong>18 - 24 Months</strong></td>
+                            <td><span class="pill-badge pill-blue">+15.00% - +20.00%</span></td>
                             <td>15% Deposit</td>
                             <td>Itemized on PDF Receipt</td>
                         </tr>
                     </tbody>
                 </table>
 
-                <div style="margin-top: 1.5rem; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 1.25rem;">
-                    <div style="font-weight: 700; color: #0f172a; margin-bottom: 0.5rem;">🧾 Official Digitally Stamped PDF Receipts:</div>
-                    <p style="font-size: 0.85rem; color: #475569; line-height: 1.5;">
-                        Every payment received generates a tamper-evident PDF receipt displaying the <strong>Base Property Price</strong>, <strong>Spread Surcharge</strong>, <strong>VAT (7.5%)</strong>, <strong>Statutory Tax</strong>, <strong>Cumulative Amount Paid</strong>, and <strong>Outstanding Balance</strong>. Clients can also log into their 24/7 VIP Buyer Portal to download receipts and track site construction progress.
+                <div style="margin-top:1.5rem; background:#f8fafc; border:1px solid #e2e8f0; border-radius:12px; padding:1.25rem;">
+                    <div style="font-weight:700; color:#0f172a; margin-bottom:0.5rem;">🧾 Official Digitally Stamped PDF Receipt Structure:</div>
+                    <p style="font-size:0.85rem; color:#475569; line-height:1.6;">
+                        When an investor deposits funds for any unit (e.g. ₦50M Duplex on a 6-month plan), the PDF receipt displays:
+                        <strong>Base Price (₦50,000,000)</strong> + <strong>Tenure Interest (+₦2,500,000)</strong> + <strong>VAT 7.5% (+₦3,750,000)</strong> = <strong>Total Contract Sum (₦56,250,000)</strong>, along with Cumulative Paid and Remaining Balance.
                     </p>
                 </div>
             </div>
 
-            <!-- Department Hierarchy -->
-            <div class="section-block">
-                <div class="section-header">
-                    <div class="section-number">5</div>
-                    <h2 class="section-title">Department Pods & Role Architecture</h2>
-                </div>
-                <p style="font-size: 0.9rem; color: #475569; margin-bottom: 1rem;">
-                    The platform enforces role-based access control (RBAC) across department squads:
-                </p>
-
-                <div class="feature-grid">
-                    <div class="card">
-                        <div class="card-title">🏗️ Project Management Pod</div>
-                        <div class="card-desc"><strong>HOD:</strong> Chief Project Engineer<br><strong>Squad:</strong> Quantity Surveyor (QS), Site Engineers, Materials & Inventory Storekeepers.</div>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">💼 Finance & Accounts Pod</div>
-                        <div class="card-desc"><strong>HOD:</strong> Head of Finance & Accounts<br><strong>Squad:</strong> Lead Financial Controller, Staff Accountants, Billing & Treasury Officers.</div>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">🎨 Media & Creative Pod</div>
-                        <div class="card-desc"><strong>HOD:</strong> Media & Production Lead<br><strong>Squad:</strong> Lead Graphic Designer, Senior Video Editor & Drone Pilot, Content Copywriters.</div>
-                    </div>
-                    <div class="card">
-                        <div class="card-title">🤝 Sales & Business Pod</div>
-                        <div class="card-desc"><strong>HOD:</strong> Head of Sales & Marketing<br><strong>Squad:</strong> Real Estate Sales Executives, Digital Ad Buyers, All-Staff Lead Closers.</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Summary Sign-off -->
+            <!-- Footer Sign-off -->
             <div style="border-top: 2px solid #e2e8f0; padding-top: 1.5rem; display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #94a3b8;">
-                <div>Powered by <strong>NAW PropertyFlow Enterprise Platform</strong></div>
-                <div>Authorized Executive Copy • Page 1 of 1</div>
+                <div>Powered by <strong>NAW PropertyFlow Enterprise CRM</strong></div>
+                <div>Authorized Executive Presentation • Confidential</div>
             </div>
 
         </div>
