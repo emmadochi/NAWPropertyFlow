@@ -67,47 +67,63 @@ Route::middleware([
     // Direct Web Seeder Runner for Demo Testing
     Route::get('/seed-demo-now', function () {
         try {
-            // Run Role & Permission Seeder
+            // 1. Run all tenant migrations
+            \Illuminate\Support\Facades\Artisan::call('migrate', [
+                '--path' => 'database/migrations/tenant',
+                '--force' => true
+            ]);
+
+            // 2. Run Role & Permission Seeder
             $permissionSeeder = new \Database\Seeders\PermissionSeeder();
             $permissionSeeder->run();
 
-            // Run Tenant Accounting Suite & Payment Plan Durations Migrations
-            \Illuminate\Support\Facades\Artisan::call('migrate', [
-                '--path' => 'database/migrations/tenant/2026_08_27_200001_create_accounting_suite_tables.php',
-                '--force' => true
-            ]);
-            \Illuminate\Support\Facades\Artisan::call('migrate', [
-                '--path' => 'database/migrations/tenant/2026_08_27_210001_create_payment_plan_durations_table.php',
-                '--force' => true
-            ]);
-            \Illuminate\Support\Facades\Artisan::call('migrate', [
-                '--path' => 'database/migrations/tenant/2026_08_27_220001_add_enabled_modules_to_company_settings_table.php',
-                '--force' => true
-            ]);
+            // 3. Run Company Settings & Defaults
+            $companySeeder = new \Database\Seeders\CompanySettingSeeder();
+            $companySeeder->run();
 
-            // Run Core CRM & Staff Personas Seeder
+            // 4. Run Core CRM & Staff Personas Seeder
             $userSeeder = new \Database\Seeders\UserSeeder();
             $userSeeder->run();
 
-            // Run Construction Inventory, Suppliers & Enterprise Accounting Demo Seeder
+            // 5. Run Properties & Units Seeder
+            $propertySeeder = new \Database\Seeders\PropertySeeder();
+            $propertySeeder->run();
+
+            // 6. Run Leads & Prospects Seeder
+            $leadSeeder = new \Database\Seeders\LeadSeeder();
+            $leadSeeder->run();
+
+            // 7. Run Payroll Seeder
+            $payrollSeeder = new \Database\Seeders\PayrollSeeder();
+            $payrollSeeder->run();
+
+            // 8. Run Construction Inventory, Suppliers & Enterprise Accounting Demo Seeder
             $inventorySeeder = new \Database\Seeders\InventoryDemoSeeder();
             $inventorySeeder->run();
 
             $totalUsers = \App\Models\User::count();
-            $usersList = \App\Models\User::select('name', 'email', 'role')->get();
+            $usersList = \App\Models\User::select('name', 'email', 'role', 'job_title')->get();
+            $totalSites = \App\Models\Inventory\InventorySite::count();
+            $totalMaterials = \App\Models\Inventory\MaterialCatalogue::count();
+            $totalSuppliers = \App\Models\Inventory\Supplier::count();
+            $totalPOs = \App\Models\Inventory\PurchaseOrder::count();
 
             return response('
             <!DOCTYPE html>
             <html>
             <head>
-                <title>Database Seeded Successfully</title>
+                <title>Demo Data & Inventory Seeded Successfully</title>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
                 <style>
                     body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; display: flex; justify-content: center; }
-                    .card { background: #1e293b; border: 1px solid #334155; border-radius: 1.5rem; max-width: 600px; width: 100%; padding: 2rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+                    .card { background: #1e293b; border: 1px solid #334155; border-radius: 1.5rem; max-width: 680px; width: 100%; padding: 2rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
                     .badge { background: #059669; color: #fff; padding: 0.25rem 0.75rem; border-radius: 9999px; font-size: 0.75rem; font-weight: bold; display: inline-block; margin-bottom: 1rem; }
                     h1 { margin: 0 0 0.5rem 0; font-size: 1.5rem; color: #fff; }
                     p { color: #94a3b8; font-size: 0.875rem; line-height: 1.5; margin-bottom: 1.5rem; }
+                    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.75rem; margin-bottom: 1.5rem; }
+                    .stat-box { background: #0f172a; border: 1px solid #334155; border-radius: 0.75rem; padding: 0.75rem; text-align: center; }
+                    .stat-val { font-size: 1.25rem; font-weight: bold; color: #f59e0b; }
+                    .stat-lbl { font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; margin-top: 0.2rem; }
                     .user-list { background: #0f172a; border-radius: 0.75rem; padding: 1rem; max-height: 220px; overflow-y: auto; margin-bottom: 1.5rem; font-size: 0.8rem; }
                     .user-item { display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px solid #1e293b; }
                     .btn { display: block; text-align: center; background: #f59e0b; color: #000; padding: 0.85rem; border-radius: 0.75rem; font-weight: bold; text-decoration: none; font-size: 0.9rem; }
@@ -117,12 +133,19 @@ Route::middleware([
             <body>
                 <div class="card">
                     <span class="badge">✓ SEEDING COMPLETED</span>
-                    <h1>All Personas & Test Data Seeded!</h1>
-                    <p>Total of <strong>' . $totalUsers . ' user accounts</strong>, 3 construction site yards, 6 material categories, and double-entry journals are live in your database.</p>
+                    <h1>All Inventory & CRM Test Data Seeded!</h1>
+                    <p>Total of <strong>' . $totalUsers . ' staff accounts</strong>, ' . $totalSites . ' construction site yards, ' . $totalMaterials . ' material categories, ' . $totalSuppliers . ' verified suppliers, and live PO/MRF records are live in your database.</p>
                     
+                    <div class="stats-grid">
+                        <div class="stat-box"><div class="stat-val">' . $totalSites . '</div><div class="stat-lbl">Site Yards</div></div>
+                        <div class="stat-box"><div class="stat-val">' . $totalMaterials . '</div><div class="stat-lbl">Materials</div></div>
+                        <div class="stat-box"><div class="stat-val">' . $totalSuppliers . '</div><div class="stat-lbl">Suppliers</div></div>
+                        <div class="stat-box"><div class="stat-val">' . $totalPOs . '</div><div class="stat-lbl">Purchase Orders</div></div>
+                    </div>
+
                     <div class="user-list">
                         ' . $usersList->map(function ($u) {
-                            return '<div class="user-item"><span><strong>' . e($u->name) . '</strong> (' . e($u->role) . ')</span><code style="color:#f59e0b;">' . e($u->email) . '</code></div>';
+                            return '<div class="user-item"><span><strong>' . e($u->name) . '</strong> <span style="color:#94a3b8;">(' . e($u->job_title ?? $u->role) . ')</span></span><code style="color:#f59e0b;">' . e($u->email) . '</code></div>';
                         })->implode('') . '
                     </div>
 

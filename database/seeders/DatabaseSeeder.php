@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             PropertySeeder::class,
             LeadSeeder::class,
             PayrollSeeder::class,
+            InventoryDemoSeeder::class,
         ]);
     }
 }
