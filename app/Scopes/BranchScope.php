@@ -24,12 +24,19 @@ class BranchScope implements Scope
         // Super Admin / Company Admin can see everything or filter by selected branch
         if ($user->isSuperAdmin() || $user->isCompanyAdmin()) {
             if (session()->has('selected_branch_id') && session('selected_branch_id') !== 'all') {
-                $builder->where($model->getTable() . '.branch_id', session('selected_branch_id'));
+                $builder->where(function($q) use ($model) {
+                    $q->where($model->getTable() . '.branch_id', session('selected_branch_id'))
+                      ->orWhereNull($model->getTable() . '.branch_id');
+                });
             }
         } else {
-            // Sales Manager / Sales Executive are scoped strictly to their branch
-            // If they don't have a branch assigned, they see nothing or we could show only null, but scoping to their branch_id is standard.
-            $builder->where($model->getTable() . '.branch_id', $user->branch_id);
+            // Staff/Officers are scoped to their branch plus unassigned/corporate records
+            if (!empty($user->branch_id)) {
+                $builder->where(function($q) use ($model, $user) {
+                    $q->where($model->getTable() . '.branch_id', $user->branch_id)
+                      ->orWhereNull($model->getTable() . '.branch_id');
+                });
+            }
         }
     }
 }

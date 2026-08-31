@@ -72,6 +72,18 @@ class LeadController extends Controller
      */
     public function store(Request $request)
     {
+        // Sanitize nullable fields if empty string was submitted
+        $request->merge([
+            'property_interest_id' => $request->filled('property_interest_id') ? $request->property_interest_id : null,
+            'assigned_to' => $request->filled('assigned_to') ? $request->assigned_to : null,
+            'branch_id' => $request->filled('branch_id') ? $request->branch_id : null,
+            'email' => $request->filled('email') ? $request->email : null,
+            'whatsapp_number' => $request->filled('whatsapp_number') ? $request->whatsapp_number : null,
+            'address' => $request->filled('address') ? $request->address : null,
+            'preferred_location' => $request->filled('preferred_location') ? $request->preferred_location : null,
+            'notes' => $request->filled('notes') ? $request->notes : null,
+        ]);
+
         $validated = $request->validate([
             'full_name' => 'required|string|max:255',
             'phone_number' => 'required|string|max:30',
