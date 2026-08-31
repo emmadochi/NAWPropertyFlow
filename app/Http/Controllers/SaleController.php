@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\SalesService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class SaleController extends Controller
 {
@@ -19,6 +20,16 @@ class SaleController extends Controller
      */
     public function store(Request $request)
     {
+        // Clean empty string dropdown values so validation does not fail
+        $request->merge([
+            'property_unit_id' => $request->filled('property_unit_id') ? $request->property_unit_id : null,
+            'sales_officer_id' => $request->filled('sales_officer_id') ? $request->sales_officer_id : null,
+            'payment_plan_duration_id' => $request->filled('payment_plan_duration_id') ? $request->payment_plan_duration_id : null,
+            'bank_reference' => $request->filled('bank_reference') ? $request->bank_reference : null,
+            'payment_method' => $request->filled('payment_method') ? $request->payment_method : null,
+            'deal_closed_at' => $request->filled('deal_closed_at') ? $request->deal_closed_at : null,
+        ]);
+
         $validated = $request->validate([
             'lead_id' => 'required|exists:leads,id',
             'property_id' => 'required|exists:properties,id',
@@ -43,17 +54,30 @@ class SaleController extends Controller
         $validated['send_notification_email'] = $request->has('send_notification_email');
 
         if ($request->hasFile('payment_receipt')) {
-            $path = $request->file('payment_receipt')->store('receipts', 'public');
-            $validated['payment_receipt'] = $path;
+            try {
+                $path = $request->file('payment_receipt')->store('receipts', 'public');
+                $validated['payment_receipt'] = $path;
+            } catch (\Throwable $e) {
+                Log::warning('Payment receipt file upload failed: ' . $e->getMessage());
+            }
         }
 
-        $sale = $this->salesService->recordSale($validated);
+        try {
+            $sale = $this->salesService->recordSale($validated);
 
-        $msg = 'Sale recorded successfully! Payment plan initialized & official PDF receipt generated.';
-        if (!$validated['send_notification_email']) {
-            $msg .= ' (Saved in Silent / Historical Mode - No client emails sent).';
+            $msg = 'Sale recorded successfully! Payment plan initialized & official PDF receipt generated.';
+            if (!$validated['send_notification_email']) {
+                $msg .= ' (Saved in Silent / Historical Mode - No client emails sent).';
+            }
+
+            return back()->with('success', $msg);
+        } catch (\Throwable $e) {
+            Log::error('Sale recording error:', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile() . ':' . $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->withInput()->with('error', 'Failed to record sale: ' . $e->getMessage());
         }
-
-        return back()->with('success', $msg);
     }
 }

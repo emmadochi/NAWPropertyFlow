@@ -135,19 +135,27 @@ class PaymentService
             );
 
             // Generate receipt PDF for records
-            $pdfPath = $this->generateReceiptPdf($milestone);
-            $milestone->receipt_path = $pdfPath;
-            $milestone->save();
+            try {
+                $pdfPath = $this->generateReceiptPdf($milestone);
+                $milestone->receipt_path = $pdfPath;
+                $milestone->save();
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('Receipt PDF generation error: ' . $e->getMessage());
+            }
 
             // Fire event with notification flag
-            event(new \App\Events\PaymentReceived($milestone, $sendNotification));
+            try {
+                event(new \App\Events\PaymentReceived($milestone, $sendNotification));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('PaymentReceived event error: ' . $e->getMessage());
+            }
 
             // If notification email enabled, send email
             if ($sendNotification && $lead->email) {
                 try {
                     Mail::to($lead->email)->send(new \App\Mail\PaymentInvoiceMail($sale));
-                } catch (\Exception $e) {
-                    // Ignore or log
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Payment milestone mail error: ' . $e->getMessage());
                 }
             }
 
@@ -165,13 +173,15 @@ class PaymentService
         $lead = $sale->lead;
         $property = $sale->property;
 
-        $pdf = Pdf::loadView('pdf.receipt', compact('milestone', 'paymentPlan', 'sale', 'lead', 'property'));
-        
-        $filename = 'receipts/receipt_' . $milestone->id . '_' . time() . '.pdf';
-        
-        Storage::disk('public')->put($filename, $pdf->output());
-
-        return $filename;
+        try {
+            $pdf = Pdf::loadView('pdf.receipt', compact('milestone', 'paymentPlan', 'sale', 'lead', 'property'));
+            $filename = 'receipts/receipt_' . $milestone->id . '_' . time() . '.pdf';
+            Storage::disk('public')->put($filename, $pdf->output());
+            return $filename;
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed generating PDF receipt: ' . $e->getMessage());
+            return '';
+        }
     }
 
     /**

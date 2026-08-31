@@ -30,7 +30,13 @@ class SalesService
         return DB::transaction(function () use ($data, $userId) {
             $lead = Lead::findOrFail($data['lead_id']);
             $property = Property::findOrFail($data['property_id']);
-            $currentUserId = $userId ?? Auth::id() ?? 1;
+            $currentUserId = $userId ?? Auth::id();
+
+            // Ensure valid sales officer ID
+            $salesOfficerId = $data['sales_officer_id'] ?? $lead->assigned_to ?? $currentUserId;
+            if ($salesOfficerId && !\App\Models\User::where('id', $salesOfficerId)->exists()) {
+                $salesOfficerId = \App\Models\User::value('id');
+            }
 
             $dealClosedAt = !empty($data['deal_closed_at']) ? Carbon::parse($data['deal_closed_at']) : Carbon::now();
             $sendNotification = isset($data['send_notification_email']) ? filter_var($data['send_notification_email'], FILTER_VALIDATE_BOOLEAN) : true;
@@ -40,7 +46,7 @@ class SalesService
                 'lead_id' => $lead->id,
                 'property_id' => $property->id,
                 'property_unit_id' => $data['property_unit_id'] ?? null,
-                'sales_officer_id' => $data['sales_officer_id'] ?? $lead->assigned_to ?? $currentUserId,
+                'sales_officer_id' => $salesOfficerId,
                 'deal_value' => $data['deal_value'],
                 'units_purchased' => $data['units_purchased'] ?? 1,
                 'status' => $data['status'] ?? 'Closed Won',
@@ -153,16 +159,20 @@ class SalesService
 
             // Create customer user account for buyer portal access
             if ($lead->email) {
-                $userExists = \App\Models\User::where('email', $lead->email)->exists();
-                if (!$userExists) {
-                    \App\Models\User::create([
-                        'name' => $lead->full_name,
-                        'email' => $lead->email,
-                        'password' => \Illuminate\Support\Facades\Hash::make('password123'),
-                        'role' => 'customer',
-                        'status' => 'active',
-                        'phone_number' => $lead->phone_number,
-                    ]);
+                try {
+                    $userExists = \App\Models\User::where('email', $lead->email)->exists();
+                    if (!$userExists) {
+                        \App\Models\User::create([
+                            'name' => $lead->full_name,
+                            'email' => $lead->email,
+                            'password' => \Illuminate\Support\Facades\Hash::make('password123'),
+                            'role' => 'customer',
+                            'status' => 'active',
+                            'phone_number' => $lead->phone_number,
+                        ]);
+                    }
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Customer buyer account creation skipped: ' . $e->getMessage());
                 }
             }
 
@@ -170,17 +180,23 @@ class SalesService
             if ($sendNotification && $lead->email) {
                 try {
                     Mail::to($lead->email)->send(new PaymentInvoiceMail($sale));
-                } catch (\Exception $e) {
-                    // Ignore or log
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Payment invoice mail failed: ' . $e->getMessage());
                 }
             }
 
-            event(new \App\Events\DealWon($sale, $sendNotification));
+            try {
+                event(new \App\Events\DealWon($sale, $sendNotification));
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning('DealWon event error: ' . $e->getMessage());
+            }
 
             if ($sendNotification) {
                 try {
                     app(\App\Services\DripService::class)->triggerFor($lead, 'deal_won');
-                } catch (\Exception $e) {}
+                } catch (\Throwable $e) {
+                    \Illuminate\Support\Facades\Log::warning('Drip deal_won error: ' . $e->getMessage());
+                }
             }
 
             return $sale;
