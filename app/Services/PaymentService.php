@@ -187,7 +187,13 @@ class PaymentService
         $property = $sale->property;
 
         try {
-            $pdf = Pdf::loadView('pdf.receipt', compact('milestone', 'paymentPlan', 'sale', 'lead', 'property'));
+            // Generate QR code data URI for receipt verification
+            $receiptNo = 'REC-' . str_pad($milestone->id, 6, '0', STR_PAD_LEFT);
+            $qrData    = url('/') . ' | Receipt: ' . $receiptNo . ' | Ref: ' . ($milestone->bank_reference ?? 'N/A') . ' | Client: ' . $lead->full_name;
+            $qrCodeUri = \App\Helpers\QrCodeHelper::generate($qrData, 130);
+
+            $pdf = Pdf::loadView('pdf.receipt', compact('milestone', 'paymentPlan', 'sale', 'lead', 'property', 'qrCodeUri', 'receiptNo'))
+                ->setPaper('a4', 'portrait');
             $filename = 'receipts/receipt_' . $milestone->id . '_' . time() . '.pdf';
             Storage::disk('public')->put($filename, $pdf->output());
             return $filename;
@@ -196,6 +202,7 @@ class PaymentService
             return '';
         }
     }
+
 
     /**
      * Mark a milestone payment as Verified by an Admin (super_admin / company_admin).
