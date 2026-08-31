@@ -20,14 +20,35 @@ class SaleController extends Controller
      */
     public function store(Request $request)
     {
-        // Clean empty string dropdown values so validation does not fail
+        $property = \App\Models\Property::find($request->property_id);
+        $baseDealValue = $request->filled('base_deal_value') && floatval($request->base_deal_value) > 0
+            ? floatval($request->base_deal_value)
+            : ($property ? floatval($property->price) : 0);
+
+        $interestPct = floatval($request->interest_rate_pct ?? 0);
+        $interestAmount = $request->filled('interest_amount')
+            ? floatval($request->interest_amount)
+            : round(($baseDealValue * $interestPct) / 100, 2);
+
+        $dealValue = $request->filled('deal_value') && floatval($request->deal_value) > 0
+            ? floatval($request->deal_value)
+            : ($baseDealValue + $interestAmount);
+
+        $durationId = $request->filled('payment_plan_duration_id') 
+            ? $request->payment_plan_duration_id 
+            : ($request->filled('selected_duration_id') ? $request->selected_duration_id : null);
+
+        // Clean empty string dropdown values and ensure computed deal value
         $request->merge([
             'property_unit_id' => $request->filled('property_unit_id') ? $request->property_unit_id : null,
             'sales_officer_id' => $request->filled('sales_officer_id') ? $request->sales_officer_id : null,
-            'payment_plan_duration_id' => $request->filled('payment_plan_duration_id') ? $request->payment_plan_duration_id : null,
+            'payment_plan_duration_id' => $durationId,
             'bank_reference' => $request->filled('bank_reference') ? $request->bank_reference : null,
             'payment_method' => $request->filled('payment_method') ? $request->payment_method : null,
             'deal_closed_at' => $request->filled('deal_closed_at') ? $request->deal_closed_at : null,
+            'deal_value' => $dealValue,
+            'base_deal_value' => $baseDealValue,
+            'interest_amount' => $interestAmount,
         ]);
 
         $validated = $request->validate([

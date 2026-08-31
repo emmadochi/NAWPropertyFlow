@@ -842,7 +842,6 @@
                 @csrf
                 <input type="hidden" name="lead_id" value="{{ $lead->id }}">
                 <input type="hidden" name="deal_value" :value="getTotalDealValue()">
-                <input type="hidden" name="base_deal_value" :value="baseDealValue">
                 <input type="hidden" name="interest_rate_pct" :value="getInterestRate()">
                 <input type="hidden" name="interest_amount" :value="getInterestAmount()">
                 <input type="hidden" name="payment_plan_duration_id" :value="selectedDurationId">
@@ -878,7 +877,7 @@
                     <div class="grid grid-cols-2 gap-3">
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Base Property Price (₦) *</label>
-                            <input type="number" x-model.number="baseDealValue" step="0.01" required
+                            <input type="number" name="base_deal_value" x-model.number="baseDealValue" step="0.01" min="1" required
                                    class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-xs font-extrabold text-brand-600 focus:border-brand-500 outline-none">
                         </div>
                         <div>
