@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ricaf-crm-v1';
+const CACHE_NAME = 'ricaf-crm-v2';
 const ASSETS_TO_CACHE = [
   '/',
   '/manifest.json',
@@ -42,7 +42,9 @@ self.addEventListener('fetch', (event) => {
   // Only handle GET requests
   if (event.request.method !== 'GET') return;
 
-  // Don't intercept API/Auth actions that should always hit server
+  // Don't intercept chrome-extension://, api endpoints, or auth routes
+  if (!event.request.url.startsWith('http')) return;
+
   const url = new URL(event.request.url);
   if (url.pathname.startsWith('/api') || url.pathname.startsWith('/logout')) {
     return;
@@ -51,7 +53,6 @@ self.addEventListener('fetch', (event) => {
   event.respondWith(
     fetch(event.request)
       .then((networkResponse) => {
-        // Clone and store successful GET responses
         if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
           const responseToCache = networkResponse.clone();
           caches.open(CACHE_NAME).then((cache) => {
@@ -60,15 +61,19 @@ self.addEventListener('fetch', (event) => {
         }
         return networkResponse;
       })
-      .catch(() => {
-        // Fallback to cache if network is offline
-        return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-          if (event.request.headers.get('accept')?.includes('text/html')) {
-            return caches.match('/');
-          }
+      .catch(async () => {
+        const cachedResponse = await caches.match(event.request);
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        if (event.request.headers.get('accept')?.includes('text/html')) {
+          const rootCached = await caches.match('/');
+          if (rootCached) return rootCached;
+        }
+        return new Response('Network error occurred', {
+          status: 503,
+          statusText: 'Service Unavailable',
+          headers: { 'Content-Type': 'text/plain' }
         });
       })
   );
