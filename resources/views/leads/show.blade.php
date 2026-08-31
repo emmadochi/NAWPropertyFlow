@@ -7,7 +7,7 @@
         scheduleFollowUpOpen: false, 
         bookInspectionOpen: false, 
         recordSaleOpen: false,
-        activeTab: 'timeline' 
+        activeTab: '{{ request('tab', 'timeline') }}' 
      }">
 
     <!-- Top Navigation Header -->
@@ -765,6 +765,7 @@
     <div x-cloak x-show="recordSaleOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/60 backdrop-blur-sm transition-opacity overflow-y-auto">
         <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full shadow-2xl p-6 md:p-8 space-y-5 my-8 max-h-[90vh] overflow-y-auto custom-sidebar-scroll border border-gray-200 dark:border-slate-700" @click.away="recordSaleOpen = false"
              x-data="{
+                properties: {{ json_encode($properties) }},
                 selectedPropertyId: '{{ $lead->property_interest_id ?? '' }}',
                 paymentType: 'installment',
                 baseDealValue: {{ $lead->propertyInterest ? $lead->propertyInterest->price : 0 }},
@@ -772,6 +773,18 @@
                 durations: {{ json_encode($paymentPlanDurations) }},
                 initialDeposit: 0,
                 
+                init() {
+                    if (this.selectedPropertyId) {
+                        this.onPropertyChange();
+                    }
+                },
+                onPropertyChange() {
+                    const p = this.properties.find(prop => prop.id == this.selectedPropertyId);
+                    if (p && (!this.baseDealValue || this.baseDealValue === 0)) {
+                        this.baseDealValue = parseFloat(p.price) || 0;
+                    }
+                    this.onDurationChange();
+                },
                 getSelectedDuration() {
                     return this.durations.find(d => d.id == this.selectedDurationId) || null;
                 },
@@ -838,7 +851,7 @@
                 <div class="space-y-3">
                     <div>
                         <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider mb-1.5">Purchased Property *</label>
-                        <select name="property_id" required x-model="selectedPropertyId"
+                        <select name="property_id" required x-model="selectedPropertyId" @change="onPropertyChange()"
                                 class="w-full px-3.5 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-xs font-semibold text-gray-800 dark:text-white focus:border-brand-500 outline-none">
                             <option value="">-- Choose Property --</option>
                             @foreach($properties as $property)

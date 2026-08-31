@@ -70,14 +70,14 @@ class SaleController extends Controller
                 $msg .= ' (Saved in Silent / Historical Mode - No client emails sent).';
             }
 
-            return back()->with('success', $msg);
+            return redirect()->route('leads.show', ['lead' => $validated['lead_id'], 'tab' => 'payments'])->with('success', $msg);
         } catch (\Throwable $e) {
             Log::error('Sale recording error:', [
                 'error' => $e->getMessage(),
                 'file' => $e->getFile() . ':' . $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
-            return back()->withInput()->with('error', 'Failed to record sale: ' . $e->getMessage());
+            return redirect()->route('leads.show', ['lead' => $validated['lead_id'], 'tab' => 'payments'])->withInput()->with('error', 'Failed to record sale: ' . $e->getMessage());
         }
     }
 }
