@@ -552,6 +552,7 @@
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Budget Range *</label>
                         <select name="budget_range" required
                                 class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 outline-none text-sm text-gray-700 bg-white">
+                            <option value="₦1M - ₦9M" {{ $lead->budget_range === '₦1M - ₦9M' ? 'selected' : '' }}>₦1M - ₦9M</option>
                             <option value="₦10M - ₦30M" {{ $lead->budget_range === '₦10M - ₦30M' ? 'selected' : '' }}>₦10M - ₦30M</option>
                             <option value="₦30M - ₦60M" {{ $lead->budget_range === '₦30M - ₦60M' ? 'selected' : '' }}>₦30M - ₦60M</option>
                             <option value="₦60M - ₦100M" {{ $lead->budget_range === '₦60M - ₦100M' ? 'selected' : '' }}>₦60M - ₦100M</option>
