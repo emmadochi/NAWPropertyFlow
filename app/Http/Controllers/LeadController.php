@@ -210,12 +210,16 @@ class LeadController extends Controller
 
         // 5. Sales
         foreach ($lead->sales as $sale) {
+            $propertyName = $sale->property ? $sale->property->name : 'Property';
+            $unitInfo = $sale->propertyUnit ? "Unit #{$sale->propertyUnit->unit_number}" : "{$sale->units_purchased} unit(s)";
+            $dealVal = (float)($sale->deal_value ?? 0);
+
             $timeline->push([
                 'type' => 'sale',
                 'activity_type' => 'Sale Logged',
-                'description' => "Closed Sale: Unit {$sale->unit_name} at {$sale->property_name} for ₦" . number_format($sale->sale_price, 2),
+                'description' => "Closed Sale: {$unitInfo} at {$propertyName} for ₦" . number_format($dealVal, 2),
                 'created_at' => $sale->created_at,
-                'user' => $lead->assignedOfficer ? $lead->assignedOfficer->name : 'System',
+                'user' => $sale->salesOfficer ? $sale->salesOfficer->name : ($lead->assignedOfficer ? $lead->assignedOfficer->name : 'System'),
                 'icon' => '✅',
                 'color' => 'bg-emerald-500'
             ]);
