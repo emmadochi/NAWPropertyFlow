@@ -48,10 +48,15 @@ class PaymentController extends Controller
             'notes' => 'nullable|string',
         ]);
 
-        $this->paymentService->createPlan($sale, $validated);
+        try {
+            $this->paymentService->createPlan($sale, $validated);
 
-        return redirect()->route('leads.show', $sale->lead_id)
-            ->with('success', 'Payment plan and milestones configured successfully!');
+            return redirect()->route('leads.show', $sale->lead_id)
+                ->with('success', 'Payment plan and milestones configured successfully!');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Payment plan creation error:', ['error' => $e->getMessage()]);
+            return back()->withInput()->with('error', 'Failed to configure payment plan: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -78,14 +83,19 @@ class PaymentController extends Controller
 
         $validated['send_receipt_email'] = $request->has('send_receipt_email');
 
-        $this->paymentService->recordMilestonePayment($milestone, $validated, $validated['send_receipt_email']);
+        try {
+            $this->paymentService->recordMilestonePayment($milestone, $validated, $validated['send_receipt_email']);
 
-        $msg = 'Payment of ₦' . number_format($validated['amount_paid'], 2) . ' successfully recorded!';
-        if (!$validated['send_receipt_email']) {
-            $msg .= ' (Silent / Historical Mode - No client email sent).';
+            $msg = 'Payment of ₦' . number_format($validated['amount_paid'], 2) . ' successfully recorded!';
+            if (!$validated['send_receipt_email']) {
+                $msg .= ' (Silent / Historical Mode - No client email sent).';
+            }
+
+            return back()->with('success', $msg);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Record payment error:', ['error' => $e->getMessage()]);
+            return back()->withInput()->with('error', 'Failed to record payment: ' . $e->getMessage());
         }
-
-        return back()->with('success', $msg);
     }
 
     /**
@@ -102,9 +112,14 @@ class PaymentController extends Controller
             return back()->with('error', 'Cannot verify a milestone that has zero amount paid.');
         }
 
-        $this->paymentService->verifyMilestonePayment($milestone, $user->id);
+        try {
+            $this->paymentService->verifyMilestonePayment($milestone, $user->id);
 
-        return back()->with('success', 'Milestone payment verified! Marketer commission calculated & queued for monthly payroll.');
+            return back()->with('success', 'Milestone payment verified! Marketer commission calculated & queued for monthly payroll.');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Verify payment error:', ['error' => $e->getMessage()]);
+            return back()->with('error', 'Failed to verify payment: ' . $e->getMessage());
+        }
     }
 
     /**
