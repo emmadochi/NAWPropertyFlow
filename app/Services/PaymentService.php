@@ -10,6 +10,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Schema;
 use App\Mail\PaymentReminderMail;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -43,24 +44,36 @@ class PaymentService
             $taxAmount = isset($data['tax_amount']) ? (float)$data['tax_amount'] : 0.00;
             $totalAmount = isset($data['total_amount']) ? (float)$data['total_amount'] : ($baseAmount + $interestAmount + $vatAmount);
 
-            $plan = PaymentPlan::create([
-                'sale_id' => $sale->id,
+            // Determine which optional columns exist (safe for databases that haven't run the VAT migration)
+            $hasVat = Schema::hasColumn('payment_plans', 'vat_rate_pct');
+            $hasTax = Schema::hasColumn('payment_plans', 'tax_amount');
+
+            $planData = [
+                'sale_id'                  => $sale->id,
                 'payment_plan_duration_id' => $data['payment_plan_duration_id'] ?? null,
-                'duration_months' => $data['duration_months'] ?? null,
-                'plan_type' => $data['plan_type'] ?? 'installment',
-                'base_deal_value' => $baseAmount,
-                'interest_rate_pct' => $interestRate,
-                'interest_amount' => $interestAmount,
-                'vat_rate_pct' => $vatRate,
-                'vat_amount' => $vatAmount,
-                'tax_amount' => $taxAmount,
-                'total_amount' => $totalAmount,
-                'amount_paid' => 0,
-                'balance' => $totalAmount,
-                'number_of_installments' => $data['number_of_installments'] ?? (isset($data['milestones']) ? count($data['milestones']) : 1),
-                'notes' => $data['notes'] ?? null,
-                'status' => 'active',
-            ]);
+                'duration_months'          => $data['duration_months'] ?? null,
+                'plan_type'                => $data['plan_type'] ?? 'installment',
+                'base_deal_value'          => $baseAmount,
+                'interest_rate_pct'        => $interestRate,
+                'interest_amount'          => $interestAmount,
+                'total_amount'             => $totalAmount,
+                'amount_paid'              => 0,
+                'balance'                  => $totalAmount,
+                'number_of_installments'   => $data['number_of_installments'] ?? (isset($data['milestones']) ? count($data['milestones']) : 1),
+                'notes'                    => $data['notes'] ?? null,
+                'status'                   => 'active',
+            ];
+
+            if ($hasVat) {
+                $planData['vat_rate_pct'] = $vatRate;
+                $planData['vat_amount']   = $vatAmount;
+            }
+
+            if ($hasTax) {
+                $planData['tax_amount'] = $taxAmount;
+            }
+
+            $plan = PaymentPlan::create($planData);
 
             $milestonesData = $data['milestones'] ?? [];
             if (empty($milestonesData)) {

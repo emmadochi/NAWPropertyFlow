@@ -64,6 +64,20 @@ Route::middleware([
         return view('welcome');
     })->name('landing');
 
+    // One-click migration runner (run pending tenant migrations without SSH)
+    Route::get('/run-migrations', function () {
+        try {
+            \Illuminate\Support\Facades\Artisan::call('migrate', [
+                '--path'  => 'database/migrations/tenant',
+                '--force' => true,
+            ]);
+            $output = \Illuminate\Support\Facades\Artisan::output();
+            return response('<pre style="font-family:monospace;background:#0f172a;color:#86efac;padding:2rem;border-radius:1rem;font-size:14px;"><strong style="color:#fbbf24;">✅ Migrations ran successfully:</strong>' . "\n\n" . htmlspecialchars($output) . '</pre>', 200, ['Content-Type' => 'text/html']);
+        } catch (\Throwable $e) {
+            return response('<pre style="font-family:monospace;background:#450a0a;color:#fca5a5;padding:2rem;border-radius:1rem;font-size:14px;"><strong>❌ Migration Error:</strong>' . "\n\n" . htmlspecialchars($e->getMessage()) . '</pre>', 500, ['Content-Type' => 'text/html']);
+        }
+    })->name('run-migrations');
+
     // Direct Web Seeder Runner for Demo Testing
     Route::get('/seed-demo-now', function () {
         try {
