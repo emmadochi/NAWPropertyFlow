@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Models\ActivityLog;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 trait LogsActivity
 {
@@ -24,30 +25,39 @@ trait LogsActivity
 
     protected function logActivity($action)
     {
-        $causer = Auth::user();
-        
-        $properties = [];
-        if ($action === 'updated') {
-            $properties = [
-                'old' => $this->getOriginal(),
-                'attributes' => $this->getChanges(),
-            ];
-        } else {
-            $properties = [
-                'attributes' => $this->getAttributes(),
-            ];
+        try {
+            $causer = Auth::user();
+
+            $properties = [];
+            if ($action === 'updated') {
+                $properties = [
+                    'old'        => $this->getOriginal(),
+                    'attributes' => $this->getChanges(),
+                ];
+            } else {
+                $properties = [
+                    'attributes' => $this->getAttributes(),
+                ];
+            }
+
+            $logName = strtolower(class_basename($this));
+
+            ActivityLog::create([
+                'log_name'     => $logName,
+                'description'  => "{$logName} {$action}",
+                'subject_type' => get_class($this),
+                'subject_id'   => $this->getKey(),
+                'causer_type'  => $causer ? get_class($causer) : null,
+                'causer_id'    => $causer ? $causer->id : null,
+                'properties'   => $properties,
+            ]);
+        } catch (\Throwable $e) {
+            // Never crash the main operation due to audit logging failure
+            Log::warning('LogsActivity: failed to write audit log', [
+                'model'  => get_class($this),
+                'action' => $action,
+                'error'  => $e->getMessage(),
+            ]);
         }
-
-        $logName = strtolower(class_basename($this));
-
-        ActivityLog::create([
-            'log_name' => $logName,
-            'description' => "{$logName} {$action}",
-            'subject_type' => get_class($this),
-            'subject_id' => $this->getKey(),
-            'causer_type' => $causer ? get_class($causer) : null,
-            'causer_id' => $causer ? $causer->id : null,
-            'properties' => $properties,
-        ]);
     }
 }

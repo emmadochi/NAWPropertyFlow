@@ -88,8 +88,9 @@ class LeadController extends Controller
             'branch_id' => 'nullable|exists:branches,id',
         ]);
 
-        if (!in_array(Auth::user()->role, ['super_admin', 'company_admin'])) {
-            $validated['branch_id'] = Auth::user()->branch_id;
+        $user = Auth::user();
+        if (!$user->isSuperAdmin() && !$user->isCompanyAdmin()) {
+            $validated['branch_id'] = $user->branch_id;
         } else {
             if (empty($validated['branch_id']) && session()->has('selected_branch_id') && session('selected_branch_id') !== 'all') {
                 $validated['branch_id'] = session('selected_branch_id');
@@ -97,13 +98,21 @@ class LeadController extends Controller
         }
 
         // Safeguard: If created by a sales_executive, automatically lock assignment to them
-        if (Auth::user()->role === 'sales_executive') {
-            $validated['assigned_to'] = Auth::id();
+        if ($user->isSalesExecutive()) {
+            $validated['assigned_to'] = $user->id;
         }
 
-        $this->leadService->createLead($validated);
-
-        return redirect()->route('leads.index')->with('success', 'Lead created successfully.');
+        try {
+            $this->leadService->createLead($validated);
+            return redirect()->route('leads.index')->with('success', 'Lead created successfully.');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Lead creation error:', [
+                'error' => $e->getMessage(),
+                'file' => $e->getFile() . ':' . $e->getLine(),
+                'trace' => $e->getTraceAsString()
+            ]);
+            return back()->withInput()->with('error', 'Failed to create lead: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -485,22 +494,31 @@ class LeadController extends Controller
             return response()->json(['error' => 'Unauthorized.'], 403);
         }
 
-        $oldStatus = $lead->status;
-        $lead->status = $validated['status'];
-        $lead->save();
+        try {
+            $oldStatus = $lead->status;
+            $lead->status = $validated['status'];
+            $lead->save();
 
-        // Log status change
-        \App\Models\ActivityLog::create([
-            'description' => "Lead status changed from '{$oldStatus}' to '{$validated['status']}'",
-            'causer_id' => $user->id,
-            'subject_id' => $lead->id,
-            'subject_type' => Lead::class,
-        ]);
+            // Log status change activity
+            try {
+                \App\Models\ActivityLog::create([
+                    'log_name' => 'lead',
+                    'description' => "Lead status changed from '{$oldStatus}' to '{$validated['status']}'",
+                    'causer_type' => get_class($user),
+                    'causer_id' => $user->id,
+                    'subject_id' => $lead->id,
+                    'subject_type' => Lead::class,
+                ]);
+            } catch (\Throwable $e) {}
 
-        return response()->json([
-            'success' => true,
-            'lead_id' => $lead->id,
-            'new_status' => $lead->status,
-        ]);
+            return response()->json([
+                'success' => true,
+                'lead_id' => $lead->id,
+                'new_status' => $lead->status,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Lead updateStatus error:', ['error' => $e->getMessage()]);
+            return response()->json(['error' => 'Failed to update lead status.'], 500);
+        }
     }
 }

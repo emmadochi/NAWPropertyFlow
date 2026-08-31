@@ -38,7 +38,7 @@ class LeadService
         if ($sendWelcomeMail && $lead->email) {
             try {
                 Mail::to($lead->email)->send(new WelcomeLeadMail($lead));
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 // Ignore or log mail errors locally
             }
         }
@@ -69,7 +69,7 @@ class LeadService
             if ($lead->status === 'Closed Lost' && $lead->email) {
                 try {
                     Mail::to($lead->email)->send(new PoliteClosingMail($lead));
-                } catch (\Exception $e) {
+                } catch (\Throwable $e) {
                     // Ignore or log
                 }
             }
@@ -113,7 +113,7 @@ class LeadService
         if ($status === 'Closed Lost' && $lead->email) {
             try {
                 Mail::to($lead->email)->send(new PoliteClosingMail($lead));
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 // Ignore or log
             }
         }

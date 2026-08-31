@@ -17,8 +17,8 @@ class Lead extends Model
         static::created(function ($lead) {
             try {
                 app(\App\Services\DripService::class)->triggerFor($lead, 'lead_created');
-            } catch (\Exception $e) {
-                // Ignore
+            } catch (\Throwable $e) {
+                // Ignore background drip errors to never break lead creation
             }
         });
 
@@ -26,7 +26,7 @@ class Lead extends Model
             if ($lead->wasChanged('status') && strcasecmp($lead->status, 'hot') === 0) {
                 try {
                     app(\App\Services\DripService::class)->triggerFor($lead, 'status_changed_hot');
-                } catch (\Exception $e) {}
+                } catch (\Throwable $e) {}
             }
         });
     }
