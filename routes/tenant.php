@@ -188,6 +188,11 @@ Route::middleware([
     Route::middleware(['auth'])->group(function () {
         Route::match(['get', 'post'], '/logout', [AuthController::class, 'logout'])->name('logout');
         Route::post('/change-password', [AuthController::class, 'changePassword'])->name('password.change');
+
+        // CSRF Token Refresh — used by AJAX forms to prevent 419 on long-lived sessions
+        Route::get('/csrf-refresh', function () {
+            return response()->json(['token' => csrf_token()]);
+        })->name('csrf.refresh');
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
         
         // Virtual Tour & Interactive Estate Map

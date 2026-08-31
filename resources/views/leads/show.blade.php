@@ -838,7 +838,7 @@
                 </button>
             </div>
 
-            <form action="{{ route('sales.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
+            <form id="record-sale-form" data-no-spa action="{{ route('sales.store') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 <input type="hidden" name="lead_id" value="{{ $lead->id }}">
                 <input type="hidden" name="deal_value" :value="getTotalDealValue()">
@@ -1004,9 +1004,10 @@
 
                 <div class="flex justify-end space-x-3 pt-3 border-t border-gray-100 dark:border-slate-700">
                     <button type="button" @click="recordSaleOpen = false" class="px-4 py-2 text-xs font-bold text-gray-500 hover:text-gray-700">Cancel</button>
-                    <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center space-x-1.5">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        <span>Confirm Sale &amp; Issue Receipt</span>
+                    <button id="record-sale-submit-btn" type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition-all flex items-center space-x-1.5">
+                        <svg id="record-sale-icon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <svg id="record-sale-spinner" class="w-4 h-4 animate-spin hidden" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path></svg>
+                        <span id="record-sale-btn-label">Confirm Sale &amp; Issue Receipt</span>
                     </button>
                 </div>
             </form>
@@ -1114,3 +1115,105 @@
 </script>
 @endpush
 
+@push('scripts')
+<script>
+(function () {
+    function initRecordSaleForm() {
+        const form = document.getElementById('record-sale-form');
+        if (!form) return;
+
+        // Prevent duplicate listeners
+        if (form.dataset.ajaxBound === '1') return;
+        form.dataset.ajaxBound = '1';
+
+        form.addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const submitBtn   = document.getElementById('record-sale-submit-btn');
+            const icon        = document.getElementById('record-sale-icon');
+            const spinner     = document.getElementById('record-sale-spinner');
+            const btnLabel    = document.getElementById('record-sale-btn-label');
+
+            // -- Show loading state --
+            submitBtn.disabled = true;
+            icon.classList.add('hidden');
+            spinner.classList.remove('hidden');
+            btnLabel.textContent = 'Processing…';
+
+            try {
+                // Step 1: Refresh CSRF token to prevent 419 on long-lived sessions
+                const csrfRes = await fetch('/csrf-refresh', {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+                    credentials: 'same-origin'
+                });
+
+                if (csrfRes.ok) {
+                    const { token } = await csrfRes.json();
+                    // Update meta tag
+                    const metaTag = document.querySelector('meta[name="csrf-token"]');
+                    if (metaTag) metaTag.setAttribute('content', token);
+                    // Update the hidden _token input inside the form
+                    const tokenInput = form.querySelector('input[name="_token"]');
+                    if (tokenInput) tokenInput.value = token;
+                }
+
+                // Step 2: Build FormData (supports file upload)
+                const formData = new FormData(form);
+
+                // Step 3: Submit the form via fetch
+                const freshToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': freshToken,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json'
+                    },
+                    body: formData,
+                    credentials: 'same-origin'
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    // Success — navigate to payments tab
+                    btnLabel.textContent = '✅ Sale Recorded!';
+                    setTimeout(() => {
+                        if (typeof loadPage === 'function') {
+                            loadPage(data.redirect, true);
+                        } else {
+                            window.location.href = data.redirect;
+                        }
+                    }, 600);
+                } else {
+                    // Validation / server error
+                    const msg = data.message || data.error || 'An error occurred. Please try again.';
+                    alert('❌ ' + msg);
+                    // Reset button
+                    submitBtn.disabled = false;
+                    icon.classList.remove('hidden');
+                    spinner.classList.add('hidden');
+                    btnLabel.textContent = 'Confirm Sale & Issue Receipt';
+                }
+
+            } catch (err) {
+                console.error('Sale submission error:', err);
+                alert('❌ Network error. Please check your connection and try again.');
+                submitBtn.disabled = false;
+                icon.classList.remove('hidden');
+                spinner.classList.add('hidden');
+                btnLabel.textContent = 'Confirm Sale & Issue Receipt';
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initRecordSaleForm);
+    } else {
+        initRecordSaleForm();
+    }
+    document.addEventListener('spa-load-complete', initRecordSaleForm);
+})();
+</script>
+@endpush

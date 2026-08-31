@@ -91,14 +91,36 @@ class SaleController extends Controller
                 $msg .= ' (Saved in Silent / Historical Mode - No client emails sent).';
             }
 
-            return redirect()->route('leads.show', ['lead' => $validated['lead_id'], 'tab' => 'payments'])->with('success', $msg);
+            $redirectUrl = route('leads.show', ['lead' => $validated['lead_id'], 'tab' => 'payments']);
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => $msg,
+                    'redirect' => $redirectUrl,
+                ]);
+            }
+
+            return redirect()->to($redirectUrl)->with('success', $msg);
         } catch (\Throwable $e) {
             Log::error('Sale recording error:', [
                 'error' => $e->getMessage(),
                 'file' => $e->getFile() . ':' . $e->getLine(),
                 'trace' => $e->getTraceAsString()
             ]);
-            return redirect()->route('leads.show', ['lead' => $validated['lead_id'], 'tab' => 'payments'])->withInput()->with('error', 'Failed to record sale: ' . $e->getMessage());
+
+            $errMsg = 'Failed to record sale: ' . $e->getMessage();
+
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $errMsg,
+                ], 422);
+            }
+
+            return redirect()->route('leads.show', ['lead' => $validated['lead_id'], 'tab' => 'payments'])
+                ->withInput()
+                ->with('error', $errMsg);
         }
     }
 }
