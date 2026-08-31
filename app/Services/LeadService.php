@@ -26,11 +26,12 @@ class LeadService
         );
 
         if (!empty($lead->assigned_to)) {
+            $officerName = $lead->assignedOfficer?->name ?? 'Sales Officer';
             $this->logActivity(
                 $lead->id,
                 $userId ?? Auth::id() ?? 1,
                 'Updated',
-                "Lead assigned to Sales Officer: " . $lead->assignedOfficer->name
+                "Lead assigned to Sales Officer: " . $officerName
             );
         }
 
