@@ -16,30 +16,45 @@ class LeadService
      */
     public function createLead(array $data, ?int $userId = null, bool $sendWelcomeMail = true): Lead
     {
-        $lead = Lead::create($data);
-
-        $this->logActivity(
-            $lead->id,
-            $userId ?? Auth::id() ?? 1, // Fallback if no auth user (e.g. API/Seeder)
-            'Created',
-            'Lead created successfully.'
-        );
-
-        if (!empty($lead->assigned_to)) {
-            $officerName = $lead->assignedOfficer?->name ?? 'Sales Officer';
-            $this->logActivity(
-                $lead->id,
-                $userId ?? Auth::id() ?? 1,
-                'Updated',
-                "Lead assigned to Sales Officer: " . $officerName
-            );
+        // Safe-filter data attributes so missing columns in tenant database do not throw errors
+        $filteredData = [];
+        foreach ($data as $key => $val) {
+            if (\Illuminate\Support\Facades\Schema::hasColumn('leads', $key)) {
+                $filteredData[$key] = $val;
+            }
         }
 
-        if ($sendWelcomeMail && $lead->email) {
+        $lead = Lead::create(!empty($filteredData) ? $filteredData : $data);
+
+        $currentUserId = $userId ?? Auth::id();
+
+        try {
+            $this->logActivity(
+                $lead->id,
+                $currentUserId,
+                'Created',
+                'Lead created successfully.'
+            );
+
+            if (!empty($lead->assigned_to)) {
+                $officer = \App\Models\User::find($lead->assigned_to);
+                $officerName = $officer ? $officer->name : 'Sales Officer';
+                $this->logActivity(
+                    $lead->id,
+                    $currentUserId,
+                    'Updated',
+                    "Lead assigned to Sales Officer: " . $officerName
+                );
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('Lead activity logging failed', ['error' => $e->getMessage()]);
+        }
+
+        if ($sendWelcomeMail && !empty($lead->email)) {
             try {
                 Mail::to($lead->email)->send(new WelcomeLeadMail($lead));
             } catch (\Throwable $e) {
-                // Ignore or log mail errors locally
+                \Illuminate\Support\Facades\Log::warning('Welcome lead mail sending failed', ['error' => $e->getMessage()]);
             }
         }
 
@@ -124,13 +139,39 @@ class LeadService
     /**
      * Log helper for lead activities.
      */
-    public function logActivity(int $leadId, int $userId, string $type, string $description): LeadActivity
+    public function logActivity(?int $leadId, ?int $userId, string $type, string $description): ?LeadActivity
     {
-        return LeadActivity::create([
-            'lead_id' => $leadId,
-            'user_id' => $userId,
-            'activity_type' => $type,
-            'description' => $description,
-        ]);
+        if (!$leadId) {
+            return null;
+        }
+
+        try {
+            if (!\Illuminate\Support\Facades\Schema::hasTable('lead_activities')) {
+                return null;
+            }
+
+            $validUserId = $userId;
+            if ($validUserId && !\App\Models\User::where('id', $validUserId)->exists()) {
+                $validUserId = \App\Models\User::value('id');
+            }
+
+            if (!$validUserId) {
+                $validUserId = \App\Models\User::value('id');
+            }
+
+            if (!$validUserId) {
+                return null;
+            }
+
+            return LeadActivity::create([
+                'lead_id' => $leadId,
+                'user_id' => $validUserId,
+                'activity_type' => $type,
+                'description' => $description,
+            ]);
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning('LeadActivity log failed:', ['error' => $e->getMessage()]);
+            return null;
+        }
     }
 }

@@ -189,7 +189,7 @@
             ];
 
             $leadsAll = \App\Models\Lead::with(['assignedOfficer','propertyInterest'])
-                ->when(Auth::user()->role === 'sales_executive', fn($q) => $q->where('assigned_to', Auth::id()))
+                ->when(Auth::user()->role === 'sales_executive' || Auth::user()->isSalesExecutive(), fn($q) => $q->where(fn($sq) => $sq->where('assigned_to', Auth::id())->orWhereNull('assigned_to')))
                 ->when(request('search'), fn($q, $s) => $q->search($s))
                 ->orderBy('created_at', 'desc')
                 ->get()

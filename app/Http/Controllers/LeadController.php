@@ -26,9 +26,12 @@ class LeadController extends Controller
         $user = Auth::user();
         $query = Lead::with(['propertyInterest', 'assignedOfficer']);
 
-        // 1. Role-based scoping: Sales Executives only see their own assigned leads
-        if ($user->role === 'sales_executive') {
-            $query->where('assigned_to', $user->id);
+        // 1. Role-based scoping: Sales Executives only see their own assigned leads + unassigned leads
+        if ($user->role === 'sales_executive' || $user->isSalesExecutive()) {
+            $query->where(function($q) use ($user) {
+                $q->where('assigned_to', $user->id)
+                  ->orWhereNull('assigned_to');
+            });
         }
 
         // 2. Apply Filters
