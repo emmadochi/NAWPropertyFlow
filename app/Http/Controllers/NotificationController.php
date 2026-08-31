@@ -92,9 +92,9 @@ class NotificationController extends Controller
                     'category' => 'payments',
                     'icon' => '💳',
                     'title' => 'Proof of Payment Uploaded',
-                    'description' => "{$leadName} uploaded POP (₦" . number_format($pop->amount_paid, 2) . ") for '{$pop->label}' in {$propName}. Awaiting verification.",
+                    'description' => "{$leadName} uploaded POP (₦" . number_format($pop->amount_paid ?? 0, 2) . ") for '{$pop->label}' in {$propName}. Awaiting verification.",
                     'time' => $pop->pop_submitted_at ? $pop->pop_submitted_at->diffForHumans() : 'Recently',
-                    'url' => route('payments.milestones', $pop->payment_plan_id)
+                    'url' => route('payments.show-plan', $pop->payment_plan_id)
                 ];
             }
         }
