@@ -182,10 +182,67 @@ class LeadAndSaleFullFlowTest extends TestCase
         ]);
 
         // View lead profile page and verify no 500 errors and payments tab renders
-        $showResponse = $this->actingAs($admin)->get(route('leads.show', $lead->id));
+        $showResponse = $this->actingAs($admin)->get(route('leads.show', ['lead' => $lead->id, 'tab' => 'payments']));
         $showResponse->assertStatus(200);
         $showResponse->assertSee('Sunset Ridge Estate');
         $showResponse->assertSee('Payments (1)');
         $showResponse->assertSee('52,500,000');
+    }
+
+    public function test_record_outright_sale_on_unassigned_general_inquiry_lead()
+    {
+        $admin = User::create([
+            'name' => 'General Admin',
+            'email' => 'genadmin@test.com',
+            'password' => bcrypt('password'),
+            'role' => 'company_admin',
+            'status' => 'active',
+        ]);
+
+        $property = Property::create([
+            'name' => 'Grand Palm Villa',
+            'location' => 'Kuje, Abuja',
+            'price' => 25000000,
+            'total_units' => 5,
+            'available_units' => 5,
+            'property_type' => 'Residential',
+            'status' => 'available',
+        ]);
+
+        $lead = Lead::create([
+            'full_name' => 'EMMAN test',
+            'phone_number' => '+2349042988676',
+            'email' => 'emmadocgi11@gmail.com',
+            'budget_range' => '₦1M - ₦9M',
+            'lead_source' => 'Website',
+            'status' => 'New',
+            'assigned_to' => null,
+            'branch_id' => null,
+        ]);
+
+        // Submit sale with 100% Outright
+        $response = $this->actingAs($admin)->post(route('sales.store'), [
+            'lead_id' => $lead->id,
+            'property_id' => $property->id,
+            'property_unit_id' => '',
+            'sales_officer_id' => '',
+            'deal_value' => 25000000,
+            'base_deal_value' => 25000000,
+            'units_purchased' => 1,
+            'plan_type' => 'outright',
+            'payment_method' => 'Bank Transfer',
+        ]);
+
+        $response->assertRedirect(route('leads.show', ['lead' => $lead->id, 'tab' => 'payments']));
+        $response->assertSessionHas('success');
+
+        $lead->refresh();
+        $this->assertEquals('Closed Won', $lead->status);
+
+        $showResponse = $this->actingAs($admin)->get(route('leads.show', ['lead' => $lead->id, 'tab' => 'payments']));
+        $showResponse->assertStatus(200);
+        $showResponse->assertSee('Grand Palm Villa');
+        $showResponse->assertSee('Payments (1)');
+        $showResponse->assertSee('25,000,000');
     }
 }
