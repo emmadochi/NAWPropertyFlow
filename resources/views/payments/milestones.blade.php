@@ -131,13 +131,12 @@
                                 @endif
                             </div>
                         </td>
-                        <td class="px-6 py-4 text-sm text-right space-x-2">
-                            @if($milestone->amount_paid > 0 && $milestone->receipt_path)
-                            <a href="{{ route('payments.download-receipt', $milestone->id) }}" target="_blank" class="inline-flex items-center text-brand-500 hover:text-brand-600 font-semibold transition-colors">
-                                <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            @if($milestone->amount_paid > 0)
+                            <a href="{{ route('payments.download-receipt', $milestone->id) }}" target="_blank" class="inline-flex items-center text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm transition-colors">
+                                <svg class="w-4 h-4 mr-1.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
                                 </svg>
-                                <span>Receipt</span>
+                                <span>Official Receipt</span>
                             </a>
                             @endif
 

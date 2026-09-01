@@ -474,8 +474,20 @@
                                         </span>
                                     </div>
                                 </div>
-                                <div class="flex justify-end pt-2">
-                                    <a href="{{ route('payments.show-plan', $sale->paymentPlan->id) }}" class="inline-flex items-center px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md transition-colors">
+                                <div class="flex items-center justify-between pt-2 flex-wrap gap-2">
+                                    <div class="flex items-center space-x-2 flex-wrap">
+                                        @foreach($sale->paymentPlan->milestones as $m)
+                                            @if($m->amount_paid > 0)
+                                            <a href="{{ route('payments.download-receipt', $m->id) }}" target="_blank" class="inline-flex items-center px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-300 font-bold text-xs rounded-xl transition-colors shadow-sm my-1">
+                                                <svg class="w-3.5 h-3.5 mr-1.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                                </svg>
+                                                <span>Download Receipt (#{{ $m->id }})</span>
+                                            </a>
+                                            @endif
+                                        @endforeach
+                                    </div>
+                                    <a href="{{ route('payments.show-plan', $sale->paymentPlan->id) }}" class="inline-flex items-center px-4 py-2 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md transition-colors my-1">
                                         Manage Milestones & Payments
                                     </a>
                                 </div>
