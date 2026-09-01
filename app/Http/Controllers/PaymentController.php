@@ -32,20 +32,28 @@ class PaymentController extends Controller
      */
     public function storePlan(Request $request, Sale $sale)
     {
+        // Guard: table may not exist on older production DBs
+        $durationRule = 'nullable';
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('payment_plan_durations')) {
+                $durationRule = 'nullable|exists:payment_plan_durations,id';
+            }
+        } catch (\Throwable $e) {}
+
         $validated = $request->validate([
-            'payment_plan_duration_id' => 'nullable|exists:payment_plan_durations,id',
-            'duration_months' => 'nullable|integer|min:0',
-            'plan_type' => 'required|in:outright,installment,mortgage',
-            'base_deal_value' => 'nullable|numeric|min:0',
-            'interest_rate_pct' => 'nullable|numeric|min:0|max:100',
-            'interest_amount' => 'nullable|numeric|min:0',
-            'total_amount' => 'nullable|numeric|min:0',
-            'number_of_installments' => 'nullable|integer|min:1',
-            'milestones' => 'nullable|array',
-            'milestones.*.label' => 'required|string',
-            'milestones.*.amount_due' => 'required|numeric|min:0',
-            'milestones.*.due_date' => 'required|date',
-            'notes' => 'nullable|string',
+            'payment_plan_duration_id' => $durationRule,
+            'duration_months'          => 'nullable|integer|min:0',
+            'plan_type'                => 'required|in:outright,installment,mortgage',
+            'base_deal_value'          => 'nullable|numeric|min:0',
+            'interest_rate_pct'        => 'nullable|numeric|min:0|max:100',
+            'interest_amount'          => 'nullable|numeric|min:0',
+            'total_amount'             => 'nullable|numeric|min:0',
+            'number_of_installments'   => 'nullable|integer|min:1',
+            'milestones'               => 'nullable|array',
+            'milestones.*.label'       => 'required|string',
+            'milestones.*.amount_due'  => 'required|numeric|min:0',
+            'milestones.*.due_date'    => 'required|date',
+            'notes'                    => 'nullable|string',
         ]);
 
         try {
@@ -127,13 +135,23 @@ class PaymentController extends Controller
      */
     public function downloadReceipt(PaymentMilestone $milestone)
     {
-        $paymentPlan = $milestone->paymentPlan;
-        $sale = $paymentPlan->sale;
-        $lead = $sale->lead;
-        $property = $sale->property;
+        try {
+            $paymentPlan = $milestone->paymentPlan;
+            $sale        = $paymentPlan->sale;
+            $lead        = $sale->lead;
+            $property    = $sale->property;
 
-        $pdf = Pdf::loadView('pdf.receipt', compact('milestone', 'paymentPlan', 'sale', 'lead', 'property'));
+            $receiptNo  = 'REC-' . str_pad($milestone->id, 6, '0', STR_PAD_LEFT);
+            $qrData     = url('/') . ' | Receipt: ' . $receiptNo . ' | Ref: ' . ($milestone->bank_reference ?? 'N/A') . ' | Client: ' . $lead->full_name;
+            $qrCodeUri  = \App\Helpers\QrCodeHelper::generate($qrData, 130);
 
-        return $pdf->stream('receipt_' . $milestone->id . '.pdf');
+            $pdf = Pdf::loadView('pdf.receipt', compact('milestone', 'paymentPlan', 'sale', 'lead', 'property', 'qrCodeUri', 'receiptNo'))
+                ->setPaper('a4', 'portrait');
+
+            return $pdf->stream('receipt_' . $receiptNo . '.pdf');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Receipt download error: ' . $e->getMessage());
+            abort(500, 'Could not generate receipt: ' . $e->getMessage());
+        }
     }
 }
