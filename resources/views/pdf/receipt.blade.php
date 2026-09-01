@@ -21,24 +21,24 @@
 
         /* HEADER */
         .hdr { width: 100%; border-collapse: collapse; background: #0f172a; }
-        .hdr td { padding: 24px 36px; vertical-align: middle; }
+        .hdr td { padding: 36px 36px 28px 36px; vertical-align: middle; }
         .hdr-l { width: 55%; }
         .hdr-r { width: 45%; text-align: right; }
-        .logo   { height: 36px; display: block; margin-bottom: 6px; }
+        .logo   { height: 38px; display: block; margin-bottom: 8px; }
         .co-name { font-size: 17px; font-weight: bold; color: #ffffff; letter-spacing: 0.2px; }
-        .co-sub  { font-size: 8.5px; color: #94a3b8; margin-top: 3px; line-height: 1.6; }
+        .co-sub  { font-size: 8.5px; color: #94a3b8; margin-top: 4px; line-height: 1.65; }
         .rec-lbl { font-size: 21px; font-weight: bold; color: #FEA500; letter-spacing: 0.8px; text-transform: uppercase; }
-        .rec-no  { font-size: 10.5px; color: #e2e8f0; font-weight: bold; margin-top: 5px; }
-        .rec-sub { font-size: 8.5px; color: #94a3b8; margin-top: 3px; line-height: 1.7; }
+        .rec-no  { font-size: 10.5px; color: #e2e8f0; font-weight: bold; margin-top: 6px; }
+        .rec-sub { font-size: 8.5px; color: #94a3b8; margin-top: 4px; line-height: 1.75; }
 
         /* ACCENT BAR */
         .bar { height: 4px; background: #FEA500; font-size: 0; }
 
         /* BODY */
-        .wrap { padding: 26px 36px 90px 36px; }
+        .wrap { padding: 32px 36px 85px 36px; }
 
         /* DIVIDERS */
-        hr { border: none; border-top: 1px solid #e8e8e4; margin: 18px 0; }
+        hr { border: none; border-top: 1px solid #e8e8e4; margin: 20px 0; }
 
         /* CLIENT / PROPERTY TWO-COL */
         .info-t { width: 100%; border-collapse: collapse; margin-bottom: 22px; }
