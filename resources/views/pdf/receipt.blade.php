@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -141,7 +141,9 @@
         <div class="rec-sub">
             Date: {{ $paidDate }}<br>
             Method: {{ $milestone->payment_method ?? 'Bank Transfer' }}
-            @if($milestone->bank_reference)<br>Ref: {{ $milestone->bank_reference }}@endif
+            @if(!empty($milestone->bank_reference))
+                <br>Ref: {{ $milestone->bank_reference }}
+            @endif
         </div>
     </td>
 </tr></table>
@@ -156,14 +158,27 @@
             <div class="cname">{{ $lead->full_name }}</div>
             <div class="cdet">{{ $lead->email }}</div>
             <div class="cdet">{{ $lead->phone_number }}</div>
-            @if(!empty($lead->address))<div class="cdet">{{ $lead->address }}</div>@endif
+            @if(!empty($lead->address))
+                <div class="cdet">{{ $lead->address }}</div>
+            @endif
         </td>
         <td class="ic-r">
             <div class="lbl">Property Details</div>
-            <div class="cdet"><strong>{{ $property->name }}</strong>@if($sale->propertyUnit) &mdash; Unit #{{ $sale->propertyUnit->unit_number }}@endif</div>
+            <div class="cdet">
+                <strong>{{ $property->name }}</strong>
+                @if($sale->propertyUnit)
+                    &mdash; Unit #{{ $sale->propertyUnit->unit_number }}
+                @endif
+            </div>
             <div class="cdet">{{ $property->location ?? '' }}</div>
             <div class="cdet">Milestone: <strong>{{ $milestone->label }}</strong></div>
-            <div class="cdet">Plan: <strong>{{ ucfirst($paymentPlan->plan_type ?? 'installment') }}@if($paymentPlan->duration_months) &mdash; {{ $paymentPlan->duration_months }} Months@endif</strong></div>
+            <div class="cdet">
+                Plan: <strong>{{ ucfirst($paymentPlan->plan_type ?? 'installment') }}
+                @if(!empty($paymentPlan->duration_months))
+                    &mdash; {{ $paymentPlan->duration_months }} Months
+                @endif
+                </strong>
+            </div>
         </td>
     </tr></table>
 
@@ -181,12 +196,21 @@
             <tr>
                 <td>
                     <div class="d-main">{{ $milestone->label }}</div>
-                    <div class="d-sub">{{ $property->name }}@if($sale->propertyUnit) &mdash; Unit #{{ $sale->propertyUnit->unit_number }}@endif</div>
-                    @if($milestone->bank_reference)<div class="d-sub">Ref: {{ $milestone->bank_reference }}</div>@endif
+                    <div class="d-sub">
+                        {{ $property->name }}
+                        @if($sale->propertyUnit)
+                            &mdash; Unit #{{ $sale->propertyUnit->unit_number }}
+                        @endif
+                    </div>
+                    @if(!empty($milestone->bank_reference))
+                        <div class="d-sub">Ref: {{ $milestone->bank_reference }}</div>
+                    @endif
                 </td>
                 <td class="tc" style="color:#555; font-size:9.5px;">
                     {{ ucfirst($paymentPlan->plan_type ?? 'installment') }}
-                    @if($paymentPlan->duration_months)<br><strong>{{ $paymentPlan->duration_months }} Months</strong>@endif
+                    @if(!empty($paymentPlan->duration_months))
+                        <br><strong>{{ $paymentPlan->duration_months }} Months</strong>
+                    @endif
                 </td>
                 <td class="tr">&#8358;{{ number_format($milestone->amount_due, 2) }}</td>
                 <td class="tr" style="font-weight:bold; color:#0f172a;">&#8358;{{ number_format($milestone->amount_paid, 2) }}</td>

@@ -130,7 +130,7 @@
                                     @endif
                                 @endif
                             </div>
-                        </td>
+                        <td class="px-6 py-4 text-sm text-right space-x-2">
                             @if($milestone->amount_paid > 0)
                             <a href="{{ route('payments.download-receipt', $milestone->id) }}" target="_blank" class="inline-flex items-center text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 font-bold text-xs px-3 py-1.5 rounded-lg shadow-sm transition-colors">
                                 <svg class="w-4 h-4 mr-1.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
