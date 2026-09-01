@@ -51,25 +51,35 @@ class SaleController extends Controller
             'interest_amount' => $interestAmount,
         ]);
 
+        // Check if payment_plan_durations table exists before validating against it
+        $durationRule = 'nullable';
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('payment_plan_durations')) {
+                $durationRule = 'nullable|exists:payment_plan_durations,id';
+            }
+        } catch (\Throwable $e) {
+            // table doesn't exist yet — skip exists check
+        }
+
         $validated = $request->validate([
-            'lead_id' => 'required|exists:leads,id',
-            'property_id' => 'required|exists:properties,id',
-            'property_unit_id' => 'nullable|exists:property_units,id',
-            'sales_officer_id' => 'nullable|exists:users,id',
-            'deal_value' => 'required|numeric|min:0',
-            'base_deal_value' => 'nullable|numeric|min:0',
-            'interest_rate_pct' => 'nullable|numeric|min:0|max:100',
-            'interest_amount' => 'nullable|numeric|min:0',
-            'payment_plan_duration_id' => 'nullable|exists:payment_plan_durations,id',
-            'units_purchased' => 'required|integer|min:1',
-            'plan_type' => 'nullable|string|in:outright,installment',
-            'initial_deposit' => 'nullable|numeric|min:0',
-            'installment_months' => 'nullable|integer|min:1|max:60',
-            'bank_reference' => 'nullable|string|max:100',
-            'payment_method' => 'nullable|string|max:100',
-            'payment_receipt' => 'nullable|file|mimes:pdf,jpg,png,jpeg|max:10240',
-            'deal_closed_at' => 'nullable|date',
-            'send_notification_email' => 'nullable',
+            'lead_id'                  => 'required|exists:leads,id',
+            'property_id'              => 'required|exists:properties,id',
+            'property_unit_id'         => 'nullable|exists:property_units,id',
+            'sales_officer_id'         => 'nullable|exists:users,id',
+            'deal_value'               => 'required|numeric|min:0',
+            'base_deal_value'          => 'nullable|numeric|min:0',
+            'interest_rate_pct'        => 'nullable|numeric|min:0|max:100',
+            'interest_amount'          => 'nullable|numeric|min:0',
+            'payment_plan_duration_id' => $durationRule,
+            'units_purchased'          => 'required|integer|min:1',
+            'plan_type'                => 'nullable|string|in:outright,installment',
+            'initial_deposit'          => 'nullable|numeric|min:0',
+            'installment_months'       => 'nullable|integer|min:1|max:60',
+            'bank_reference'           => 'nullable|string|max:100',
+            'payment_method'           => 'nullable|string|max:100',
+            'payment_receipt'          => 'nullable|file|mimes:pdf,jpg,png,jpeg|max:10240',
+            'deal_closed_at'           => 'nullable|date',
+            'send_notification_email'  => 'nullable',
         ]);
 
         $validated['send_notification_email'] = $request->has('send_notification_email');
@@ -109,7 +119,7 @@ class SaleController extends Controller
                 'trace' => $e->getTraceAsString()
             ]);
 
-            $errMsg = 'Failed to record sale: ' . $e->getMessage();
+            $errMsg = 'Failed to record sale: ' . $e->getMessage() . ' (in ' . basename($e->getFile()) . ':' . $e->getLine() . ')';
 
             if ($request->expectsJson()) {
                 return response()->json([
