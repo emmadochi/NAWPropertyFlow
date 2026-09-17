@@ -26,12 +26,9 @@ class LeadController extends Controller
         $user = Auth::user();
         $query = Lead::with(['propertyInterest', 'assignedOfficer']);
 
-        // 1. Role-based scoping: Sales Executives only see their own assigned leads + unassigned leads
+        // 1. Role-based scoping: Sales Executives strictly only see their own assigned leads
         if ($user->role === 'sales_executive' || $user->isSalesExecutive()) {
-            $query->where(function($q) use ($user) {
-                $q->where('assigned_to', $user->id)
-                  ->orWhereNull('assigned_to');
-            });
+            $query->where('assigned_to', $user->id);
         }
 
         // 2. Apply Filters
@@ -138,8 +135,8 @@ class LeadController extends Controller
         $user = Auth::user();
 
         // Authorize check: Sales Executive can only view their own assigned leads
-        if ($user->role === 'sales_executive' && $lead->assigned_to !== $user->id) {
-            abort(403, 'Unauthorized action.');
+        if (($user->role === 'sales_executive' || $user->isSalesExecutive()) && $lead->assigned_to !== $user->id) {
+            abort(403, 'Unauthorized action: You can only view your own assigned prospects.');
         }
 
         $lead->load([

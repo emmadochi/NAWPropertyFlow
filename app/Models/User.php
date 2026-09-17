@@ -124,6 +124,12 @@ class User extends Authenticatable
             'project_manager' => [
                 'properties.view', 'properties.create', 'properties.edit', 'units.manage', 'finance.log_expenses'
             ],
+            'customer_care' => [
+                'leads.view_all', 'leads.view', 'leads.edit', 'leads.call', 'followups.manage', 'properties.view'
+            ],
+            'telemarketer' => [
+                'leads.view_all', 'leads.view', 'leads.edit', 'leads.call', 'followups.manage', 'properties.view'
+            ],
         ];
 
         return in_array($slug, $matrix[$this->role] ?? []);
@@ -168,6 +174,11 @@ class User extends Authenticatable
     public function isAccountant(): bool
     {
         return in_array($this->role, ['accountant', 'finance_manager']) || ($this->roleRelation && in_array($this->roleRelation->slug, ['accountant', 'finance_manager']));
+    }
+
+    public function isCustomerCare(): bool
+    {
+        return in_array($this->role, ['customer_care', 'telemarketer']) || ($this->roleRelation && in_array($this->roleRelation->slug, ['customer_care', 'telemarketer']));
     }
 
     public function hasRole(array|string $roles): bool

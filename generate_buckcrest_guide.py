@@ -38,7 +38,7 @@ class NumberedCanvas(canvas.Canvas):
 
         # Header
         self.drawString(54, letter[1] - 36, "BUCKCREST HAVENS LIMITED • CLIENT OPERATIONS MANUAL")
-        self.drawRightString(letter[0] - 54, letter[1] - 36, "CRM & SALES WORKFLOW SUITE")
+        self.drawRightString(letter[0] - 54, letter[1] - 36, "CRM, CALL CENTER & PIPELINE SUITE")
         self.setStrokeColor(colors.HexColor("#E2E8F0"))
         self.setLineWidth(0.75)
         self.line(54, letter[1] - 42, letter[0] - 54, letter[1] - 42)
@@ -74,14 +74,15 @@ def build_pdf(filename):
     c_card_bg = colors.HexColor("#EDF2F7")
     c_border = colors.HexColor("#CBD5E0")
     c_accent_bg = colors.HexColor("#FFFDF5")
+    c_green = colors.HexColor("#2E7D32")
 
     # Typography Styles
     title_style = ParagraphStyle(
         'CoverTitle',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=28,
-        leading=34,
+        fontSize=26,
+        leading=32,
         textColor=c_navy,
         spaceAfter=10
     )
@@ -90,18 +91,18 @@ def build_pdf(filename):
         'CoverSubtitle',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=13,
-        leading=18,
+        fontSize=12.5,
+        leading=17,
         textColor=c_blue,
-        spaceAfter=25
+        spaceAfter=22
     )
 
     meta_label = ParagraphStyle(
         'CoverMetaLabel',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=9,
-        leading=13,
+        fontSize=8.5,
+        leading=12,
         textColor=c_navy
     )
 
@@ -109,8 +110,8 @@ def build_pdf(filename):
         'CoverMetaVal',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=9,
-        leading=13,
+        fontSize=8.5,
+        leading=12,
         textColor=c_muted
     )
 
@@ -118,8 +119,8 @@ def build_pdf(filename):
         'Heading1_Custom',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=16,
-        leading=21,
+        fontSize=15,
+        leading=20,
         textColor=c_navy,
         spaceBefore=14,
         spaceAfter=8,
@@ -130,8 +131,8 @@ def build_pdf(filename):
         'Heading2_Custom',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=12,
-        leading=16,
+        fontSize=11.5,
+        leading=15.5,
         textColor=c_blue,
         spaceBefore=10,
         spaceAfter=5,
@@ -142,8 +143,8 @@ def build_pdf(filename):
         'Body_Custom',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=9.5,
-        leading=14.5,
+        fontSize=9,
+        leading=14,
         textColor=c_dark,
         spaceAfter=7
     )
@@ -152,10 +153,10 @@ def build_pdf(filename):
         'Bullet_Custom',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=9,
-        leading=13.5,
+        fontSize=8.5,
+        leading=13,
         textColor=c_dark,
-        leftIndent=15,
+        leftIndent=14,
         spaceAfter=4
     )
 
@@ -172,8 +173,8 @@ def build_pdf(filename):
         'TableHeader',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=8.5,
-        leading=11,
+        fontSize=8,
+        leading=10.5,
         textColor=colors.white
     )
 
@@ -181,8 +182,8 @@ def build_pdf(filename):
         'TableCell',
         parent=styles['Normal'],
         fontName='Helvetica',
-        fontSize=8.5,
-        leading=11.5,
+        fontSize=8,
+        leading=11,
         textColor=c_dark
     )
 
@@ -190,8 +191,8 @@ def build_pdf(filename):
         'TableCellBold',
         parent=styles['Normal'],
         fontName='Helvetica-Bold',
-        fontSize=8.5,
-        leading=11.5,
+        fontSize=8,
+        leading=11,
         textColor=c_navy
     )
 
@@ -200,15 +201,15 @@ def build_pdf(filename):
     # =========================================================================
     # COVER PAGE
     # =========================================================================
-    story.append(Spacer(1, 40))
+    story.append(Spacer(1, 30))
     
     # Gold decorative top bar
-    story.append(Table([[""]], colWidths=[504], rowHeights=[6], style=TableStyle([
+    story.append(Table([[""]], colWidths=[504], rowHeights=[5], style=TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), c_gold),
         ('TOPPADDING', (0,0), (-1,-1), 0),
         ('BOTTOMPADDING', (0,0), (-1,-1), 0),
     ])))
-    story.append(Spacer(1, 20))
+    story.append(Spacer(1, 16))
 
     story.append(Paragraph("BUCKCREST HAVENS LIMITED", ParagraphStyle(
         'BrandHeading',
@@ -217,45 +218,44 @@ def build_pdf(filename):
         fontSize=12,
         leading=14,
         textColor=c_gold,
-        spaceAfter=12
+        spaceAfter=10
     )))
 
-    story.append(Paragraph("Enterprise CRM & Real Estate Sales Management System", title_style))
-    story.append(Paragraph("Complete Technical Architecture & Daily Operating Manual for Staff and Management", subtitle_style))
+    story.append(Paragraph("Enterprise CRM, Call Center & Lead Privacy Operating Manual", title_style))
+    story.append(Paragraph("A Detailed Technical & Operational Guide for Customer Care, Sales Executives & Management", subtitle_style))
 
-    story.append(HRFlowable(width="100%", thickness=1.5, color=c_blue, spaceBefore=5, spaceAfter=20))
+    story.append(HRFlowable(width="100%", thickness=1.5, color=c_blue, spaceBefore=4, spaceAfter=18))
 
     # Executive Summary Card on Cover
     summary_box_data = [
-        [Paragraph("<b>SYSTEM ACCESS & DEPLOYMENT SPECIFICATION</b>", ParagraphStyle('BoxH', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=10, textColor=c_navy))],
-        [Paragraph("This comprehensive manual provides the executive team, sales consultants, administrative staff, and accountants at <b>Buckcrest Havens Limited</b> with a complete operational walkthrough of their dedicated PropertyFlow CRM suite. The system automates the end-to-end real estate lifecycle from lead acquisition to verified deal close.", body_style)],
+        [Paragraph("<b>SYSTEM ACCESS & ARCHITECTURE DECLARATION</b>", ParagraphStyle('BoxH', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=9.5, textColor=c_navy))],
+        [Paragraph("This official operational manual details the purpose-built <b>PropertyFlow CRM Suite</b> deployed for <b>Buckcrest Havens Limited</b>. Designed specifically to maximize sales velocity while strictly safeguarding proprietary lead data, the system provides <b>centralized customer care calling</b>, <b>automated follow-up logging</b>, <b>strict cross-rep data privacy</b>, and <b>real-time executive oversight</b>.", body_style)],
     ]
     summary_box = Table(summary_box_data, colWidths=[504], style=TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), c_card_bg),
-        ('LEFTPADDING', (0,0), (-1,-1), 16),
-        ('RIGHTPADDING', (0,0), (-1,-1), 16),
-        ('TOPPADDING', (0,0), (-1,-1), 12),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 12),
+        ('LEFTPADDING', (0,0), (-1,-1), 14),
+        ('RIGHTPADDING', (0,0), (-1,-1), 14),
+        ('TOPPADDING', (0,0), (-1,-1), 10),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 10),
         ('BOX', (0,0), (-1,-1), 1, c_border),
     ]))
     story.append(summary_box)
-    story.append(Spacer(1, 25))
+    story.append(Spacer(1, 18))
 
     # Meta credentials & setup grid
     meta_table_data = [
-        [Paragraph("Live Portal URL:", meta_label), Paragraph("<font color='#0B2545'><b>https://bhl.nawpropertyflow.com.ng/login</b></font>", meta_val)],
-        [Paragraph("Instance Type:", meta_label), Paragraph("Dedicated Isolated Multi-Tenant Instance", meta_val)],
-        [Paragraph("Organization:", meta_label), Paragraph("Buckcrest Havens Limited", meta_val)],
-        [Paragraph("Database Environment:", meta_label), Paragraph("Dedicated Database (stufedoc_nawcrm_bhl)", meta_val)],
-        [Paragraph("Active Functional Suites:", meta_label), Paragraph("Customer Relationship Management (CRM) & Payment Plans", meta_val)],
-        [Paragraph("System Role Scopes:", meta_label), Paragraph("Super Admin, Company Admin, Sales Executive, Finance Officer", meta_val)],
+        [Paragraph("Portal Access URL:", meta_label), Paragraph("<font color='#0B2545'><b>https://bhl.nawpropertyflow.com.ng/login</b></font>", meta_val)],
+        [Paragraph("Client Organization:", meta_label), Paragraph("Buckcrest Havens Limited", meta_val)],
+        [Paragraph("System Instance:", meta_label), Paragraph("Dedicated Isolated Database Schema (stufedoc_nawcrm_bhl)", meta_val)],
+        [Paragraph("Core Capabilities:", meta_label), Paragraph("Lead Ingestion, Call Logging, Follow-Up SLAs, Strict Lead Privacy", meta_val)],
+        [Paragraph("Protected Roles:", meta_label), Paragraph("Executive Board, Customer Care Team, Sales Consultants, Finance", meta_val)],
+        [Paragraph("Data Security Level:", meta_label), Paragraph("Zero-Cross-Visibility Anti-Poaching Protection Active", meta_val)],
         [Paragraph("Publication Date:", meta_label), Paragraph("September 2026", meta_val)],
-        [Paragraph("Document Status:", meta_label), Paragraph("Official Operational Client Release", meta_val)],
     ]
-    meta_table = Table(meta_table_data, colWidths=[150, 354], style=TableStyle([
+    meta_table = Table(meta_table_data, colWidths=[140, 364], style=TableStyle([
         ('VALIGN', (0,0), (-1,-1), 'MIDDLE'),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 4),
-        ('TOPPADDING', (0,0), (-1,-1), 4),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 3.5),
+        ('TOPPADDING', (0,0), (-1,-1), 3.5),
         ('LINEBELOW', (0,0), (-1,-1), 0.5, colors.HexColor("#EDF2F7")),
     ]))
     story.append(meta_table)
@@ -263,318 +263,186 @@ def build_pdf(filename):
     story.append(PageBreak())
 
     # =========================================================================
-    # SECTION 1: EXECUTIVE SYSTEM ARCHITECTURE
+    # SECTION 1: STRICT PRIVACY & ANTI-POACHING LEAD OWNERSHIP
     # =========================================================================
-    story.append(Paragraph("1. Executive Overview & System Architecture", h1_style))
+    story.append(Paragraph("1. Strict Lead Privacy & Anti-Poaching Architecture", h1_style))
     story.append(Paragraph(
-        "Buckcrest Havens Limited operates on a <b>cloud-native, multi-tenant real estate operating platform</b>. "
-        "Unlike generic spreadsheet tracking or shared public tools, the Buckcrest Havens instance operates with complete data isolation, "
-        "meaning your client phone numbers, lead notes, financial payment milestones, and proprietary sales figures are stored in a dedicated, "
-        "independent database completely separated from other entities.",
+        "A primary priority for Buckcrest Havens Limited is ensuring that <b>prospect contact information (phone numbers, email addresses, residential details) "
+        "is strictly safeguarded against internal poaching, unauthorized exporting, or cross-rep exposure</b>. "
+        "The CRM enforces iron-clad permission barriers directly at the database and application levels:",
         body_style
     ))
 
-    # Callout Banner
-    callout_data = [[
-        Paragraph("<b>Key Security Highlight:</b> All prospect records, bank deposit receipts, and transaction history created under the <b>bhl.nawpropertyflow.com.ng</b> domain write directly to your dedicated MySQL database. No external organization or demo user has access or visibility into Buckcrest Havens' commercial records.", callout_text)
+    privacy_table_data = [
+        [Paragraph("User Category", th_style), Paragraph("Contact Details Visibility (Phone/Email/Address)", th_style), Paragraph("Lead Ownership & Directory Scope", th_style)],
+        [
+            Paragraph("<b>Assigned Sales Executive</b>", td_bold),
+            Paragraph("<font color='#2E7D32'><b>FULL ACCESS (Own Leads Only)</b></font><br/>Can view full phone numbers, WhatsApp, emails, and address of prospects assigned to their personal portfolio.", td_style),
+            Paragraph("Exclusively restricted to their own leads. Cannot search, browse, or open another rep's prospects.", td_style)
+        ],
+        [
+            Paragraph("<b>Other Sales Executives</b>", td_bold),
+            Paragraph("<font color='#C62828'><b>ZERO ACCESS (Strictly Blocked)</b></font><br/>Cannot see the names, phone numbers, or emails of prospects belonging to peers. Direct URL access triggers an immediate <b>403 Forbidden</b> error.", td_style),
+            Paragraph("Can ONLY see anonymous aggregate figures (e.g. 'John: 15 leads generated') on team leaderboards.", td_style)
+        ],
+        [
+            Paragraph("<b>Customer Care Team</b>", td_bold),
+            Paragraph("<font color='#2E7D32'><b>FULL OUTREACH ACCESS</b></font><br/>Authorized to view all phone numbers, initiate click-to-call, and record customer call feedback across the organization.", td_style),
+            Paragraph("Acts as the centralized tele-calling engine. Can call on behalf of any rep to qualify leads.", td_style)
+        ],
+        [
+            Paragraph("<b>Executive Admin / Board</b>", td_bold),
+            Paragraph("<font color='#2E7D32'><b>360° TOTAL OVERSIGHT</b></font><br/>Unrestricted visibility across all company prospects, officer assignments, call response notes, and conversion figures.", td_style),
+            Paragraph("Global command: can reassign leads, audit outreach activity, and export management reports.", td_style)
+        ],
+    ]
+    privacy_table = Table(privacy_table_data, colWidths=[110, 214, 180], style=TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), c_navy),
+        ('BOX', (0,0), (-1,-1), 1, c_border),
+        ('GRID', (0,0), (-1,-1), 0.5, c_border),
+        ('VALIGN', (0,0), (-1,-1), 'TOP'),
+        ('TOPPADDING', (0,0), (-1,-1), 5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+    ]))
+    story.append(privacy_table)
+    story.append(Spacer(1, 10))
+
+    callout_p_data = [[
+        Paragraph("<b>Protection Guarantee:</b> Sales executives can never extract or poach client contact information generated by other consultants. When an executive views team leaderboards or performance reports, the CRM only displays <b>metric tallies and numerical volume</b> — never private client identities.", callout_text)
     ]]
-    callout = Table(callout_data, colWidths=[504], style=TableStyle([
+    callout_p = Table(callout_p_data, colWidths=[504], style=TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), c_accent_bg),
         ('BOX', (0,0), (-1,-1), 1.5, c_gold),
-        ('LEFTPADDING', (0,0), (-1,-1), 12),
-        ('RIGHTPADDING', (0,0), (-1,-1), 12),
-        ('TOPPADDING', (0,0), (-1,-1), 8),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
+        ('LEFTPADDING', (0,0), (-1,-1), 10),
+        ('RIGHTPADDING', (0,0), (-1,-1), 10),
+        ('TOPPADDING', (0,0), (-1,-1), 7),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(callout)
-    story.append(Spacer(1, 10))
-
-    story.append(Paragraph("Core Architectural Pillars:", h2_style))
-    story.append(Paragraph("• <b>Subdomain-Driven Routing:</b> When your staff access <code>bhl.nawpropertyflow.com.ng</code>, the system automatically initializes your corporate identity, branding, and permissions.", bullet_style))
-    story.append(Paragraph("• <b>Zero-Leak Data Security:</b> Tenant identification middleware enforces strict barriers at the database connection layer, guaranteeing complete privacy for Buckcrest's customer base.", bullet_style))
-    story.append(Paragraph("• <b>High-Speed Web Architecture:</b> Built with responsive mobile-ready Blade interfaces and asynchronous status updates, allowing sales reps to update leads from smartphones directly in the field.", bullet_style))
+    story.append(callout_p)
 
     # =========================================================================
-    # SECTION 2: ACCESS & USER ROLES
+    # SECTION 2: CUSTOMER CARE CALLING & CALL LOGGING
     # =========================================================================
     story.append(Spacer(1, 10))
-    story.append(Paragraph("2. User Roles & Permission Hierarchy", h1_style))
+    story.append(Paragraph("2. Customer Care Calling & Call Response Logging", h1_style))
     story.append(Paragraph(
-        "To ensure internal transparency while preventing unauthorized access to sensitive financial metrics, the system implements granular Role-Based Access Control (RBAC). Staff members only see the data and controls appropriate to their duty:",
+        "Buckcrest Havens operates a dedicated <b>Customer Care / Tele-calling workflow</b>. "
+        "Customer Care representatives act as the frontline relationship bridge — placing outbound calls, confirming client readiness, "
+        "and logging real-time feedback so sales reps and management are immediately synchronized.",
         body_style
     ))
 
-    role_table_data = [
-        [Paragraph("Role", th_style), Paragraph("Permitted Scope & Responsibilities", th_style), Paragraph("Dashboard View", th_style)],
+    story.append(Paragraph("Step-by-Step Customer Care Calling Workflow:", h2_style))
+    story.append(Paragraph("1. <b>Accessing Prospect Queue:</b> Customer Care logs into the portal and views the active prospect queue, filtered by status (e.g. <i>New Leads Awaiting First Call</i>).", bullet_style))
+    story.append(Paragraph("2. <b>One-Click Outreach:</b> Reps click the telephone icon or WhatsApp button on the client profile to dial directly from an office softphone, cellular device, or web dialer.", bullet_style))
+    story.append(Paragraph("3. <b>Instant Response Logging:</b> While or immediately after speaking with the customer, the agent uses the <b>Quick Call Logger</b> to record the exact outcome.", bullet_style))
+
+    story.append(Spacer(1, 6))
+
+    # Call Outcome Table
+    call_log_data = [
+        [Paragraph("Call Response Outcome", th_style), Paragraph("When to Select", th_style), Paragraph("System Action & Next Step", th_style)],
         [
-            Paragraph("<b>Company Admin / Super Admin</b>", td_bold),
-            Paragraph("Full control over the entire Buckcrest environment. Can register staff accounts, view company-wide sales figures, reassign leads, approve payments, and manage property developments.", td_style),
-            Paragraph("Global Company Overview (All Leads, All Inflows)", td_style)
+            Paragraph("<b>Spoke with Client (Qualified)</b>", td_bold),
+            Paragraph("Customer answered, confirmed property interest, and stated budget/timeline.", td_style),
+            Paragraph("Prompts consultant to schedule a physical estate inspection.", td_style)
         ],
         [
-            Paragraph("<b>Sales Executive / Agent</b>", td_bold),
-            Paragraph("Focuses on pipeline conversion. Can capture new leads, schedule follow-ups, book physical site inspections, log client interaction notes, and submit deal reservations.", td_style),
-            Paragraph("Personal Portfolio Only (Assigned Prospects)", td_style)
+            Paragraph("<b>Client Requested Call Back</b>", td_bold),
+            Paragraph("Customer was driving, in a meeting, or requested contact at a specific time.", td_style),
+            Paragraph("Opens date/time picker to set an automated reminder on the rep's dashboard.", td_style)
         ],
         [
-            Paragraph("<b>Finance & Operations</b>", td_bold),
-            Paragraph("Verifies customer proof of payment (POP), creates and monitors installment payment plans, approves payment milestones, and generates official sales allocation receipts.", td_style),
-            Paragraph("Inflow / Milestone Verification Queue", td_style)
+            Paragraph("<b>No Answer / Ringing Busy</b>", td_bold),
+            Paragraph("Call rang out or was engaged. Customer did not pick up.", td_style),
+            Paragraph("Increments outreach attempt count; queues for second attempt in 4 hours.", td_style)
+        ],
+        [
+            Paragraph("<b>Wrong Number / Invalid</b>", td_bold),
+            Paragraph("Number is switched off, barred, or belonged to someone else.", td_style),
+            Paragraph("Flags record as invalid; notifies capturing rep to verify alternate phone.", td_style)
+        ],
+        [
+            Paragraph("<b>Not Interested / Dropped</b>", td_bold),
+            Paragraph("Prospect is no longer actively seeking real estate investment.", td_style),
+            Paragraph("Moves lead to Closed Lost; archives record while preserving call audit trail.", td_style)
         ],
     ]
-    role_table = Table(role_table_data, colWidths=[110, 244, 150], style=TableStyle([
+    call_log_table = Table(call_log_data, colWidths=[120, 194, 190], style=TableStyle([
         ('BACKGROUND', (0,0), (-1,0), c_navy),
         ('BOX', (0,0), (-1,-1), 1, c_border),
         ('GRID', (0,0), (-1,-1), 0.5, c_border),
         ('VALIGN', (0,0), (-1,-1), 'TOP'),
-        ('TOPPADDING', (0,0), (-1,-1), 6),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 6),
-        ('LEFTPADDING', (0,0), (-1,-1), 8),
-        ('RIGHTPADDING', (0,0), (-1,-1), 8),
+        ('TOPPADDING', (0,0), (-1,-1), 4.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4.5),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
     ]))
-    story.append(role_table)
+    story.append(call_log_table)
 
     story.append(PageBreak())
 
     # =========================================================================
-    # SECTION 3: LEAD CAPTURE & PIPELINE MANAGEMENT
+    # SECTION 3: SALES EXECUTIVE INGESTION & LEAD MANAGEMENT
     # =========================================================================
-    story.append(Paragraph("3. Lead Capture & Visual Sales Pipeline (Kanban)", h1_style))
+    story.append(Paragraph("3. Sales Executive Lead Ingestion & Tracking", h1_style))
     story.append(Paragraph(
-        "The core of Buckcrest Havens' revenue engine is the <b>Lead Management Lifecycle</b>. Prospects enter the system through various marketing channels and progress through clearly defined stages toward a closed sale.",
+        "Sales executives at Buckcrest Havens are empowered with fast, friction-free tools to record their daily prospects. "
+        "Whether capturing an individual walk-in or bulk-uploading dozens of leads from daily field marketing, the process is streamlined:",
         body_style
     ))
 
-    pipeline_table_data = [
-        [Paragraph("Pipeline Stage", th_style), Paragraph("Operational Meaning", th_style), Paragraph("Next Action Required", th_style)],
-        [
-            Paragraph("<b>New</b>", td_bold),
-            Paragraph("Newly captured prospect from online adverts, walk-ins, social media, or referrals. No outreach conducted yet.", td_style),
-            Paragraph("Initial introductory phone call or WhatsApp message within 15 minutes.", td_style)
-        ],
-        [
-            Paragraph("<b>Contacted</b>", td_bold),
-            Paragraph("Sales executive has successfully engaged the client. Budget, property preference, and investment timeline are being confirmed.", td_style),
-            Paragraph("Send digital property brochure and request site visit availability.", td_style)
-        ],
-        [
-            Paragraph("<b>Inspection Scheduled</b>", td_bold),
-            Paragraph("Client has confirmed a physical or virtual site visit date to inspect one of Buckcrest Havens' estates or developments.", td_style),
-            Paragraph("Conduct site tour, register inspection attendance, and log client feedback.", td_style)
-        ],
-        [
-            Paragraph("<b>Negotiation / Proposal</b>", td_bold),
-            Paragraph("Prospect has selected a specific plot or housing unit. Price negotiation, customized payment plans, or contract terms are underway.", td_style),
-            Paragraph("Generate draft offer letter or payment milestone schedule.", td_style)
-        ],
-        [
-            Paragraph("<b>Closed Won</b>", td_bold),
-            Paragraph("Client has made an initial deposit or outright payment. Transaction is finalized and unit is allocated.", td_style),
-            Paragraph("Finance verifies payment proof; official deed/receipt issued.", td_style)
-        ],
-        [
-            Paragraph("<b>Closed Lost</b>", td_bold),
-            Paragraph("Prospect did not proceed due to budget mismatch, location preference, or competitor choice.", td_style),
-            Paragraph("Re-enroll in automated drip marketing campaign for future estate launches.", td_style)
-        ],
-    ]
-    pipeline_table = Table(pipeline_table_data, colWidths=[110, 214, 180], style=TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), c_navy),
-        ('BOX', (0,0), (-1,-1), 1, c_border),
-        ('GRID', (0,0), (-1,-1), 0.5, c_border),
-        ('VALIGN', (0,0), (-1,-1), 'TOP'),
-        ('TOPPADDING', (0,0), (-1,-1), 5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(pipeline_table)
-    story.append(Spacer(1, 10))
-
-    story.append(Paragraph("Drag-and-Drop Pipeline (Kanban Board)", h2_style))
+    story.append(Paragraph("A. Individual Lead Capture (Single Prospect)", h2_style))
     story.append(Paragraph(
-        "Sales reps and team leaders can switch seamlessly between the classic tabular list view and the <b>Interactive Kanban Board</b>. "
-        "Moving a lead from 'Contacted' to 'Inspection Scheduled' is as simple as dragging the card across the board. "
-        "All changes instantly sync to the database and recalculate live stage conversion metrics.",
+        "Click <b>'Capture Lead'</b> on the top-right toolbar. The form captures: "
+        "<b>Full Name, Phone Number, WhatsApp Number, Email, Residential/Office Address, Budget Range, Preferred Location, Property Interest, and Initial Notes</b>. "
+        "The system automatically binds the lead to the capturing consultant as the credited owner.",
         body_style
     ))
 
-    # =========================================================================
-    # SECTION 4: SITE INSPECTIONS & CLIENT APPOINTMENTS
-    # =========================================================================
+    story.append(Paragraph("B. Daily Leads Upload (Bulk CSV Harvester)", h2_style))
+    story.append(Paragraph(
+        "When marketing teams return from roadshows, trade exhibitions, or run Facebook/Instagram lead ads, they use the <b>'Daily Leads Upload (CSV)'</b> feature:",
+        body_style
+    ))
+    story.append(Paragraph("• <b>Download Standard Template:</b> A pre-formatted CSV template ensures columns align perfectly.", bullet_style))
+    story.append(Paragraph("• <b>Smart Phone Deduplication:</b> The system scans existing numbers in Buckcrest's database and skips duplicates, preventing lead conflicts.", bullet_style))
+    story.append(Paragraph("• <b>Attribution Locking:</b> All successfully imported leads are automatically attributed to the uploading executive.", bullet_style))
+    story.append(Paragraph("• <b>Marketing Spot Tagging:</b> Tag the batch with a location tag (e.g. <i>'Garki Outreach Day 1'</i>) to measure channel ROI.", bullet_style))
+
     story.append(Spacer(1, 8))
-    story.append(Paragraph("4. Site Inspection Management Workflow", h1_style))
+
+    # =========================================================================
+    # SECTION 4: ADMINISTRATIVE OVERSIGHT & MONITORING
+    # =========================================================================
+    story.append(Paragraph("4. Management Command Center & Follow-Up Monitoring", h1_style))
     story.append(Paragraph(
-        "In Nigerian real estate, physical site inspections are the critical turning point between an interested prospect and a committed buyer. "
-        "The Buckcrest CRM contains dedicated modules to ensure no inspection falls through the cracks:",
+        "For the executive leadership and Sales Director at Buckcrest Havens, the CRM provides total visibility and operational governance:",
         body_style
     ))
 
-    story.append(Paragraph("1. <b>Booking an Inspection:</b> Sales reps click 'Book Inspection' directly from the client's profile, specifying the destination estate, meeting date, time, and assigned field officer.", bullet_style))
-    story.append(Paragraph("2. <b>Inspection Statuses:</b> Each inspection transitions through <code>Scheduled</code> &rarr; <code>Completed</code> &rarr; <code>Client No-Show</code> &rarr; <code>Cancelled</code>.", bullet_style))
-    story.append(Paragraph("3. <b>Post-Inspection Debrief:</b> Immediately following the visit, the consultant logs client reactions (e.g. 'Loved corner piece plot', 'Prefers 6-month installment plan'), providing team leads full visibility.", bullet_style))
-
-    story.append(PageBreak())
-
-    # =========================================================================
-    # SECTION 5: PAYMENT PLANS & MILESTONES
-    # =========================================================================
-    story.append(Paragraph("5. Payment Plans, Milestones & Financial Accounting", h1_style))
-    story.append(Paragraph(
-        "To cater to diverse buyer profiles, Buckcrest Havens Limited provides flexible payment options. "
-        "The system replaces manual tracking spreadsheets with an automated <b>Payment Milestone Engine</b>:",
-        body_style
-    ))
-
-    story.append(Paragraph("A. Flexible Plan Generation", h2_style))
-    story.append(Paragraph(
-        "When recording a sale on a property, the consultant or accountant can choose between: "
-        "<b>Outright Payment (100% upfront)</b> or <b>Custom Installment Schedule (e.g., 30% initial deposit followed by 3, 6, or 12 monthly milestones)</b>. "
-        "The system automatically calculates due dates, remaining balances, and payment deadlines.",
-        body_style
-    ))
-
-    story.append(Paragraph("B. Proof of Payment (POP) Verification Queue", h2_style))
-    story.append(Paragraph(
-        "When a buyer makes a bank transfer to Buckcrest Havens' corporate bank account:",
-        body_style
-    ))
-    story.append(Paragraph("1. The sales representative uploads the bank deposit slip / transfer screenshot under the relevant milestone.", bullet_style))
-    story.append(Paragraph("2. The milestone transitions to <code>Pending Verification</code>.", bullet_style))
-    story.append(Paragraph("3. The Finance Department inspects company bank accounts, verifies the credit, and clicks <b>'Approve & Issue Receipt'</b>.", bullet_style))
-    story.append(Paragraph("4. The system locks the milestone as <code>Verified</code>, credits the sales agent's commission tally, and updates the property balance.", bullet_style))
-
-    story.append(Spacer(1, 10))
-
-    # Financial workflow diagram table
-    fin_box_data = [
-        [Paragraph("<b>FINANCIAL RECONCILIATION FLOW AT BUCKCREST HAVENS</b>", ParagraphStyle('FH', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=9, textColor=c_navy))],
-        [Paragraph("<b>Step 1:</b> Deal Closed &rarr; <b>Step 2:</b> Installment Schedule Created &rarr; <b>Step 3:</b> Buyer Transfers Funds &rarr; <b>Step 4:</b> POP Attached &rarr; <b>Step 5:</b> Finance Approves &rarr; <b>Step 6:</b> Unit Allocation Finalized", ParagraphStyle('FB', parent=styles['Normal'], fontName='Helvetica', fontSize=8.5, textColor=c_dark))],
-    ]
-    fin_box = Table(fin_box_data, colWidths=[504], style=TableStyle([
-        ('BACKGROUND', (0,0), (-1,-1), c_card_bg),
-        ('BOX', (0,0), (-1,-1), 1, c_blue),
-        ('LEFTPADDING', (0,0), (-1,-1), 12),
-        ('RIGHTPADDING', (0,0), (-1,-1), 12),
-        ('TOPPADDING', (0,0), (-1,-1), 8),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 8),
-    ]))
-    story.append(fin_box)
-
-    # =========================================================================
-    # SECTION 6: DAILY LEADS HARVEST & CSV INGESTION
-    # =========================================================================
-    story.append(Spacer(1, 12))
-    story.append(Paragraph("6. Daily Leads Ingestion & Bulk CSV Import", h1_style))
-    story.append(Paragraph(
-        "For marketing campaigns, exhibition events, or outsourced lead generation drives, staff can ingest hundreds of prospects in seconds using the <b>Daily Leads Ingestion Modal</b>.",
-        body_style
-    ))
-
-    story.append(Paragraph("Key Ingestion Features:", h2_style))
-    story.append(Paragraph("• <b>Standard Template Download:</b> Staff can download the pre-formatted CSV template directly from the portal with one click.", bullet_style))
-    story.append(Paragraph("• <b>Duplicate Protection:</b> An intelligent deduping filter automatically skips phone numbers already existing in the Buckcrest database, protecting consultants from stepping on each other's prospects.", bullet_style))
-    story.append(Paragraph("• <b>Flexible Lead Allocation:</b> Leads can be assigned immediately to a specific officer, distributed evenly across team members, or credited to the importing consultant.", bullet_style))
-    story.append(Paragraph("• <b>Outreach Tagging:</b> Tag bulk imports with specific marketing spots (e.g. <i>'Abuja Trade Fair 2026'</i>, <i>'Instagram Campaign Q3'</i>) for ROI tracking.", bullet_style))
-
-    story.append(PageBreak())
-
-    # =========================================================================
-    # SECTION 7: EXECUTIVE REPORTING & ANALYTICS
-    # =========================================================================
-    story.append(Paragraph("7. Executive Reporting & Performance Analytics", h1_style))
-    story.append(Paragraph(
-        "Buckcrest Havens leadership gains complete visibility into commercial velocity without waiting for manual weekly PowerPoint reports. "
-        "The CRM calculates real-time key performance indicators (KPIs):",
-        body_style
-    ))
-
-    kpi_table_data = [
-        [Paragraph("Executive Metric", th_style), Paragraph("How It Is Calculated", th_style), Paragraph("Strategic Importance", th_style)],
+    admin_features_data = [
+        [Paragraph("Executive Control Feature", th_style), Paragraph("How Leadership Uses It", th_style)],
         [
-            Paragraph("<b>Total Active Pipeline</b>", td_bold),
-            Paragraph("Count of all active leads currently in New, Contacted, or Inspection stages.", td_style),
-            Paragraph("Measures near-term revenue potential and sales rep workload.", td_style)
+            Paragraph("<b>Filter by Sales Officer</b>", td_bold),
+            Paragraph("Select any executive from the dropdown to instantly view their personal pipeline, active lead count, and recent activity notes.", td_style)
         ],
         [
-            Paragraph("<b>Conversion Rate (%)</b>", td_bold),
-            Paragraph("(Total Closed Won Deals &divide; Total Captured Leads) &times; 100", td_style),
-            Paragraph("Identifies lead quality across advertising channels and sales team closing efficiency.", td_style)
+            Paragraph("<b>Follow-Up Accountability Audit</b>", td_bold),
+            Paragraph("View which follow-ups are overdue, completed, or neglected. Identify lagging consultants before prospective buyers go cold.", td_style)
         ],
         [
-            Paragraph("<b>Monthly Cash Inflow</b>", td_bold),
-            Paragraph("Sum of all verified milestone payments credited within the current calendar month.", td_style),
-            Paragraph("Direct visibility into commercial estate cash collections.", td_style)
+            Paragraph("<b>One-Click Lead Reassignment</b>", td_bold),
+            Paragraph("If an agent travels, resigns, or fails to contact a high-budget lead, the Admin can reassign that prospect to a senior closer instantly.", td_style)
         ],
         [
-            Paragraph("<b>Inspection-to-Close Ratio</b>", td_bold),
-            Paragraph("Percentage of completed site visits that converted into a paid reservation.", td_style),
-            Paragraph("Measures the effectiveness of physical site tours and closing pitches.", td_style)
-        ],
-        [
-            Paragraph("<b>Consultant Leaderboard</b>", td_bold),
-            Paragraph("Ranking of sales officers by volume of Closed Won contracts and revenue generated.", td_style),
-            Paragraph("Automates commission tracking, performance bonuses, and quarterly appraisals.", td_style)
+            Paragraph("<b>Unified Customer Audit Trail</b>", td_bold),
+            Paragraph("Every interaction — from initial call notes by Customer Care to site inspection outcomes — is recorded chronologically on the lead's master timeline.", td_style)
         ],
     ]
-    kpi_table = Table(kpi_table_data, colWidths=[120, 204, 180], style=TableStyle([
-        ('BACKGROUND', (0,0), (-1,0), c_navy),
-        ('BOX', (0,0), (-1,-1), 1, c_border),
-        ('GRID', (0,0), (-1,-1), 0.5, c_border),
-        ('VALIGN', (0,0), (-1,-1), 'TOP'),
-        ('TOPPADDING', (0,0), (-1,-1), 5),
-        ('BOTTOMPADDING', (0,0), (-1,-1), 5),
-        ('LEFTPADDING', (0,0), (-1,-1), 7),
-        ('RIGHTPADDING', (0,0), (-1,-1), 7),
-    ]))
-    story.append(kpi_table)
-
-    # =========================================================================
-    # SECTION 8: DAILY OPERATING CHECKLIST FOR STAFF
-    # =========================================================================
-    story.append(Spacer(1, 12))
-    story.append(Paragraph("8. Daily Operating Checklist for Buckcrest Staff", h1_style))
-    story.append(Paragraph(
-        "To achieve maximum return on investment from your CRM deployment, staff should adhere to this standardized daily routine:",
-        body_style
-    ))
-
-    story.append(Paragraph("<b>Morning Routine (8:30 AM - 9:30 AM):</b>", h2_style))
-    story.append(Paragraph("1. Log in to <code>https://bhl.nawpropertyflow.com.ng/login</code>.", bullet_style))
-    story.append(Paragraph("2. Review 'Pending Follow-Ups' due for the day on your dashboard.", bullet_style))
-    story.append(Paragraph("3. Check for any overnight marketing leads assigned to your profile in the 'New' stage.", bullet_style))
-
-    story.append(Paragraph("<b>Mid-Day Operations (10:00 AM - 3:00 PM):</b>", h2_style))
-    story.append(Paragraph("4. Conduct prospect calls and immediately log summaries under 'Introductory / Activity Notes'.", bullet_style))
-    story.append(Paragraph("5. Confirm upcoming site inspections scheduled for the weekend.", bullet_style))
-    story.append(Paragraph("6. Upload proof of payment receipts for any bank deposits received.", bullet_style))
-
-    story.append(Paragraph("<b>Evening Close-Out (4:30 PM - 5:00 PM):</b>", h2_style))
-    story.append(Paragraph("7. Drag successfully progressed leads into their next respective Kanban columns.", bullet_style))
-    story.append(Paragraph("8. Set scheduled follow-up dates for all leads contacted during the day (never leave a lead without a scheduled next step).", bullet_style))
-
-    story.append(PageBreak())
-
-    # =========================================================================
-    # SECTION 9: TECHNICAL GUARANTEES & SUPPORT
-    # =========================================================================
-    story.append(Paragraph("9. System Specifications & Security Guarantees", h1_style))
-    story.append(Paragraph(
-        "Buckcrest Havens Limited benefits from enterprise-grade cloud security, reliability, and maintenance standards:",
-        body_style
-    ))
-
-    tech_specs_data = [
-        [Paragraph("System Dimension", th_style), Paragraph("Implementation Specification", th_style)],
-        [Paragraph("Application Domain", td_bold), Paragraph("https://bhl.nawpropertyflow.com.ng", td_style)],
-        [Paragraph("Database Engine", td_bold), Paragraph("MySQL InnoDB with Emulated Prepared Statements & Strict ACID Compliance", td_style)],
-        [Paragraph("Tenancy Model", td_bold), Paragraph("Database-per-tenant isolation (Independent schema stufedoc_nawcrm_bhl)", td_style)],
-        [Paragraph("Encryption & Auth", td_bold), Paragraph("Bcrypt password hashing, CSRF session protection, HTTPS TLS 1.3 encryption", td_style)],
-        [Paragraph("Audit Logging", td_bold), Paragraph("Full activity tracking on lead assignments, status shifts, and payment approvals", td_style)],
-        [Paragraph("Automated Backups", td_bold), Paragraph("Daily scheduled MySQL database snapshots and file backups", td_style)],
-        [Paragraph("Browser Compatibility", td_bold), Paragraph("Fully certified on Google Chrome, Apple Safari, Microsoft Edge, Mozilla Firefox, and Mobile Web (iOS & Android)", td_style)],
-    ]
-    tech_table = Table(tech_specs_data, colWidths=[160, 344], style=TableStyle([
+    admin_table = Table(admin_features_data, colWidths=[150, 354], style=TableStyle([
         ('BACKGROUND', (0,0), (-1,0), c_navy),
         ('BOX', (0,0), (-1,-1), 1, c_border),
         ('GRID', (0,0), (-1,-1), 0.5, c_border),
@@ -584,25 +452,78 @@ def build_pdf(filename):
         ('LEFTPADDING', (0,0), (-1,-1), 8),
         ('RIGHTPADDING', (0,0), (-1,-1), 8),
     ]))
-    story.append(tech_table)
+    story.append(admin_table)
 
-    story.append(Spacer(1, 15))
-    story.append(Paragraph("10. System Administrator Sign-Off & Contacts", h1_style))
+    story.append(PageBreak())
+
+    # =========================================================================
+    # SECTION 5: STRATEGIC REVIEW & EVALUATION
+    # =========================================================================
+    story.append(Paragraph("5. Strategic Evaluation of Buckcrest's Operating Structure", h1_style))
     story.append(Paragraph(
-        "This system manual constitutes the certified operational guide for <b>Buckcrest Havens Limited</b>. "
-        "For additional user creation, custom property additions, or staff training inquiries, please contact your designated CRM engineering team.",
+        "<b>Senior Real Estate Systems Architecture Review:</b><br/>"
+        "Buckcrest Havens' requested structure — separating <b>Customer Care outreach</b>, <b>individual sales rep pipelines</b>, "
+        "and <b>strict anti-poaching privacy</b> — represents the gold standard in modern real estate agency operations. Here is why:",
         body_style
     ))
 
-    # Sign-off card
-    sign_data = [
-        [Paragraph("<b>DOCUMENT APPROVAL & TECHNICAL HANDOVER</b>", ParagraphStyle('SH', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=9, textColor=c_navy))],
-        [Paragraph("<b>Prepared For:</b> Executive Board & Staff of Buckcrest Havens Limited<br/>"
-                   "<b>Lead Platform Architect:</b> PropertyFlow CRM Technical Engineering Team<br/>"
-                   "<b>Live System Status:</b> <font color='green'><b>● ONLINE & CERTIFIED OPERATIONAL</b></font><br/>"
-                   "<b>Authorized Portal Access:</b> https://bhl.nawpropertyflow.com.ng/login", ParagraphStyle('SB', parent=styles['Normal'], fontName='Helvetica', fontSize=8.5, leading=13, textColor=c_dark))],
+    story.append(Paragraph("1. Elimination of Internal Friction & Client 'Ownership Wars':", h2_style))
+    story.append(Paragraph(
+        "In fast-growing property firms, sales reps often dispute who first contacted a client when a deposit is made. "
+        "By enforcing mandatory lead registration, timestamped logging, and automated duplicate phone blocking, the CRM creates an indisputable "
+        "record of ownership. Every commission dispute is eliminated before it begins.",
+        body_style
+    ))
+
+    story.append(Paragraph("2. Protection Against Staff Turnover & Client List Theft:", h2_style))
+    story.append(Paragraph(
+        "The highest commercial risk in Nigerian real estate brokerage is an agent copying the master client list and moving to a competitor. "
+        "Because Buckcrest's sales reps can <b>only access their own assigned clients</b>, an outgoing agent has zero visibility into the company's broader investor database. "
+        "Your high-net-worth buyer database remains secure inside the corporate vault.",
+        body_style
+    ))
+
+    story.append(Paragraph("3. Customer Care Specialization Drives Up Speed-to-Lead:", h2_style))
+    story.append(Paragraph(
+        "Sales executives are often in field transit, conducting inspections, or closing deals. "
+        "Allowing Customer Care to act as centralized tele-callers guarantees that new inquiries are contacted within 15 minutes of arriving, "
+        "dramatically increasing conversion rates before handing qualified leads to sales executives.",
+        body_style
+    ))
+
+    story.append(Spacer(1, 10))
+
+    # =========================================================================
+    # SECTION 6: PAYMENT MILESTONES & CLOSE-WON VERIFICATION
+    # =========================================================================
+    story.append(Paragraph("6. Payment Milestones & Accounting Verification", h1_style))
+    story.append(Paragraph(
+        "Once a prospect moves to <code>Closed Won</code>, the CRM transitions into the <b>Payment Milestone & Receipting Workflow</b>:",
+        body_style
+    ))
+
+    story.append(Paragraph("• <b>Installment Plan Configuration:</b> Choose Outright (100%) or Installments (30% initial deposit followed by 3, 6, or 12 monthly milestones).", bullet_style))
+    story.append(Paragraph("• <b>Proof of Payment Upload:</b> Sales consultants attach bank transfer slips or deposit receipts directly to the milestone record.", bullet_style))
+    story.append(Paragraph("• <b>Finance Approval Queue:</b> The Finance Department verifies company bank accounts, approves the milestone, and issues the official allocation receipt.", bullet_style))
+    story.append(Paragraph("• <b>Commission Computation:</b> Verified deals instantly calculate the consultant's credited commission tally.", bullet_style))
+
+    story.append(Spacer(1, 15))
+
+    # =========================================================================
+    # SECTION 7: OFFICIAL HANDOVER & CERTIFICATION
+    # =========================================================================
+    story.append(Paragraph("7. Certified Handover & Deployment Confirmation", h1_style))
+    
+    sign_box_data = [
+        [Paragraph("<b>OFFICIAL DEPLOYMENT SIGN-OFF & HANDOVER CERTIFICATE</b>", ParagraphStyle('SH', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=9, textColor=c_navy))],
+        [Paragraph("<b>Client Enterprise:</b> Buckcrest Havens Limited<br/>"
+                   "<b>Live Application URL:</b> https://bhl.nawpropertyflow.com.ng<br/>"
+                   "<b>Primary Administrator:</b> admin@buckcresthavens.com<br/>"
+                   "<b>Lead Database Schema:</b> stufedoc_nawcrm_bhl (Isolated MySQL)<br/>"
+                   "<b>Verified Capabilities:</b> Lead Ingestion, Customer Care Call Logger, Follow-Up Engine, Anti-Poaching Scoping, Payment Milestone System<br/>"
+                   "<b>Operational Status:</b> <font color='green'><b>● FULLY OPERATIONAL & CERTIFIED READY FOR DAILY USE</b></font>", ParagraphStyle('SB', parent=styles['Normal'], fontName='Helvetica', fontSize=8, leading=12.5, textColor=c_dark))],
     ]
-    sign_box = Table(sign_data, colWidths=[504], style=TableStyle([
+    sign_box = Table(sign_box_data, colWidths=[504], style=TableStyle([
         ('BACKGROUND', (0,0), (-1,-1), c_card_bg),
         ('BOX', (0,0), (-1,-1), 1, c_gold),
         ('LEFTPADDING', (0,0), (-1,-1), 14),
