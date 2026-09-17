@@ -10,6 +10,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 class ProvisionTenantCommand extends Command
@@ -121,6 +122,13 @@ class ProvisionTenantCommand extends Command
 
         // 2. Create or Update Tenant in Central DB
         $this->info("2. Registering central Tenant record...");
+        if (!Schema::hasTable('tenants')) {
+            $this->warn("   Central `tenants` table not found in `" . config('database.connections.mysql.database') . "`. Running central migrations...");
+            Artisan::call('migrate', ['--force' => true]);
+            $this->line(Artisan::output());
+            $this->line("   <info>✓</info> Central tables created successfully.");
+        }
+
         $tenant = Tenant::firstOrNew(['id' => $id]);
         $tenant->company_name = $name;
         $tenant->package_tier = $tier;
