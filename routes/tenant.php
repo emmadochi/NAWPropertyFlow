@@ -203,24 +203,32 @@ Route::middleware([
 
         // 5. Purge Demo Construction Inventory & Demo Suppliers
         if (\Illuminate\Support\Facades\Schema::hasTable('suppliers')) {
-            $demoSuppliers = [
-                'Dangote Cement Plc (North Regional Depot)',
-                'Julius Berger Quarry & Aggregates',
-                'BUA Cement Commercial Depot',
-                'Coleman Technical Wire & Cable Ltd',
-                'Sankyo Smart HVAC & Electrical Systems',
-                'Tiger TMT Steel Rolling Mills Ltd',
-            ];
-            $supplierIds = \App\Models\Inventory\Supplier::whereIn('company_name', $demoSuppliers)->pluck('id')->toArray();
-            if (!empty($supplierIds)) {
-                if (\Illuminate\Support\Facades\Schema::hasTable('purchase_orders')) {
-                    \App\Models\Inventory\PurchaseOrder::whereIn('supplier_id', $supplierIds)->delete();
+            try {
+                $demoSuppliers = [
+                    'Dangote Cement Plc (North Regional Depot)',
+                    'Julius Berger Quarry & Aggregates',
+                    'BUA Cement Commercial Depot',
+                    'Coleman Technical Wire & Cable Ltd',
+                    'Sankyo Smart HVAC & Electrical Systems',
+                    'Tiger TMT Steel Rolling Mills Ltd',
+                ];
+                $col = \Illuminate\Support\Facades\Schema::hasColumn('suppliers', 'name') ? 'name' : 'company_name';
+                $supplierIds = \Illuminate\Support\Facades\DB::table('suppliers')->whereIn($col, $demoSuppliers)->pluck('id')->toArray();
+                if (!empty($supplierIds)) {
+                    if (\Illuminate\Support\Facades\Schema::hasTable('purchase_orders')) {
+                        \Illuminate\Support\Facades\DB::table('purchase_orders')->whereIn('supplier_id', $supplierIds)->delete();
+                    }
+                    if (\Illuminate\Support\Facades\Schema::hasTable('supplier_invoices')) {
+                        \Illuminate\Support\Facades\DB::table('supplier_invoices')->whereIn('supplier_id', $supplierIds)->delete();
+                    }
+                    if (\Illuminate\Support\Facades\Schema::hasTable('supplier_users')) {
+                        \Illuminate\Support\Facades\DB::table('supplier_users')->whereIn('supplier_id', $supplierIds)->delete();
+                    }
+                    \Illuminate\Support\Facades\DB::table('suppliers')->whereIn('id', $supplierIds)->delete();
+                    $log[] = "✅ Purged " . count($supplierIds) . " demo construction suppliers and demo purchase orders.";
                 }
-                if (\Illuminate\Support\Facades\Schema::hasTable('supplier_invoices')) {
-                    \App\Models\Inventory\SupplierInvoice::whereIn('supplier_id', $supplierIds)->delete();
-                }
-                \App\Models\Inventory\Supplier::whereIn('id', $supplierIds)->delete();
-                $log[] = "✅ Purged " . count($supplierIds) . " demo construction suppliers and demo purchase orders.";
+            } catch (\Throwable $e) {
+                // Non-fatal
             }
         }
 
