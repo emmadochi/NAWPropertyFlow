@@ -49,8 +49,7 @@ use App\Http\Controllers\NotificationController;
 
 Route::middleware(array_values(array_filter([
     'web',
-    env('TENANCY_ENABLED', false) ? InitializeTenancyBySubdomain::class : null,
-    env('TENANCY_ENABLED', false) ? PreventAccessFromCentralDomains::class : null,
+    \App\Providers\TenancyServiceProvider::isTenancyActive() ? InitializeTenancyBySubdomain::class : null,
 ])))->group(function () {
 
     // Landing redirect (Show landing page on main domain, CRM login on demo / tenant subdomains)

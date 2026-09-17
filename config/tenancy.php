@@ -16,11 +16,13 @@ return [
      *
      * Only relevant if you're using the domain or subdomain identification middleware.
      */
-    'central_domains' => [
+    'central_domains' => array_values(array_unique(array_filter([
         '127.0.0.1',
         'localhost',
-        env('APP_DOMAIN', 'localhost'),
-    ],
+        'nawpropertyflow.com.ng',
+        'www.nawpropertyflow.com.ng',
+        env('APP_DOMAIN', 'nawpropertyflow.com.ng'),
+    ]))),
 
     /**
      * Tenancy bootstrappers are executed when tenancy is initialized.

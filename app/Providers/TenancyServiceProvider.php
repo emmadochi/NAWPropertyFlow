@@ -100,11 +100,41 @@ class TenancyServiceProvider extends ServiceProvider
         //
     }
 
+    public static function isTenancyActive(): bool
+    {
+        $envTenancy = env('TENANCY_ENABLED');
+        if ($envTenancy !== null) {
+            return filter_var($envTenancy, FILTER_VALIDATE_BOOLEAN);
+        }
+
+        if (app()->environment('production')) {
+            return true;
+        }
+
+        $appUrl = config('app.url', '');
+        if (str_contains($appUrl, 'nawpropertyflow.com.ng')) {
+            return true;
+        }
+
+        if (! app()->runningInConsole()) {
+            $host = request()->getHost();
+            return str_ends_with($host, 'nawpropertyflow.com.ng') || str_contains($host, '.localhost');
+        }
+
+        return false;
+    }
+
     public function boot()
     {
-        if (! env('TENANCY_ENABLED', false)) {
+        if (! static::isTenancyActive()) {
             return;
         }
+
+        // Graceful passthrough for central domains (e.g. main nawpropertyflow.com.ng demo)
+        // Central domains proceed without initializing tenancy, serving from the central DB.
+        \Stancl\Tenancy\Middleware\InitializeTenancyBySubdomain::$onFail = function ($e, $request, $next) {
+            return $next($request);
+        };
 
         $this->bootEvents();
         $this->mapRoutes();

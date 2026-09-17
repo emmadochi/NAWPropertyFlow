@@ -73,13 +73,8 @@ Route::get('/icons/icon-512x512.png', function () {
 });
 
 // ─── CRM Routes (Standalone Mode) ───────────────────────────────────────────
-if (! env('TENANCY_ENABLED', false)) {
+if (! \App\Providers\TenancyServiceProvider::isTenancyActive()) {
     require __DIR__.'/tenant.php';
-} else {
-    // ─── Public Landing Page (Multi-Tenant Landlord) ─────────────────────────
-    Route::get('/', function () {
-        return view('welcome');
-    })->name('home');
 }
 
 // ─── System Admin Authentication ─────────────────────────────────────────────
