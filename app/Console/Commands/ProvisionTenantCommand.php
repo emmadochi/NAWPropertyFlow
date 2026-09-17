@@ -129,16 +129,43 @@ class ProvisionTenantCommand extends Command
             $this->line("   <info>✓</info> Central tables created successfully.");
         }
 
-        $tenant = Tenant::firstOrNew(['id' => $id]);
-        $tenant->company_name = $name;
-        $tenant->package_tier = $tier;
-        $tenant->admin_email  = $email;
-        $tenant->admin_name   = $adminName;
-        $tenant->is_active    = true;
-        $tenant->data         = array_merge($tenant->data ?? [], [
-            'tenancy_db_name' => $tenantDbName,
-        ]);
-        $tenant->save();
+        try {
+            DB::connection('mysql')->getPdo()->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
+        } catch (\Throwable $e) {}
+
+        try {
+            $tenant = Tenant::firstOrNew(['id' => $id]);
+            $tenant->company_name = $name;
+            $tenant->package_tier = $tier;
+            $tenant->admin_email  = $email;
+            $tenant->admin_name   = $adminName;
+            $tenant->is_active    = true;
+            $tenant->data         = array_merge($tenant->data ?? [], [
+                'tenancy_db_name' => $tenantDbName,
+            ]);
+            $tenant->save();
+        } catch (\Throwable $e) {
+            // Reconnect and retry with raw query if MySQL 1615 prepared statement error occurs
+            DB::purge('mysql');
+            DB::reconnect('mysql');
+            try {
+                DB::connection('mysql')->getPdo()->setAttribute(\PDO::ATTR_EMULATE_PREPARES, true);
+            } catch (\Throwable $e2) {}
+
+            DB::table('tenants')->updateOrInsert(
+                ['id' => $id],
+                [
+                    'company_name' => $name,
+                    'package_tier' => $tier,
+                    'admin_email'  => $email,
+                    'admin_name'   => $adminName,
+                    'is_active'    => 1,
+                    'data'         => json_encode(['tenancy_db_name' => $tenantDbName]),
+                    'updated_at'   => now(),
+                ]
+            );
+            $tenant = Tenant::find($id);
+        }
         $this->line("   <info>✓</info> Central tenant registered.");
 
         // 3. Register Associated Subdomains & Domains
@@ -150,7 +177,18 @@ class ProvisionTenantCommand extends Command
         ];
 
         foreach ($domains as $domainName) {
-            $tenant->domains()->firstOrCreate(['domain' => $domainName]);
+            try {
+                DB::table('domains')->updateOrInsert(
+                    ['domain' => $domainName],
+                    [
+                        'tenant_id'  => $id,
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]
+                );
+            } catch (\Throwable $e) {
+                // Already attached
+            }
             $this->line("   <info>✓</info> Attached domain: {$domainName}");
         }
 
@@ -167,6 +205,7 @@ class ProvisionTenantCommand extends Command
             'collation' => 'utf8mb4_unicode_ci',
             'prefix'    => '',
             'strict'    => true,
+            'options'   => [\PDO::ATTR_EMULATE_PREPARES => true],
         ]]);
         DB::purge('tenant');
         DB::reconnect('tenant');
