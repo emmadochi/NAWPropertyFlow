@@ -605,20 +605,21 @@
     </div>
 
     <!-- Edit Lead details Modal -->
-    <div x-cloak x-show="editLeadOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/60 transition-opacity overflow-y-auto">
-        <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl p-6 md:p-8 space-y-6 my-8" @click.away="editLeadOpen = false">
-            <div class="flex justify-between items-center pb-3 border-b border-gray-100">
+    <div x-cloak x-show="editLeadOpen" class="fixed inset-0 z-50 overflow-y-auto bg-dark-900/60 backdrop-blur-sm transition-opacity p-4 sm:p-6 flex items-start justify-center">
+        <div class="bg-white rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden my-4 sm:my-8 max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)] flex flex-col" @click.away="editLeadOpen = false">
+            <div class="flex justify-between items-center px-6 py-5 md:px-8 border-b border-gray-100 shrink-0 bg-white">
                 <h3 class="text-xl font-bold text-dark-900">Edit Lead Details</h3>
-                <button @click="editLeadOpen = false" class="text-gray-400 hover:text-gray-600">
+                <button @click="editLeadOpen = false" class="text-gray-400 hover:text-gray-600 p-2 rounded-xl hover:bg-gray-100 transition-colors">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
 
-            <form action="{{ route('leads.update', $lead->id) }}" method="POST" class="space-y-4">
+            <form action="{{ route('leads.update', $lead->id) }}" method="POST" class="flex flex-col flex-1 overflow-hidden">
                 @csrf
                 @method('PUT')
+                <div class="p-6 md:p-8 space-y-4 overflow-y-auto flex-1">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">Full Name *</label>
@@ -743,9 +744,11 @@
                               placeholder="Notes...">{{ $lead->notes }}</textarea>
                 </div>
 
-                <div class="flex justify-end space-x-3 pt-4 border-t border-gray-100">
+                </div>
+
+                <div class="flex justify-end space-x-3 px-6 py-4 md:px-8 border-t border-gray-100 bg-gray-50/80 rounded-b-3xl shrink-0">
                     <button type="button" @click="editLeadOpen = false" class="px-5 py-2.5 text-sm font-bold text-gray-500 hover:text-gray-700">Cancel</button>
-                    <button type="submit" class="px-6 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-500/10">
+                    <button type="submit" class="px-6 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-500/20 transition-all">
                         Save changes
                     </button>
                 </div>
@@ -865,8 +868,8 @@
     </div>
 
     <!-- Record Sale Modal -->
-    <div x-cloak x-show="recordSaleOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/60 backdrop-blur-sm transition-opacity overflow-y-auto">
-        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full shadow-2xl p-6 md:p-8 space-y-5 my-8 max-h-[90vh] overflow-y-auto custom-sidebar-scroll border border-gray-200 dark:border-slate-700" @click.away="recordSaleOpen = false"
+    <div x-cloak x-show="recordSaleOpen" class="fixed inset-0 z-50 overflow-y-auto bg-dark-900/60 backdrop-blur-sm transition-opacity p-4 sm:p-6 flex items-start justify-center">
+        <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full shadow-2xl p-6 md:p-8 space-y-5 my-4 sm:my-8 max-h-[calc(100vh-2rem)] sm:max-h-[calc(100vh-4rem)] overflow-y-auto custom-sidebar-scroll border border-gray-200 dark:border-slate-700" @click.away="recordSaleOpen = false"
              x-data="{
                 properties: {{ json_encode($properties) }},
                 selectedPropertyId: '{{ $lead->property_interest_id ?? '' }}',
