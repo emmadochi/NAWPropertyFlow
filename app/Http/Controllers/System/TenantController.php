@@ -63,8 +63,10 @@ class TenantController extends Controller
             'is_active'    => true,
         ]);
 
-        // 3. Attach domain (using just the subdomain because routes/tenant.php uses InitializeTenancyBySubdomain)
-        $tenant->domains()->create(['domain' => $subdomain]);
+        // 3. Attach domains (subdomain, production domain, and localhost)
+        $tenant->domains()->firstOrCreate(['domain' => $subdomain]);
+        $tenant->domains()->firstOrCreate(['domain' => "{$subdomain}.nawpropertyflow.com.ng"]);
+        $tenant->domains()->firstOrCreate(['domain' => "{$subdomain}.localhost"]);
 
         // 4. Run tenant migrations & seed initial company_admin user
         $tenant->run(function () use ($validated) {
