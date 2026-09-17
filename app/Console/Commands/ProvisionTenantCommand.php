@@ -69,25 +69,52 @@ class ProvisionTenantCommand extends Command
 
         // 1. Create Tenant Database if not exists
         $this->info("1. Ensuring database `{$tenantDbName}` exists...");
+        $dbReady = false;
+
+        // Try direct CREATE DATABASE first
         try {
             DB::statement("CREATE DATABASE IF NOT EXISTS `{$tenantDbName}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
             $this->line("   <info>✓</info> Database `{$tenantDbName}` ready.");
+            $dbReady = true;
         } catch (\Throwable $e) {
-            // Check if database was already created manually in cPanel
+            // CREATE DATABASE failed (normal on cPanel shared hosting)
+        }
+
+        if (!$dbReady) {
+            // Check if database already exists in cPanel MySQL
             try {
                 $testConn = array_merge(config('database.connections.mysql'), ['database' => $tenantDbName]);
                 config(['database.connections.tenant_check' => $testConn]);
+                DB::purge('tenant_check');
                 DB::connection('tenant_check')->getPdo();
                 $this->line("   <info>✓</info> Database `{$tenantDbName}` already exists and is accessible.");
+                $dbReady = true;
             } catch (\Throwable $ex) {
-                $this->error("   Failed to create database: " . $e->getMessage());
+                $this->error("   Database `{$tenantDbName}` is not accessible: " . $ex->getMessage());
                 $this->line("");
-                $this->warn("   💡 cPanel Shared Hosting Note:");
-                $this->line("   cPanel does not allow PHP to run `CREATE DATABASE` directly.");
-                $this->line("   Please log into cPanel > MySQL Databases:");
-                $this->line("   1. Create database: `{$tenantDbName}` (or `stufedoc_nawcrm_{$id}`)");
-                $this->line("   2. Add user `" . config('database.connections.mysql.username') . "` with ALL PRIVILEGES");
-                $this->line("   3. Re-run: php artisan tenant:provision {$id} --db={$tenantDbName}");
+                $this->warn("   💡 cPanel Shared Hosting Setup Needed:");
+                $this->line("   Because cPanel shared hosting blocks PHP from running `CREATE DATABASE`,");
+                $this->line("   you need to create the database in cPanel first (takes 30 seconds):");
+                $this->line("");
+                $this->line("   1. Go to cPanel > MySQL® Databases");
+                $this->line("   2. Under 'Create New Database', enter: nawcrm_{$id}");
+                $this->line("      (Your full database name will be: {$tenantDbName})");
+                $this->line("   3. Under 'Add User To Database', select user `" . config('database.connections.mysql.username') . "`");
+                $this->line("      and database `{$tenantDbName}`");
+                $this->line("   4. Click 'Add', tick 'ALL PRIVILEGES', and click 'Make Changes'");
+                
+                try {
+                    $dbs = DB::select("SHOW DATABASES;");
+                    $dbList = array_map(function($d) { return array_values((array)$d)[0]; }, $dbs);
+                    $this->line("");
+                    $this->info("   Currently visible databases on your account:");
+                    foreach ($dbList as $visibleDb) {
+                        $this->line("   - {$visibleDb}");
+                    }
+                } catch (\Throwable $t) {}
+
+                $this->line("");
+                $this->line("   Then re-run: php artisan tenant:provision {$id} --db={$tenantDbName}");
                 return 1;
             }
         }
