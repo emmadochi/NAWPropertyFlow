@@ -24,6 +24,24 @@ class Tenant extends BaseTenant implements TenantWithDatabase
         return 'string';
     }
 
+    public function getInternal(string $key)
+    {
+        $val = parent::getInternal($key);
+        if ($val !== null) {
+            return $val;
+        }
+
+        $data = $this->getAttribute('data');
+        if (is_string($data)) {
+            $data = json_decode($data, true);
+        }
+        if (is_array($data)) {
+            return $data['tenancy_' . $key] ?? $data[$key] ?? null;
+        }
+
+        return null;
+    }
+
     /**
      * Custom columns stored as native DB columns (not in the JSON data column).
      */

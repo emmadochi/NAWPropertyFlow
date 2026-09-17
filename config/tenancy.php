@@ -54,7 +54,14 @@ return [
          * Tenant database names are created like this:
          * prefix + tenant_id + suffix.
          */
-        'prefix' => env('TENANCY_DATABASE_PREFIX', 'nawcrm_'),
+        'prefix' => env('TENANCY_DATABASE_PREFIX', (function () {
+            $db = env('DB_DATABASE', '');
+            if (str_contains($db, '_')) {
+                $account = explode('_', $db)[0];
+                return $account . '_nawcrm_';
+            }
+            return 'nawcrm_';
+        })()),
         'suffix' => env('TENANCY_DATABASE_SUFFIX', ''),
 
         /**
