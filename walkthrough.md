@@ -68,9 +68,36 @@ Addressing the operational reality where sales reps have ongoing back-and-forth 
 
 ---
 
+### 4. Daily Leads Ingestion & Mon–Sun Weekly Rhythm
+Addressing the need for marketers to upload prospects continuously on a daily basis regardless of area or channel:
+- **File**: [`LeadController.php`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/app/Http/Controllers/LeadController.php) & [`leads/index.blade.php`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/resources/views/leads/index.blade.php)
+- **Flexible Daily Ingestion Channels**:
+  - Outreaches and locations are now completely **optional**—reps are no longer blocked if they don't have a specific roadshow location.
+  - Added quick channel selector presets:
+    - *Daily Field Prospecting* (default)
+    - *WhatsApp & Social Media DMs*
+    - *Referrals & Personal Network*
+    - *Office Walk-in / Enquiry*
+    - *Roadshow / Market Stand*
+- **Mon–Sun Daily Upload Rhythm (Scorecard Column)**:
+  - **File**: [`RetailPerformanceController.php`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/app/Http/Controllers/RetailPerformanceController.php) & [`reports/retail_weekly.blade.php`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/resources/views/reports/retail_weekly.blade.php)
+  - Added **Daily Rhythm (Mon–Sun)** chips to each consultant row on the weekly scorecard.
+  - Active upload days (`> 0`) are highlighted in vivid emerald chips with subtle rings, while zero-days are muted gray, giving management instant visibility into reps' daily upload discipline.
+  - Integrated full team aggregate breakdown in the scorecard table footer.
+  - Updated CSV/Excel export to include individual columns for `Mon Leads`, `Tue Leads`, `Wed Leads`, `Thu Leads`, `Fri Leads`, `Sat Leads`, and `Sun Leads`.
+- **Weekly Sales Review & Audit Framework**:
+  - Added a dedicated management panel featuring the team's 7-day daily upload cadence overview.
+  - 4-point standard operating review checklist for Monday morning pipeline meetings:
+    1. *Daily Ingestion Check*: Audit M–S upload chips to ensure leads are uploaded within 24h.
+    2. *Engagement Conversion*: Check that uploaded leads are swiftly contacted via logged calls/WhatsApp.
+    3. *Inspection Follow-through*: Compare booked vs completed site tours.
+    4. *Revenue & Top-ups Audit*: Audit closed revenue and overdue milestone installment collections.
+
+---
+
 ## Validation & Code Quality
 - Verified database schemas for tenant databases (`nawcrm_buckcrest` and `nawcrm_naw`). Added `outreach_location`, `last_contacted_at`, and `last_contact_channel` columns to the `leads` table.
-- Verified PHP syntax across all modified and newly created files:
+- Verified PHP syntax across all modified files:
   - `app/Models/Lead.php` &rarr; Syntax OK
   - `app/Http/Controllers/LeadController.php` &rarr; Syntax OK
   - `app/Http/Controllers/ActivityQuickLogController.php` &rarr; Syntax OK

@@ -73,6 +73,7 @@ class RetailPerformanceController extends Controller
             'new_sales_value'       => 0,
             'milestone_collections' => 0,
             'expected_collections'  => 0,
+            'daily_leads'           => ['Mon' => 0, 'Tue' => 0, 'Wed' => 0, 'Thu' => 0, 'Fri' => 0, 'Sat' => 0, 'Sun' => 0],
         ];
 
         foreach ($consultants as $consultant) {
@@ -145,9 +146,27 @@ class RetailPerformanceController extends Controller
                 ->values()
                 ->all();
 
+            // Daily Leads Ingestion Breakdown (Mon - Sun)
+            $dailyLeadCounts = [
+                'Mon' => 0, 'Tue' => 0, 'Wed' => 0, 'Thu' => 0, 'Fri' => 0, 'Sat' => 0, 'Sun' => 0
+            ];
+            $leadDayData = Lead::where('assigned_to', $consultant->id)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->selectRaw('DATE_FORMAT(created_at, "%a") as day_name, COUNT(*) as cnt')
+                ->groupBy('day_name')
+                ->pluck('cnt', 'day_name')
+                ->toArray();
+
+            foreach ($leadDayData as $dName => $cnt) {
+                if (isset($dailyLeadCounts[$dName])) {
+                    $dailyLeadCounts[$dName] = (int) $cnt;
+                }
+            }
+
             $row = [
                 'user'                  => $consultant,
                 'leads_captured'        => $leadsCaptured,
+                'daily_lead_counts'     => $dailyLeadCounts,
                 'calls_logged'          => $callsLogged,
                 'whatsapp_logged'       => $whatsappLogged,
                 'inspections_scheduled' => $inspectionsSched,
@@ -174,6 +193,10 @@ class RetailPerformanceController extends Controller
             $aggregates['new_sales_value']       += $newSalesValue;
             $aggregates['milestone_collections'] += $milestoneCollections;
             $aggregates['expected_collections']  += $expectedCollections;
+
+            foreach ($dailyLeadCounts as $dName => $cnt) {
+                $aggregates['daily_leads'][$dName] = ($aggregates['daily_leads'][$dName] ?? 0) + $cnt;
+            }
         }
 
         // Sort by total revenue or leads captured
@@ -234,6 +257,13 @@ class RetailPerformanceController extends Controller
             'Branch',
             'Outreach Location(s)',
             'Leads Captured',
+            'Mon Leads',
+            'Tue Leads',
+            'Wed Leads',
+            'Thu Leads',
+            'Fri Leads',
+            'Sat Leads',
+            'Sun Leads',
             'Calls Logged',
             'WhatsApp Chats',
             'Site Inspections (Completed)',
@@ -262,6 +292,22 @@ class RetailPerformanceController extends Controller
             foreach ($consultants as $consultant) {
                 $leadsCaptured = Lead::where('assigned_to', $consultant->id)
                     ->whereBetween('created_at', [$startDate, $endDate])->count();
+
+                $dailyLeadCounts = [
+                    'Mon' => 0, 'Tue' => 0, 'Wed' => 0, 'Thu' => 0, 'Fri' => 0, 'Sat' => 0, 'Sun' => 0
+                ];
+                $leadDayData = Lead::where('assigned_to', $consultant->id)
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->selectRaw('DATE_FORMAT(created_at, "%a") as day_name, COUNT(*) as cnt')
+                    ->groupBy('day_name')
+                    ->pluck('cnt', 'day_name')
+                    ->toArray();
+
+                foreach ($leadDayData as $dName => $cnt) {
+                    if (isset($dailyLeadCounts[$dName])) {
+                        $dailyLeadCounts[$dName] = (int) $cnt;
+                    }
+                }
 
                 $callsLogged = LeadActivity::where('user_id', $consultant->id)
                     ->where(function($q) { $q->where('activity_type', 'like', '%Call%')->orWhere('description', 'like', '%Call%'); })
@@ -308,6 +354,13 @@ class RetailPerformanceController extends Controller
                     $consultant->branch ? $consultant->branch->name : 'Main',
                     $outreachLocations ?: 'N/A',
                     $leadsCaptured,
+                    $dailyLeadCounts['Mon'],
+                    $dailyLeadCounts['Tue'],
+                    $dailyLeadCounts['Wed'],
+                    $dailyLeadCounts['Thu'],
+                    $dailyLeadCounts['Fri'],
+                    $dailyLeadCounts['Sat'],
+                    $dailyLeadCounts['Sun'],
                     $callsLogged,
                     $whatsappLogged,
                     $inspectionsComp,

@@ -26,10 +26,10 @@
                 </button>
             </div>
             <button @click="importLeadsOpen = true" class="inline-flex items-center space-x-2 px-5 py-3 bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 font-bold text-sm rounded-xl shadow-sm transition-all">
-                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                 </svg>
-                <span>Import Leads (CSV)</span>
+                <span>Daily Leads Upload (CSV)</span>
             </button>
             <button @click="addLeadOpen = true" class="inline-flex items-center space-x-2 px-5 py-3 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-brand-500/10 hover:shadow-brand-600/20 transition-all">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -533,15 +533,15 @@
         </div>
     </div>
 
-    <!-- Import Leads Modal -->
+    <!-- Daily Leads Upload Modal -->
     <div x-cloak x-show="importLeadsOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/60 transition-opacity">
         <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl p-6 md:p-8 space-y-6" @click.away="importLeadsOpen = false">
             <div class="flex justify-between items-center pb-3 border-b border-gray-100">
                 <div class="flex items-center space-x-2.5">
                     <span class="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-lg">📥</span>
                     <div>
-                        <h3 class="text-lg font-bold text-dark-900">Import Leads from CSV</h3>
-                        <p class="text-xs text-gray-500">Bulk upload field contacts, roadshow lists, or retail leads</p>
+                        <h3 class="text-lg font-bold text-dark-900">Daily Leads Ingestion &amp; Upload</h3>
+                        <p class="text-xs text-gray-500">Upload today's prospect harvest from any area or marketing channel</p>
                     </div>
                 </div>
                 <button @click="importLeadsOpen = false" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100">
@@ -551,18 +551,39 @@
                 </button>
             </div>
 
+            <!-- Daily upload benefit badge -->
+            <div class="flex items-center space-x-2 bg-brand-50/60 border border-brand-100/80 rounded-2xl p-3 text-xs text-brand-900">
+                <span class="text-base">⚡</span>
+                <span class="text-[11px] leading-relaxed">
+                    <strong>Daily Upload Rhythm:</strong> Leads uploaded today are timestamped for today's date and directly credited to your consultant scorecard for the <strong>Weekly Sales Review</strong>.
+                </span>
+            </div>
+
             <form action="{{ route('leads.import') }}" method="POST" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">CSV File *</label>
                     <input type="file" name="csv_file" required accept=".csv,.txt" class="w-full px-4 py-2.5 rounded-xl border border-gray-250 focus:border-brand-500 outline-none text-sm text-gray-800 bg-gray-50/50">
-                    <p class="text-[10px] text-gray-400 mt-1">Upload a standard CSV file with at least <strong>full_name</strong> and <strong>phone_number</strong>.</p>
+                    <p class="text-[10px] text-gray-400 mt-1">Standard CSV with at least <strong>full_name</strong> and <strong>phone_number</strong>.</p>
+                </div>
+
+                <!-- Flexible Lead Source / Channel -->
+                <div>
+                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Primary Acquisition Channel</label>
+                    <select name="default_lead_source" class="w-full px-3 py-2 text-xs border border-gray-250 rounded-xl focus:border-brand-500 outline-none bg-white">
+                        <option value="Daily Field Prospecting">🚶‍♂️ Daily Field Prospecting / Canvassing</option>
+                        <option value="WhatsApp & Social Media DMs">💬 WhatsApp &amp; Social Media DMs</option>
+                        <option value="Referrals & Personal Network">🤝 Referrals &amp; Personal Network</option>
+                        <option value="Office Walk-in / Direct Call">🏢 Office Walk-in / Direct Inflow</option>
+                        <option value="Roadshow / Market Stand">🎪 Roadshow / Market Stand (Garki, Banex, CAC, etc.)</option>
+                        <option value="Other Channels">🌐 Other General Channels</option>
+                    </select>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Outreach / Roadshow Location</label>
-                        <input type="text" name="default_outreach_location" placeholder="e.g. Garki Market, Banex Plaza, CAC" class="w-full px-3 py-2 text-xs border border-gray-250 rounded-xl focus:border-brand-500 outline-none">
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Specific Area / Spot <span class="text-gray-400 font-normal lowercase">(optional)</span></label>
+                        <input type="text" name="default_outreach_location" placeholder="e.g. Garki Market, Banex, Lekki, Online" class="w-full px-3 py-2 text-xs border border-gray-250 rounded-xl focus:border-brand-500 outline-none">
                     </div>
                     @if(Auth::user()->role !== 'sales_executive')
                     <div>
@@ -576,7 +597,7 @@
                     </div>
                     @else
                     <div>
-                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Assigned Consultant</label>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Credited Consultant</label>
                         <input type="text" value="{{ Auth::user()->name }} (You)" disabled class="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl bg-gray-100 text-gray-600 font-semibold cursor-not-allowed">
                     </div>
                     @endif
@@ -600,7 +621,7 @@
                 <div class="space-y-2">
                     <label class="flex items-start space-x-2.5 cursor-pointer">
                         <input type="checkbox" name="skip_duplicates" value="1" checked class="mt-0.5 rounded text-brand-600 focus:ring-brand-500">
-                        <span class="text-xs text-gray-600 font-medium">Skip duplicate phone numbers if already in database (Prevents lead overlap)</span>
+                        <span class="text-xs text-gray-600 font-medium">Skip duplicate phone numbers (Prevents lead overlap across reps)</span>
                     </label>
                     <label class="flex items-start space-x-2.5 cursor-pointer">
                         <input type="checkbox" name="mute_notifications" value="1" checked class="mt-0.5 rounded text-brand-600 focus:ring-brand-500">
@@ -611,7 +632,7 @@
                 <div class="flex justify-end space-x-3 pt-3 border-t border-gray-100">
                     <button type="button" @click="importLeadsOpen = false" class="px-4 py-2 text-xs font-bold text-gray-500 hover:text-gray-700">Cancel</button>
                     <button type="submit" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md shadow-brand-500/20 transition-all">
-                        Upload & Import Leads
+                        Upload &amp; Record Daily Leads
                     </button>
                 </div>
             </form>

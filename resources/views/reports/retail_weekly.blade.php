@@ -181,6 +181,7 @@
                         <th class="py-3.5 px-4">Sales Consultant</th>
                         <th class="py-3.5 px-3">Field Outreaches</th>
                         <th class="py-3.5 px-3 text-center">Leads</th>
+                        <th class="py-3.5 px-3 text-center">Daily Rhythm (Mon–Sun)</th>
                         <th class="py-3.5 px-3 text-center">Calls</th>
                         <th class="py-3.5 px-3 text-center">WhatsApp</th>
                         <th class="py-3.5 px-3 text-center">Inspections</th>
@@ -239,6 +240,21 @@
                             <span class="font-black text-dark-900 {{ $row['leads_captured'] > 0 ? 'text-dark-900' : 'text-gray-300' }}">
                                 {{ $row['leads_captured'] }}
                             </span>
+                        </td>
+
+                        <!-- Daily Rhythm (Mon–Sun) -->
+                        <td class="py-3.5 px-3">
+                            <div class="flex items-center justify-center space-x-1">
+                                @foreach(['Mon' => 'M', 'Tue' => 'T', 'Wed' => 'W', 'Thu' => 'T', 'Fri' => 'F', 'Sat' => 'S', 'Sun' => 'S'] as $dayKey => $dayLabel)
+                                    @php $cnt = $row['daily_lead_counts'][$dayKey] ?? 0; @endphp
+                                    <div class="flex flex-col items-center" title="{{ $dayKey }}: {{ $cnt }} leads uploaded">
+                                        <span class="text-[8px] font-bold {{ $cnt > 0 ? 'text-emerald-700 font-extrabold' : 'text-gray-400' }}">{{ $dayLabel }}</span>
+                                        <span class="w-5 h-5 flex items-center justify-center text-[10px] font-bold rounded-md transition-all {{ $cnt > 0 ? 'bg-emerald-100 text-emerald-800 font-black ring-1 ring-emerald-300' : 'bg-gray-100 text-gray-300' }}">
+                                            {{ $cnt }}
+                                        </span>
+                                    </div>
+                                @endforeach
+                            </div>
                         </td>
 
                         <!-- Calls Logged -->
@@ -310,7 +326,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="11" class="py-12 text-center text-gray-400 text-sm">
+                        <td colspan="12" class="py-12 text-center text-gray-400 text-sm">
                             No sales consultants found for the selected criteria.
                         </td>
                     </tr>
@@ -325,6 +341,17 @@
                         </td>
                         <td class="py-4 px-3 text-[10px] text-gray-400 font-bold uppercase">All Outreaches</td>
                         <td class="py-4 px-3 text-center text-sm font-black">{{ number_format($aggregates['leads_captured']) }}</td>
+                        <td class="py-4 px-3 text-center">
+                            <div class="flex items-center justify-center space-x-1">
+                                @foreach(['Mon' => 'M', 'Tue' => 'T', 'Wed' => 'W', 'Thu' => 'T', 'Fri' => 'F', 'Sat' => 'S', 'Sun' => 'S'] as $dayKey => $dayLabel)
+                                    @php $tot = $aggregates['daily_leads'][$dayKey] ?? 0; @endphp
+                                    <div class="flex flex-col items-center" title="Total {{ $dayKey }}: {{ $tot }} leads">
+                                        <span class="text-[8px] font-bold text-gray-500">{{ $dayLabel }}</span>
+                                        <span class="text-[10px] font-black {{ $tot > 0 ? 'text-emerald-700' : 'text-gray-400' }}">{{ $tot }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </td>
                         <td class="py-4 px-3 text-center text-sm font-black text-blue-700">{{ number_format($aggregates['calls_logged']) }}</td>
                         <td class="py-4 px-3 text-center text-sm font-black text-emerald-700">{{ number_format($aggregates['whatsapp_logged']) }}</td>
                         <td class="py-4 px-3 text-center text-sm font-black text-purple-700">{{ $aggregates['inspections_completed'] }} / {{ $aggregates['inspections_scheduled'] }}</td>
@@ -342,6 +369,89 @@
                 </tfoot>
                 @endif
             </table>
+        </div>
+    </div>
+
+    <!-- Weekly Review & Consistency Insights Panel -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        <!-- Daily Upload Rhythm Audit -->
+        <div class="bg-white rounded-3xl border border-gray-150 p-6 shadow-sm flex flex-col justify-between">
+            <div>
+                <div class="flex items-center space-x-2 mb-3">
+                    <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm">📅</span>
+                    <div>
+                        <h4 class="font-bold text-dark-900 text-sm">Daily Upload Cadence</h4>
+                        <p class="text-[11px] text-gray-400">Team prospect ingestion rhythm (Mon–Sun)</p>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-7 gap-1.5 py-4 border-y border-gray-100 my-3 text-center">
+                    @foreach(['Mon' => 'Monday', 'Tue' => 'Tuesday', 'Wed' => 'Wednesday', 'Thu' => 'Thursday', 'Fri' => 'Friday', 'Sat' => 'Saturday', 'Sun' => 'Sunday'] as $dK => $dLong)
+                        @php $dayTotal = $aggregates['daily_leads'][$dK] ?? 0; @endphp
+                        <div class="p-2 rounded-xl {{ $dayTotal > 0 ? 'bg-emerald-50 border border-emerald-100' : 'bg-gray-50 border border-gray-100' }}">
+                            <span class="block text-[9px] font-extrabold {{ $dayTotal > 0 ? 'text-emerald-700' : 'text-gray-400' }} uppercase">{{ substr($dK, 0, 3) }}</span>
+                            <span class="block text-base font-black {{ $dayTotal > 0 ? 'text-emerald-800' : 'text-gray-300' }} mt-0.5">{{ $dayTotal }}</span>
+                        </div>
+                    @endforeach
+                </div>
+
+                <p class="text-xs text-gray-500 leading-relaxed">
+                    Consistent daily prospecting ensures active follow-ups and prevents weekend pipeline bunching before Monday executive meetings.
+                </p>
+            </div>
+
+            <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
+                <span class="text-xs text-gray-400 font-medium">Daily Leads Portal:</span>
+                <a href="{{ route('leads.index') }}" class="text-xs font-bold text-brand-600 hover:text-brand-700 inline-flex items-center space-x-1">
+                    <span>Upload Today's Leads</span>
+                    <span>&rarr;</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Weekly Meeting Agenda & Audit Checklist -->
+        <div class="bg-white rounded-3xl border border-gray-150 p-6 shadow-sm lg:col-span-2">
+            <div class="flex items-center space-x-2 mb-3">
+                <span class="w-8 h-8 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">📋</span>
+                <div>
+                    <h4 class="font-bold text-dark-900 text-sm">Weekly Sales Review & Audit Framework</h4>
+                    <p class="text-[11px] text-gray-400">Standard operating checklist for Monday pipeline reviews and 1-on-1s</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 text-xs">
+                <div class="p-3.5 rounded-2xl bg-gray-50 border border-gray-100 flex items-start space-x-3">
+                    <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-black text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                    <div>
+                        <span class="font-bold text-dark-900 block">Daily Ingestion Check</span>
+                        <p class="text-[11px] text-gray-500 mt-0.5">Audit consultant chips (M–S). Reps must upload daily regardless of channel or area.</p>
+                    </div>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-gray-50 border border-gray-100 flex items-start space-x-3">
+                    <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 font-black text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
+                    <div>
+                        <span class="font-bold text-dark-900 block">Engagement Conversion</span>
+                        <p class="text-[11px] text-gray-500 mt-0.5">Ensure uploaded leads are immediately contacted via verified phone calls and WhatsApp.</p>
+                    </div>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-gray-50 border border-gray-100 flex items-start space-x-3">
+                    <span class="w-6 h-6 rounded-full bg-purple-100 text-purple-800 font-black text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
+                    <div>
+                        <span class="font-bold text-dark-900 block">Inspection Follow-through</span>
+                        <p class="text-[11px] text-gray-500 mt-0.5">Compare scheduled vs completed site inspections to prevent prospect drop-off.</p>
+                    </div>
+                </div>
+
+                <div class="p-3.5 rounded-2xl bg-gray-50 border border-gray-100 flex items-start space-x-3">
+                    <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-800 font-black text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">4</span>
+                    <div>
+                        <span class="font-bold text-dark-900 block">Revenue & Top-ups Audit</span>
+                        <p class="text-[11px] text-gray-500 mt-0.5">Review closed deals, pending milestone installments, and overdue customer collections.</p>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 

@@ -434,6 +434,7 @@ class LeadController extends Controller
     {
         $request->validate([
             'csv_file' => 'required|file|mimes:csv,txt|max:10240',
+            'default_lead_source' => 'nullable|string|max:100',
             'default_outreach_location' => 'nullable|string|max:255',
             'default_assigned_to' => 'nullable|exists:users,id',
             'skip_duplicates' => 'nullable|boolean',
@@ -474,6 +475,7 @@ class LeadController extends Controller
             ? $user->branch_id 
             : (session('selected_branch_id') !== 'all' ? session('selected_branch_id') : null);
 
+        $defaultLeadSource = $request->input('default_lead_source') ?: 'Daily Field Prospecting';
         $defaultOutreach = $request->input('default_outreach_location');
         $defaultAssignee = $isExecutive ? $user->id : ($request->input('default_assigned_to') ?: null);
         $muteNotifications = $request->boolean('mute_notifications', true);
@@ -549,7 +551,7 @@ class LeadController extends Controller
                 'budget_range' => !empty($data['budget_range']) ? trim($data['budget_range']) : 'N/A',
                 'preferred_location' => isset($data['preferred_location']) ? trim($data['preferred_location']) : null,
                 'outreach_location' => $outreachLoc,
-                'lead_source' => !empty($data['lead_source']) ? trim($data['lead_source']) : 'Field Outreach',
+                'lead_source' => !empty($data['lead_source']) ? trim($data['lead_source']) : $defaultLeadSource,
                 'assigned_to' => $assignedTo,
                 'status' => !empty($data['status']) ? trim($data['status']) : 'New',
                 'notes' => isset($data['notes']) ? trim($data['notes']) : null,
