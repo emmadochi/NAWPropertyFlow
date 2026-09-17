@@ -52,8 +52,8 @@ return [
          * Tenant database names are created like this:
          * prefix + tenant_id + suffix.
          */
-        'prefix' => 'nawcrm_',
-        'suffix' => '',
+        'prefix' => env('TENANCY_DATABASE_PREFIX', 'nawcrm_'),
+        'suffix' => env('TENANCY_DATABASE_SUFFIX', ''),
 
         /**
          * TenantDatabaseManagers are classes that handle the creation & deletion of tenant databases.

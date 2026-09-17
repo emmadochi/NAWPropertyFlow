@@ -22,6 +22,7 @@ class ProvisionTenantCommand extends Command
     protected $signature = 'tenant:provision 
                             {id? : Tenant identifier / subdomain (e.g. bhl)}
                             {--name= : Full company name (e.g. "Buckcrest Havens")}
+                            {--db= : Custom database name (e.g. stufedoc_nawcrm_bhl)}
                             {--tier=starter : Package tier (starter, professional, enterprise)}
                             {--modules=* : Specific modules to enable (default: crm, payment_plans for pure CRM)}
                             {--email= : Admin email address}
@@ -55,15 +56,16 @@ class ProvisionTenantCommand extends Command
             $modules = ['crm', 'payment_plans'];
         }
 
+        $dbPrefix = config('tenancy.database.prefix', 'nawcrm_');
+        $dbSuffix = config('tenancy.database.suffix', '');
+        $tenantDbName = $this->option('db') ?: ($dbPrefix . $id . $dbSuffix);
+
         $this->info("--------------------------------------------------");
         $this->info(" Provisioning Tenant: {$name} ({$id})");
         $this->info(" Domain: {$id}.nawpropertyflow.com.ng");
+        $this->info(" Database: {$tenantDbName}");
         $this->info(" Functionality: Solely CRM System ({$tier} tier)");
         $this->info("--------------------------------------------------");
-
-        $dbPrefix = config('tenancy.database.prefix', 'nawcrm_');
-        $dbSuffix = config('tenancy.database.suffix', '');
-        $tenantDbName = $dbPrefix . $id . $dbSuffix;
 
         // 1. Create Tenant Database if not exists
         $this->info("1. Ensuring database `{$tenantDbName}` exists...");
@@ -71,8 +73,23 @@ class ProvisionTenantCommand extends Command
             DB::statement("CREATE DATABASE IF NOT EXISTS `{$tenantDbName}` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;");
             $this->line("   <info>✓</info> Database `{$tenantDbName}` ready.");
         } catch (\Throwable $e) {
-            $this->error("   Failed to create database: " . $e->getMessage());
-            return 1;
+            // Check if database was already created manually in cPanel
+            try {
+                $testConn = array_merge(config('database.connections.mysql'), ['database' => $tenantDbName]);
+                config(['database.connections.tenant_check' => $testConn]);
+                DB::connection('tenant_check')->getPdo();
+                $this->line("   <info>✓</info> Database `{$tenantDbName}` already exists and is accessible.");
+            } catch (\Throwable $ex) {
+                $this->error("   Failed to create database: " . $e->getMessage());
+                $this->line("");
+                $this->warn("   💡 cPanel Shared Hosting Note:");
+                $this->line("   cPanel does not allow PHP to run `CREATE DATABASE` directly.");
+                $this->line("   Please log into cPanel > MySQL Databases:");
+                $this->line("   1. Create database: `{$tenantDbName}` (or `stufedoc_nawcrm_{$id}`)");
+                $this->line("   2. Add user `" . config('database.connections.mysql.username') . "` with ALL PRIVILEGES");
+                $this->line("   3. Re-run: php artisan tenant:provision {$id} --db={$tenantDbName}");
+                return 1;
+            }
         }
 
         // 2. Create or Update Tenant in Central DB
