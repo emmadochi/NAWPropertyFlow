@@ -361,8 +361,9 @@ class LeadController extends Controller
         return redirect()->route('leads.index')->with('success', 'Lead deleted successfully.');
     }
 
+
     /**
-     * Download sample leads import template.
+     * Download sample CSV template for lead imports.
      */
     public function importTemplate()
     {
@@ -374,23 +375,52 @@ class LeadController extends Controller
             'Expires'             => '0'
         ];
 
-        $columns = ['full_name', 'phone_number', 'whatsapp_number', 'email', 'address', 'budget_range', 'preferred_location', 'lead_source', 'notes', 'status'];
+        $columns = [
+            'full_name',
+            'phone_number',
+            'whatsapp_number',
+            'email',
+            'budget_range',
+            'preferred_location',
+            'outreach_location',
+            'lead_source',
+            'status',
+            'notes'
+        ];
 
-        $callback = function() use ($columns) {
+        $sampleRows = [
+            [
+                'Alhaji Musa Garba',
+                '08031234567',
+                '08031234567',
+                'musa.garba@example.com',
+                '₦35M - ₦50M',
+                'Karasana',
+                'Garki Market Roadshow',
+                'Field Outreach',
+                'New',
+                'Met at retail stand; interested in 3-bedroom terrace.'
+            ],
+            [
+                'Mrs. Chidinma Okafor',
+                '08129876543',
+                '08129876543',
+                'chidinma.okafor@example.com',
+                '₦60M - ₦80M',
+                'Apo',
+                'Banex Plaza Outreach',
+                'Direct Marketing',
+                'New',
+                'Requested payment plan breakdown for 4-bedroom detached.'
+            ]
+        ];
+
+        $callback = function() use ($columns, $sampleRows) {
             $file = fopen('php://output', 'w');
             fputcsv($file, $columns);
-            fputcsv($file, [
-                'John Doe',
-                '+2348012345678',
-                '+2348012345678',
-                'johndoe@example.com',
-                'Plot 519, Olu Awotesu Street, Jabi, Abuja',
-                '₦10,000,000 - ₦20,000,000',
-                'Lekki Phase 1',
-                'Website',
-                'Interested in 3-bedroom terraces.',
-                'New'
-            ]);
+            foreach ($sampleRows as $row) {
+                fputcsv($file, $row);
+            }
             fclose($file);
         };
 
@@ -403,7 +433,10 @@ class LeadController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'csv_file' => 'required|file|mimes:csv,txt|max:5120',
+            'csv_file' => 'required|file|mimes:csv,txt|max:10240',
+            'default_outreach_location' => 'nullable|string|max:255',
+            'default_assigned_to' => 'nullable|exists:users,id',
+            'skip_duplicates' => 'nullable|boolean',
         ]);
 
         $file = $request->file('csv_file');
@@ -421,56 +454,103 @@ class LeadController extends Controller
         }
 
         $headers = array_map(function($h) {
-            return trim(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $h));
+            return strtolower(trim(preg_replace('/[\x00-\x1F\x80-\xFF]/', '', $h)));
         }, $headers);
 
         if (!in_array('full_name', $headers) || !in_array('phone_number', $headers)) {
             fclose($handle);
-            return back()->withErrors(['error' => 'CSV file must contain both full_name and phone_number columns.']);
+            return back()->withErrors(['error' => 'CSV file must contain both "full_name" and "phone_number" header columns.']);
         }
 
         $importedCount = 0;
+        $duplicateCount = 0;
+        $invalidCount = 0;
         $rowNum = 1;
         $errors = [];
 
         $user = Auth::user();
+        $isExecutive = in_array($user->role, ['sales_executive', 'sales_agent', 'marketer']) || $user->isSalesExecutive();
         $branchId = !in_array($user->role, ['super_admin', 'company_admin']) 
             ? $user->branch_id 
             : (session('selected_branch_id') !== 'all' ? session('selected_branch_id') : null);
 
+        $defaultOutreach = $request->input('default_outreach_location');
+        $defaultAssignee = $isExecutive ? $user->id : ($request->input('default_assigned_to') ?: null);
         $muteNotifications = $request->boolean('mute_notifications', true);
+        $skipDuplicates = $request->boolean('skip_duplicates', true);
 
         while (($row = fgetcsv($handle)) !== false) {
             $rowNum++;
             if (count($row) !== count($headers)) {
                 $errors[] = "Row {$rowNum}: Column count mismatch.";
+                $invalidCount++;
                 continue;
             }
 
             $data = array_combine($headers, $row);
-            if (empty(trim($data['full_name'] ?? '')) && empty(trim($data['phone_number'] ?? ''))) {
+            $fullName = trim($data['full_name'] ?? '');
+            $rawPhone = trim($data['phone_number'] ?? '');
+
+            if (empty($fullName) && empty($rawPhone)) {
                 continue;
             }
 
-            if (empty(trim($data['full_name'] ?? ''))) {
+            if (empty($fullName)) {
                 $errors[] = "Row {$rowNum}: full_name is required.";
+                $invalidCount++;
                 continue;
             }
-            if (empty(trim($data['phone_number'] ?? ''))) {
-                $errors[] = "Row {$rowNum}: phone_number is required.";
+
+            // Clean & sanitize phone number (detect scientific notation e.g. 6.88881E+16)
+            if (stripos($rawPhone, 'E+') !== false || stripos($rawPhone, 'E-') !== false) {
+                $errors[] = "Row {$rowNum} ({$fullName}): Corrupted phone number formatted in scientific notation ({$rawPhone}). Skipped.";
+                $invalidCount++;
                 continue;
             }
+
+            $cleanPhone = preg_replace('/[^0-9+]/', '', $rawPhone);
+            if (strlen(preg_replace('/[^0-9]/', '', $cleanPhone)) < 9) {
+                $errors[] = "Row {$rowNum} ({$fullName}): Invalid phone number ({$rawPhone}).";
+                $invalidCount++;
+                continue;
+            }
+
+            // Check duplicate phone in database
+            $phoneDigits = substr(preg_replace('/[^0-9]/', '', $cleanPhone), -10);
+            $existing = Lead::where(function($q) use ($cleanPhone, $phoneDigits) {
+                $q->where('phone_number', 'like', "%{$phoneDigits}")
+                  ->orWhere('whatsapp_number', 'like', "%{$phoneDigits}");
+            })->first();
+
+            if ($existing && $skipDuplicates) {
+                $duplicateCount++;
+                continue;
+            }
+
+            $rawWhatsapp = isset($data['whatsapp_number']) ? trim($data['whatsapp_number']) : null;
+            $cleanWhatsapp = null;
+            if (!empty($rawWhatsapp) && stripos($rawWhatsapp, 'E+') === false) {
+                $cleanWhatsapp = preg_replace('/[^0-9+]/', '', $rawWhatsapp);
+            }
+
+            $assignedTo = $defaultAssignee;
+            if (!$isExecutive && !empty($data['assigned_to']) && is_numeric($data['assigned_to'])) {
+                $assignedTo = (int) $data['assigned_to'];
+            }
+
+            $outreachLoc = !empty($data['outreach_location']) ? trim($data['outreach_location']) : $defaultOutreach;
 
             $leadData = [
-                'full_name' => trim($data['full_name']),
-                'phone_number' => trim($data['phone_number']),
-                'whatsapp_number' => isset($data['whatsapp_number']) ? trim($data['whatsapp_number']) : null,
+                'full_name' => $fullName,
+                'phone_number' => $cleanPhone,
+                'whatsapp_number' => $cleanWhatsapp ?: $cleanPhone,
                 'email' => (!empty($data['email']) && filter_var(trim($data['email']), FILTER_VALIDATE_EMAIL)) ? trim($data['email']) : null,
                 'address' => isset($data['address']) ? trim($data['address']) : null,
                 'budget_range' => !empty($data['budget_range']) ? trim($data['budget_range']) : 'N/A',
                 'preferred_location' => isset($data['preferred_location']) ? trim($data['preferred_location']) : null,
-                'lead_source' => !empty($data['lead_source']) ? trim($data['lead_source']) : 'CSV Import',
-                'assigned_to' => ($user->role === 'sales_executive') ? $user->id : (isset($data['assigned_to']) ? $data['assigned_to'] : null),
+                'outreach_location' => $outreachLoc,
+                'lead_source' => !empty($data['lead_source']) ? trim($data['lead_source']) : 'Field Outreach',
+                'assigned_to' => $assignedTo,
                 'status' => !empty($data['status']) ? trim($data['status']) : 'New',
                 'notes' => isset($data['notes']) ? trim($data['notes']) : null,
                 'branch_id' => $branchId,
@@ -480,21 +560,26 @@ class LeadController extends Controller
                 $this->leadService->createLead($leadData, $user->id, !$muteNotifications);
                 $importedCount++;
             } catch (\Exception $e) {
-                $errors[] = "Row {$rowNum}: Failed to import (" . $e->getMessage() . ").";
+                $errors[] = "Row {$rowNum} ({$fullName}): Failed to import (" . $e->getMessage() . ").";
+                $invalidCount++;
             }
         }
 
         fclose($handle);
 
-        if (count($errors) > 0) {
-            $msg = "Imported {$importedCount} leads successfully. Errors: " . implode(' ', array_slice($errors, 0, 5));
-            if (count($errors) > 5) {
-                $msg .= " and " . (count($errors) - 5) . " more errors.";
-            }
-            return redirect()->route('leads.index')->with('warning', $msg);
+        $msg = "Successfully imported {$importedCount} leads.";
+        if ($duplicateCount > 0) {
+            $msg .= " ({$duplicateCount} existing duplicates skipped).";
+        }
+        if ($invalidCount > 0) {
+            $msg .= " ({$invalidCount} invalid rows skipped).";
         }
 
-        return redirect()->route('leads.index')->with('success', "Successfully imported {$importedCount} leads.");
+        if (count($errors) > 0 && $importedCount === 0) {
+            return redirect()->route('leads.index')->withErrors(['error' => implode(' ', array_slice($errors, 0, 5))]);
+        }
+
+        return redirect()->route('leads.index')->with('success', $msg);
     }
 
     /**

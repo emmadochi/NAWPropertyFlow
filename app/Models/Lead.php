@@ -45,11 +45,15 @@ class Lead extends Model
         'status',
         'notes',
         'branch_id',
+        'outreach_location',
+        'last_contacted_at',
+        'last_contact_channel',
         'portal_token',
         'portal_token_created_at',
     ];
 
     protected $casts = [
+        'last_contacted_at' => 'datetime',
         'portal_token_created_at' => 'datetime',
     ];
 

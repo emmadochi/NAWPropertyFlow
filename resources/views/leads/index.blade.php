@@ -535,10 +535,16 @@
 
     <!-- Import Leads Modal -->
     <div x-cloak x-show="importLeadsOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/60 transition-opacity">
-        <div class="bg-white rounded-3xl max-w-md w-full shadow-2xl p-6 md:p-8 space-y-6" @click.away="importLeadsOpen = false">
+        <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl p-6 md:p-8 space-y-6" @click.away="importLeadsOpen = false">
             <div class="flex justify-between items-center pb-3 border-b border-gray-100">
-                <h3 class="text-lg font-bold text-dark-900">Import Leads from CSV</h3>
-                <button @click="importLeadsOpen = false" class="text-gray-400 hover:text-gray-600">
+                <div class="flex items-center space-x-2.5">
+                    <span class="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-lg">📥</span>
+                    <div>
+                        <h3 class="text-lg font-bold text-dark-900">Import Leads from CSV</h3>
+                        <p class="text-xs text-gray-500">Bulk upload field contacts, roadshow lists, or retail leads</p>
+                    </div>
+                </div>
+                <button @click="importLeadsOpen = false" class="text-gray-400 hover:text-gray-600 p-1.5 rounded-lg hover:bg-gray-100">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
@@ -549,35 +555,63 @@
                 @csrf
                 <div>
                     <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-2">CSV File *</label>
-                    <input type="file" name="csv_file" required accept=".csv,.txt" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 focus:border-brand-500 outline-none text-sm text-gray-800">
-                    <p class="text-[10px] text-gray-400 mt-1">Upload a CSV file containing at least <strong>full_name</strong> and <strong>phone_number</strong> columns.</p>
+                    <input type="file" name="csv_file" required accept=".csv,.txt" class="w-full px-4 py-2.5 rounded-xl border border-gray-250 focus:border-brand-500 outline-none text-sm text-gray-800 bg-gray-50/50">
+                    <p class="text-[10px] text-gray-400 mt-1">Upload a standard CSV file with at least <strong>full_name</strong> and <strong>phone_number</strong>.</p>
                 </div>
 
-                <div class="bg-gray-50 p-4 rounded-xl border border-gray-100 text-[11px] text-gray-500 space-y-2">
-                    <span class="font-bold text-gray-700 block">Available Columns:</span>
-                    <p><code>full_name</code>, <code>phone_number</code>, <code>whatsapp_number</code>, <code>email</code>, <code>address</code>, <code>budget_range</code>, <code>preferred_location</code>, <code>lead_source</code>, <code>notes</code>, <code>status</code></p>
-                    <a href="{{ route('leads.import-template') }}" class="inline-flex items-center space-x-1 text-brand-600 hover:text-brand-700 font-bold mt-1">
-                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
-                        </svg>
-                        <span>Download Sample Template</span>
-                    </a>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Outreach / Roadshow Location</label>
+                        <input type="text" name="default_outreach_location" placeholder="e.g. Garki Market, Banex Plaza, CAC" class="w-full px-3 py-2 text-xs border border-gray-250 rounded-xl focus:border-brand-500 outline-none">
+                    </div>
+                    @if(Auth::user()->role !== 'sales_executive')
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Assign Leads To</label>
+                        <select name="default_assigned_to" class="w-full px-3 py-2 text-xs border border-gray-250 rounded-xl focus:border-brand-500 outline-none bg-white">
+                            <option value="">-- Auto/CSV Assigned --</option>
+                            @foreach($officers as $officer)
+                                <option value="{{ $officer->id }}">{{ $officer->name }} ({{ str_replace('_', ' ', $officer->role) }})</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @else
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Assigned Consultant</label>
+                        <input type="text" value="{{ Auth::user()->name }} (You)" disabled class="w-full px-3 py-2 text-xs border border-gray-200 rounded-xl bg-gray-100 text-gray-600 font-semibold cursor-not-allowed">
+                    </div>
+                    @endif
                 </div>
 
-                <div class="bg-amber-50/70 dark:bg-amber-950/30 p-3.5 rounded-xl border border-amber-200 dark:border-amber-800/40">
+                <div class="bg-gray-50 p-3.5 rounded-2xl border border-gray-150 text-[11px] text-gray-600 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <span class="font-bold text-gray-800">CSV Headers Recognized:</span>
+                        <a href="{{ route('leads.import-template') }}" class="inline-flex items-center space-x-1 text-brand-600 hover:text-brand-700 font-bold">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                            </svg>
+                            <span>Download Template</span>
+                        </a>
+                    </div>
+                    <p class="font-mono text-[10px] text-gray-500 leading-relaxed bg-white p-2 rounded-xl border border-gray-200">
+                        full_name, phone_number, whatsapp_number, email, budget_range, preferred_location, outreach_location, lead_source, status, notes
+                    </p>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="flex items-start space-x-2.5 cursor-pointer">
+                        <input type="checkbox" name="skip_duplicates" value="1" checked class="mt-0.5 rounded text-brand-600 focus:ring-brand-500">
+                        <span class="text-xs text-gray-600 font-medium">Skip duplicate phone numbers if already in database (Prevents lead overlap)</span>
+                    </label>
                     <label class="flex items-start space-x-2.5 cursor-pointer">
                         <input type="checkbox" name="mute_notifications" value="1" checked class="mt-0.5 rounded text-brand-600 focus:ring-brand-500">
-                        <div>
-                            <span class="text-xs font-bold text-amber-900 dark:text-amber-300 block">Historical Migration Mode (Recommended)</span>
-                            <span class="text-[11px] text-amber-700 dark:text-amber-400 block mt-0.5">Mute automated welcome emails & marketing drip sequences during this bulk import.</span>
-                        </div>
+                        <span class="text-xs text-gray-600 font-medium">Mute automated welcome SMS / emails during bulk import</span>
                     </label>
                 </div>
 
-                <div class="flex justify-end space-x-3 pt-2">
-                    <button type="button" @click="importLeadsOpen = false" class="px-4 py-2 text-sm font-bold text-gray-500 hover:text-gray-700">Cancel</button>
-                    <button type="submit" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-sm rounded-xl">
-                        Import Leads
+                <div class="flex justify-end space-x-3 pt-3 border-t border-gray-100">
+                    <button type="button" @click="importLeadsOpen = false" class="px-4 py-2 text-xs font-bold text-gray-500 hover:text-gray-700">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md shadow-brand-500/20 transition-all">
+                        Upload & Import Leads
                     </button>
                 </div>
             </form>

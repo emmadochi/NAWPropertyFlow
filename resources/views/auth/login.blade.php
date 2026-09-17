@@ -220,14 +220,19 @@
             </button>
         </form>
 
-        {{-- 1-Click Role Login Selector (Displayed in local environments, on demo domains, or when demo mode is active) --}}
-        @if(app()->environment('local') || request()->has('demo') || str_contains(request()->getHost(), 'demo') || str_contains(request()->getHost(), 'nawpropertyflow') || config('app.demo_mode', true))
+        {{-- 1-Click Role Login Selector (Strictly displayed in local environments or explicit demo test setups, never on live company tenants like ricafltd.com) --}}
+        @php
+            $isLiveTenant = str_contains(request()->getHost(), 'ricafltd.com') || (app()->environment('production') && !str_contains(request()->getHost(), 'demo') && !request()->has('demo'));
+        @endphp
+        @if(!$isLiveTenant && (app()->environment('local') || request()->has('demo') || str_contains(request()->getHost(), 'demo') || str_contains(request()->getHost(), 'nawpropertyflow')))
         <div class="quick-roles">
             <div class="quick-roles-header">
                 <span class="quick-roles-title">⚡ 1-Click Role Switcher</span>
+                @if(app()->environment('local'))
                 <a href="{{ url('/seed-demo-now') }}" target="_blank" class="badge-sandbox" style="text-decoration: none; cursor: pointer; display: inline-flex; align-items: center; gap: 0.25rem;">
                     <span>🔄 Initialize / Seed Database</span>
                 </a>
+                @endif
             </div>
 
             <!-- 1. Construction & Site Management Roles -->

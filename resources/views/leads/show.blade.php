@@ -71,21 +71,59 @@
 
                 <!-- Contact Details List -->
                 <div class="space-y-4 text-sm">
+                <!-- Contact Details List with Live Tracking -->
+                <div class="space-y-4 text-sm">
                     <div>
                         <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Phone Number</span>
-                        <a href="tel:{{ $lead->phone_number }}" class="text-dark-800 font-semibold hover:text-brand-600">{{ $lead->phone_number }}</a>
+                        <a href="tel:{{ $lead->phone_number }}" 
+                           onclick="trackOutreachClick(event, 'call', 'tel:{{ $lead->phone_number }}')" 
+                           class="text-dark-800 font-bold hover:text-brand-600 inline-flex items-center space-x-1.5 p-1 rounded-lg hover:bg-gray-100 transition-colors">
+                            <span class="text-blue-600">📞</span>
+                            <span>{{ $lead->phone_number }}</span>
+                        </a>
                     </div>
+
                     @if($lead->whatsapp_number)
                     <div>
                         <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">WhatsApp Number</span>
-                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $lead->whatsapp_number) }}" target="_blank" class="text-emerald-600 font-semibold hover:underline flex items-center space-x-1">
-                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <a href="https://wa.me/{{ preg_replace('/[^0-9]/', '', $lead->whatsapp_number) }}" 
+                           target="_blank" 
+                           onclick="trackOutreachClick(event, 'whatsapp', 'https://wa.me/{{ preg_replace('/[^0-9]/', '', $lead->whatsapp_number) }}')"
+                           class="text-emerald-600 font-bold hover:underline inline-flex items-center space-x-1.5 p-1 rounded-lg hover:bg-emerald-50 transition-colors">
+                            <svg class="w-4 h-4 fill-current text-emerald-600" viewBox="0 0 24 24">
                                 <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.514 2.266 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.458L0 24zm6.59-4.846c1.6.95 3.197 1.45 4.817 1.453 5.461 0 9.898-4.432 9.9-9.893.002-2.646-1.01-5.132-2.85-6.974S14.653 1.082 12.01 1.08c-5.468 0-9.91 4.436-9.912 9.898-.001 1.83.486 3.62 1.411 5.2l-.994 3.628 3.722-.972zm11.233-7.502c-.3-.15-1.77-.875-2.045-.975s-.475-.15-.675.15-.775.975-.95 1.175-.35.225-.65.075c-.3-.15-1.265-.467-2.41-1.485-.89-.79-1.49-1.77-1.665-2.07s-.018-.462.13-.61c.135-.133.3-.35.45-.525.15-.175.2-.3.3-.5s.05-.375-.025-.525-.675-1.625-.925-2.225c-.244-.589-.491-.51-.675-.52-.175-.01-.375-.01-.575-.01s-.525.075-.8.375c-.275.3-1.05 1.025-1.05 2.5s1.075 2.9 1.225 3.1c.15.2 2.11 3.225 5.11 4.525.714.31 1.27.495 1.7.635.717.227 1.37.195 1.885.118.574-.085 1.77-.725 2.02-1.39s.25-1.235.175-1.39-.275-.25-.575-.4z"/>
                             </svg>
-                            <span>Chat on WhatsApp</span>
+                            <span>Chat on WhatsApp (Auto-Tracked)</span>
                         </a>
                     </div>
                     @endif
+
+                    <!-- Last Contacted Status Badge -->
+                    <div id="lastContactedBadge" class="bg-gray-50 border border-gray-150 p-2.5 rounded-xl text-xs">
+                        <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Latest Interaction</span>
+                        @if($lead->last_contacted_at)
+                            <div class="flex items-center space-x-1.5 mt-0.5">
+                                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                                <span class="font-bold text-dark-900">{{ $lead->last_contacted_at->format('d M Y, h:i A') }}</span>
+                                <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-gray-200 text-gray-700 capitalize">
+                                    {{ $lead->last_contact_channel ?? 'Contact' }}
+                                </span>
+                            </div>
+                        @else
+                            <span class="text-amber-600 font-bold text-[11px] block mt-0.5">No direct contact logged yet</span>
+                        @endif
+                    </div>
+
+                    @if($lead->outreach_location)
+                    <div>
+                        <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Outreach / Roadshow Location</span>
+                        <span class="inline-flex items-center space-x-1 px-2.5 py-1 bg-amber-50 text-amber-800 border border-amber-200 rounded-lg text-xs font-bold">
+                            <span>📍</span>
+                            <span>{{ $lead->outreach_location }}</span>
+                        </span>
+                    </div>
+                    @endif
+
                     <div>
                         <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Email Address</span>
                         <a href="mailto:{{ $lead->email }}" class="text-dark-800 font-semibold hover:text-brand-600">{{ $lead->email ?? 'N/A' }}</a>
@@ -112,6 +150,59 @@
                         <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Assigned Sales Officer</span>
                         <span class="text-dark-900 font-semibold">{{ $lead->assignedOfficer ? $lead->assignedOfficer->name : 'Unassigned' }}</span>
                     </div>
+                </div>
+
+                <!-- 1-Click Milestone & Ongoing Chat Logger -->
+                <div class="pt-4 border-t border-gray-150 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-extrabold text-dark-900 uppercase tracking-wider flex items-center space-x-1">
+                            <span>⚡</span>
+                            <span>Quick Chat / Call Logger</span>
+                        </span>
+                        <span class="text-[10px] text-gray-400 font-bold">1-Click Pulse</span>
+                    </div>
+                    <p class="text-[11px] text-gray-500 leading-snug">
+                        Chatting on WhatsApp or taking calls on your phone? Select a quick progress outcome below to update your weekly performance numbers.
+                    </p>
+
+                    <form id="quickMilestoneForm" onsubmit="submitQuickMilestone(event)" class="space-y-2.5">
+                        <div class="grid grid-cols-2 gap-1.5 text-xs">
+                            <label class="p-2 border border-gray-200 rounded-xl hover:border-brand-500 hover:bg-brand-50/30 cursor-pointer flex items-center space-x-1.5 transition-all">
+                                <input type="radio" name="quick_channel" value="whatsapp" checked class="text-brand-500 focus:ring-brand-500 text-xs">
+                                <span class="font-bold text-gray-700 text-[11px]">💬 WhatsApp</span>
+                            </label>
+                            <label class="p-2 border border-gray-200 rounded-xl hover:border-brand-500 hover:bg-brand-50/30 cursor-pointer flex items-center space-x-1.5 transition-all">
+                                <input type="radio" name="quick_channel" value="call" class="text-brand-500 focus:ring-brand-500 text-xs">
+                                <span class="font-bold text-gray-700 text-[11px]">📞 Phone Call</span>
+                            </label>
+                        </div>
+
+                        <div>
+                            <select name="quick_outcome" id="quick_outcome" class="w-full px-3 py-2 text-xs border border-gray-250 rounded-xl focus:border-brand-500 outline-none bg-white font-medium text-gray-700">
+                                <option value="active_chat">💬 Active Ongoing Discussion</option>
+                                <option value="shared_brochure">📄 Shared Brochure / Price List</option>
+                                <option value="scheduled_inspection">🚗 Site Inspection Booked</option>
+                                <option value="office_visit">🏢 Office Visit Completed</option>
+                                <option value="negotiation">🤝 Price / Payment Negotiation</option>
+                                <option value="payment_promised">💰 Payment Commitment Received</option>
+                                <option value="call_back_later">⏳ Client Requested Call Back</option>
+                                <option value="switched_off">📵 Switched Off / No Answer</option>
+                                <option value="not_interested">❌ Not Interested</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <input type="text" name="quick_notes" placeholder="Brief note / outcome (optional)..." class="w-full px-3 py-2 text-xs border border-gray-250 rounded-xl focus:border-brand-500 outline-none">
+                        </div>
+
+                        <div class="flex items-center space-x-2">
+                            <input type="datetime-local" name="quick_follow_up" title="Schedule next follow-up" class="w-full px-2 py-1.5 text-[11px] border border-gray-250 rounded-xl text-gray-600">
+                        </div>
+
+                        <button type="submit" id="quickLogBtn" class="w-full py-2 bg-dark-900 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center space-x-1">
+                            <span>Save Engagement</span>
+                        </button>
+                    </form>
                 </div>
 
                 @if($lead->notes)
@@ -1225,7 +1316,92 @@
     } else {
         initRecordSaleForm();
     }
-    document.addEventListener('spa-load-complete', initRecordSaleForm);
+    // ─── Click-to-Dial & Click-to-WhatsApp Live Tracking ──────────────────
+    window.trackOutreachClick = function(e, channel, targetUrl) {
+        // Send tracking ping in background
+        const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        fetch('{{ route('leads.log-click', $lead->id) }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': token,
+                'Accept': 'application/json'
+            },
+            body: JSON.stringify({ channel: channel })
+        }).then(res => res.json()).then(data => {
+            if (data.success) {
+                const badge = document.getElementById('lastContactedBadge');
+                if (badge) {
+                    badge.innerHTML = `
+                        <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Latest Interaction</span>
+                        <div class="flex items-center space-x-1.5 mt-0.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="font-bold text-dark-900">${data.last_contacted_at}</span>
+                            <span class="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-gray-200 text-gray-700 capitalize">${data.channel}</span>
+                        </div>
+                    `;
+                }
+            }
+        }).catch(err => console.log('Tracking ping silently handled:', err));
+
+        // For telephone links, allow native handler; for whatsapp if prevented, open window
+        if (targetUrl && !targetUrl.startsWith('tel:')) {
+            // Already handled by target="_blank"
+        }
+    };
+
+    // ─── Submit Quick Milestone / Ongoing Discussion Log ───────────────────
+    window.submitQuickMilestone = async function(e) {
+        e.preventDefault();
+        const form = e.target;
+        const btn = document.getElementById('quickLogBtn');
+        const formData = new FormData(form);
+
+        const payload = {
+            channel: formData.get('quick_channel'),
+            outcome: formData.get('quick_outcome'),
+            notes: formData.get('quick_notes'),
+            next_follow_up_date: formData.get('quick_follow_up') || null
+        };
+
+        btn.disabled = true;
+        btn.innerHTML = 'Saving...';
+
+        try {
+            const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+            const res = await fetch('{{ route('leads.log-outcome', $lead->id) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': token,
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                btn.innerHTML = '✅ Saved!';
+                setTimeout(() => {
+                    btn.disabled = false;
+                    btn.innerHTML = '<span>Save Engagement</span>';
+                    form.reset();
+                    // Reload page to display new timeline activity and updated status badge
+                    window.location.reload();
+                }, 500);
+            } else {
+                alert('❌ ' + (data.message || 'Failed to record engagement.'));
+                btn.disabled = false;
+                btn.innerHTML = '<span>Save Engagement</span>';
+            }
+        } catch (err) {
+            console.error(err);
+            alert('❌ Network error while saving activity.');
+            btn.disabled = false;
+            btn.innerHTML = '<span>Save Engagement</span>';
+        }
+    };
+
 })();
 </script>
 @endpush

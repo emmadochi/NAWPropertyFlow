@@ -78,8 +78,194 @@ Route::middleware([
         }
     })->name('run-migrations');
 
-    // Direct Web Seeder Runner for Demo Testing
+    // One-click comprehensive demo purge & Ricaf profile restoration
+    Route::get('/restore-ricaf-defaults', function () {
+        // Allow if user is authenticated admin OR if secret key is provided
+        $isAdmin = \Illuminate\Support\Facades\Auth::check() && in_array(\Illuminate\Support\Facades\Auth::user()->role, ['super_admin', 'company_admin']);
+        $hasKey = request()->query('key') === 'ricaf2026cleanup';
+
+        if (!$isAdmin && !$hasKey) {
+            abort(403, 'Unauthorized. Please log in as Super Admin or supply the restoration key.');
+        }
+
+        $log = [];
+
+        // 1. Restore Company Settings to Ricaf Nigeria Limited
+        $cs = \App\Models\CompanySetting::firstOrCreate(['id' => 1]);
+        $cs->update([
+            'company_name'      => 'Ricaf Nigeria Limited',
+            'email'             => 'info@ricafltd.com',
+            'phone'             => '+234 800 000 0000',
+            'address'           => 'Suite D7, 3rd Floor, Kuriftu Plaza, Plot 519, Olu Awotesu Street, Jabi, Abuja, Nigeria',
+            'package_tier'      => 'enterprise',
+            'letterhead_header' => null,
+            'letterhead_footer' => null,
+        ]);
+        \Illuminate\Support\Facades\Cache::forget('active_company_setting');
+        $log[] = '✅ Company Profile restored to: <strong>Ricaf Nigeria Limited</strong> (Cache cleared).';
+
+        // 2. Identify and Purge Demo Staff (@propertyflow.com)
+        $demoUsers = \App\Models\User::where('email', 'like', '%@propertyflow.com')->get();
+        $demoUserIds = $demoUsers->pluck('id')->toArray();
+        $demoUserCount = count($demoUserIds);
+
+        if ($demoUserCount > 0) {
+            // Find a safe real admin to reassign any genuine leads if needed
+            $realAdmin = \App\Models\User::where('email', 'admin@ricafltd.com')->first() 
+                ?? \App\Models\User::where('email', 'not like', '%@propertyflow.com')->first();
+            $fallbackAdminId = $realAdmin ? $realAdmin->id : null;
+
+            if ($fallbackAdminId) {
+                \App\Models\Lead::whereIn('assigned_to', $demoUserIds)->update(['assigned_to' => $fallbackAdminId]);
+            }
+
+            // Remove associated HR/Payroll demo records
+            if (\Illuminate\Support\Facades\Schema::hasTable('salary_structures')) {
+                \App\Models\SalaryStructure::whereIn('user_id', $demoUserIds)->delete();
+            }
+            if (\Illuminate\Support\Facades\Schema::hasTable('payroll_deductions')) {
+                \App\Models\PayrollDeduction::whereIn('user_id', $demoUserIds)->delete();
+            }
+            if (\Illuminate\Support\Facades\Schema::hasTable('performance_reviews')) {
+                \App\Models\PerformanceReview::whereIn('user_id', $demoUserIds)->delete();
+            }
+            if (\Illuminate\Support\Facades\Schema::hasTable('disciplinary_records')) {
+                \App\Models\DisciplinaryRecord::whereIn('user_id', $demoUserIds)->delete();
+            }
+            if (\Illuminate\Support\Facades\Schema::hasTable('staff_certifications')) {
+                \App\Models\StaffCertification::whereIn('user_id', $demoUserIds)->delete();
+            }
+            if (\Illuminate\Support\Facades\Schema::hasTable('staff_submissions')) {
+                \Illuminate\Support\Facades\DB::table('staff_submissions')->whereIn('user_id', $demoUserIds)->delete();
+            }
+            if (\Illuminate\Support\Facades\Schema::hasTable('daily_tasks')) {
+                \Illuminate\Support\Facades\DB::table('daily_tasks')->whereIn('user_id', $demoUserIds)->delete();
+            }
+
+            \App\Models\User::whereIn('id', $demoUserIds)->delete();
+            $log[] = "✅ Purged {$demoUserCount} demo staff accounts (@propertyflow.com).";
+        } else {
+            $log[] = "ℹ️ No @propertyflow.com demo staff found.";
+        }
+
+        // 3. Identify and Purge Demo Leads
+        $demoLeadEmails = [
+            'emmadochi@gmail.com',
+            'chinedu.okafor@example.com',
+            'funke.adebayo@example.com',
+            'aisha.yusuf@example.com',
+            'abubakar.bello@example.com',
+            'segun.olatunji@example.com',
+            'ngozi.eze.uk@example.com',
+            'fola.williams@lawfirm.ng',
+            'ibrahim.danjuma@aviation.ng',
+            'chioma.n@techcorp.ng',
+            'obinna.okonkwo@diasporacapital.co.uk',
+        ];
+
+        $demoLeads = \App\Models\Lead::whereIn('email', $demoLeadEmails)
+            ->orWhere('email', 'like', '%@example.com')
+            ->get();
+        $demoLeadIds = $demoLeads->pluck('id')->toArray();
+        $demoLeadCount = count($demoLeadIds);
+
+        if ($demoLeadCount > 0) {
+            \App\Models\Sale::whereIn('lead_id', $demoLeadIds)->delete();
+            \App\Models\FollowUp::whereIn('lead_id', $demoLeadIds)->delete();
+            \App\Models\Inspection::whereIn('lead_id', $demoLeadIds)->delete();
+            \App\Models\LeadActivity::whereIn('lead_id', $demoLeadIds)->delete();
+            \App\Models\Document::whereIn('lead_id', $demoLeadIds)->delete();
+            \App\Models\Lead::whereIn('id', $demoLeadIds)->delete();
+            $log[] = "✅ Purged {$demoLeadCount} demo leads (Chinedu Okafor, Funke Adebayo, Obinna Okonkwo, etc.) and associated test sales.";
+        } else {
+            $log[] = "ℹ️ No demo leads found.";
+        }
+
+        // 4. Safely Purge Lagos Demo Properties
+        $demoPropertyNames = [
+            'Banana Island Marina Court - 5 Bedroom Waterfront Detached Villa',
+            'Lekki Atlantic Horizon - 4 Bedroom Oceanview Terrace + BQ',
+            'Epe Smart Agri-Tech & Residential City - 600 SQM Plot',
+        ];
+
+        $deletedProps = 0;
+        foreach ($demoPropertyNames as $pName) {
+            $prop = \App\Models\Property::withoutGlobalScopes()->where('name', $pName)->first();
+            if ($prop) {
+                // Delete associated units
+                $prop->units()->delete();
+                $prop->sales()->delete();
+                $prop->delete();
+                $deletedProps++;
+            }
+        }
+        $log[] = "✅ Purged {$deletedProps} Lagos demo properties (Banana Island, Lekki, Epe).";
+
+        // 5. Purge Demo Construction Inventory & Demo Suppliers
+        if (\Illuminate\Support\Facades\Schema::hasTable('suppliers')) {
+            $demoSuppliers = [
+                'Dangote Cement Plc (North Regional Depot)',
+                'Julius Berger Quarry & Aggregates',
+                'BUA Cement Commercial Depot',
+                'Coleman Technical Wire & Cable Ltd',
+                'Sankyo Smart HVAC & Electrical Systems',
+                'Tiger TMT Steel Rolling Mills Ltd',
+            ];
+            $supplierIds = \App\Models\Inventory\Supplier::whereIn('company_name', $demoSuppliers)->pluck('id')->toArray();
+            if (!empty($supplierIds)) {
+                if (\Illuminate\Support\Facades\Schema::hasTable('purchase_orders')) {
+                    \App\Models\Inventory\PurchaseOrder::whereIn('supplier_id', $supplierIds)->delete();
+                }
+                if (\Illuminate\Support\Facades\Schema::hasTable('supplier_invoices')) {
+                    \App\Models\Inventory\SupplierInvoice::whereIn('supplier_id', $supplierIds)->delete();
+                }
+                \App\Models\Inventory\Supplier::whereIn('id', $supplierIds)->delete();
+                $log[] = "✅ Purged " . count($supplierIds) . " demo construction suppliers and demo purchase orders.";
+            }
+        }
+
+        $logHtml = implode('<br>', $log);
+
+        return response('
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Ricaf Database Cleaned & Restored</title>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <style>
+                body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #0f172a; color: #f8fafc; padding: 2rem; display: flex; justify-content: center; }
+                .card { background: #1e293b; border: 1px solid #334155; border-radius: 1.5rem; max-width: 680px; width: 100%; padding: 2.5rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); }
+                .badge { background: #10b981; color: #fff; padding: 0.35rem 0.85rem; border-radius: 9999px; font-size: 0.8rem; font-weight: 800; display: inline-block; margin-bottom: 1.25rem; }
+                h1 { margin: 0 0 0.75rem 0; font-size: 1.75rem; color: #fff; }
+                p { color: #94a3b8; font-size: 0.95rem; line-height: 1.6; margin-bottom: 1.5rem; }
+                .log-box { background: #0f172a; border: 1px solid #334155; border-radius: 1rem; padding: 1.25rem; font-size: 0.9rem; line-height: 1.8; color: #e2e8f0; margin-bottom: 2rem; }
+                .btn { display: inline-block; text-align: center; background: #f97316; color: #fff; padding: 0.9rem 2rem; border-radius: 0.75rem; font-weight: bold; text-decoration: none; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3); }
+                .btn:hover { background: #ea580c; }
+            </style>
+        </head>
+        <body>
+            <div class="card">
+                <span class="badge">✓ RESTORATION COMPLETED</span>
+                <h1>Ricaf Nigeria Limited Restored!</h1>
+                <p>All injected demo staff, demo leads, Lagos listings, and test records have been successfully purged from your database. Your authentic company profile has been restored.</p>
+                
+                <div class="log-box">
+                    ' . $logHtml . '
+                </div>
+
+                <a href="/dashboard" class="btn">Return to CRM Dashboard →</a>
+            </div>
+        </body>
+        </html>
+        ', 200, ['Content-Type' => 'text/html']);
+    })->name('restore-ricaf');
+
+    // Direct Web Seeder Runner for Demo Testing (Strictly blocked on live production and client domains)
     Route::get('/seed-demo-now', function () {
+        if (app()->environment('production') || str_contains(request()->getHost(), 'ricafltd.com')) {
+            abort(403, 'Demo database seeding is strictly disabled on live production environments.');
+        }
+
         try {
             // 1. Run all tenant migrations
             \Illuminate\Support\Facades\Artisan::call('migrate', [
@@ -226,6 +412,9 @@ Route::middleware([
         Route::post('leads/{lead}/assign', [LeadController::class, 'assign'])->name('leads.assign');
         Route::patch('leads/{lead}/status', [LeadController::class, 'updateStatus'])->name('leads.update-status');
         Route::post('leads/{lead}/notes', [LeadController::class, 'storeNote'])->name('leads.notes.store');
+        Route::post('leads/{lead}/log-click', [\App\Http\Controllers\ActivityQuickLogController::class, 'logClick'])->name('leads.log-click');
+        Route::post('leads/{lead}/log-outcome', [\App\Http\Controllers\ActivityQuickLogController::class, 'logOutcome'])->name('leads.log-outcome');
+        Route::post('leads/daily-pulse', [\App\Http\Controllers\ActivityQuickLogController::class, 'dailyPulse'])->name('leads.daily-pulse');
 
         // Properties
         Route::resource('properties', PropertyController::class);
@@ -317,6 +506,10 @@ Route::middleware([
             Route::post('developer/modules', [\App\Http\Controllers\DeveloperModuleController::class, 'update'])->name('developer.modules.update');
             Route::post('developer/modules/reset', [\App\Http\Controllers\DeveloperModuleController::class, 'resetToTier'])->name('developer.modules.reset');
         });
+
+        // Retail Sales Performance Scorecard (Weekly / Monthly)
+        Route::get('reports/retail-performance', [\App\Http\Controllers\RetailPerformanceController::class, 'index'])->name('reports.retail.index');
+        Route::get('reports/retail-performance/export', [\App\Http\Controllers\RetailPerformanceController::class, 'export'])->name('reports.retail.export');
 
         // Reports
         Route::middleware(['permission:finance.view_ledger,hr.manage_targets', 'feature:advanced_reports'])->group(function () {
