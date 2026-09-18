@@ -65,6 +65,10 @@ Route::middleware(array_values(array_filter([
         return view('welcome');
     })->name('landing');
 
+    // Dynamic Multi-Tenant PWA Manifest & App Icons
+    Route::get('/manifest.json', [\App\Http\Controllers\PwaController::class, 'manifest'])->name('tenant.manifest');
+    Route::get('/pwa-icon/{size?}', [\App\Http\Controllers\PwaController::class, 'icon'])->name('tenant.pwa.icon');
+
     // One-click migration runner (run pending tenant migrations without SSH)
     Route::get('/run-migrations', function () {
         try {

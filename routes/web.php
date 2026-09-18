@@ -19,29 +19,9 @@ use App\Http\Controllers\System\TenantController;
 |
 */
 
-// ─── PWA Manifest & Service Worker Direct Endpoints ──────────────────────
-Route::get('/manifest.json', function () {
-    $path = public_path('manifest.json');
-    if (file_exists($path)) {
-        return response()->file($path, [
-            'Content-Type' => 'application/manifest+json; charset=utf-8',
-        ]);
-    }
-    return response()->json([
-        'name' => config('app.name', 'RICAF PropertyFlow CRM'),
-        'short_name' => 'RICAF CRM',
-        'id' => '/',
-        'start_url' => '/',
-        'scope' => '/',
-        'display' => 'standalone',
-        'background_color' => '#FFFFFF',
-        'theme_color' => '#F37021',
-        'icons' => [
-            ['src' => '/icons/icon-192x192.png', 'sizes' => '192x192', 'type' => 'image/png', 'purpose' => 'any'],
-            ['src' => '/icons/icon-512x512.png', 'sizes' => '512x512', 'type' => 'image/png', 'purpose' => 'any'],
-        ]
-    ]);
-});
+// ─── PWA Manifest & Dynamic Endpoints ────────────────────────────────────
+Route::get('/manifest.json', [\App\Http\Controllers\PwaController::class, 'manifest'])->name('manifest');
+Route::get('/pwa-icon/{size?}', [\App\Http\Controllers\PwaController::class, 'icon'])->name('pwa.icon');
 
 Route::get('/sw.js', function () {
     $path = public_path('sw.js');

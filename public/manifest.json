@@ -1,35 +1,35 @@
 {
-  "name": "RICAF PropertyFlow CRM",
-  "short_name": "RICAF CRM",
-  "description": "Property Management and Sales CRM for Ricaf Nigeria Limited",
+  "name": "NAW PropertyFlow CRM",
+  "short_name": "PropertyFlow",
+  "description": "Enterprise Property Management and Sales CRM Platform",
   "id": "/",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "background_color": "#FFFFFF",
-  "theme_color": "#F37021",
+  "theme_color": "#0B2545",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/icons/icon-192x192.png",
+      "src": "/pwa-icon/192",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-192x192.png",
+      "src": "/pwa-icon/192",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable"
     },
     {
-      "src": "/icons/icon-512x512.png",
+      "src": "/pwa-icon/512",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icons/icon-512x512.png",
+      "src": "/pwa-icon/512",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -41,21 +41,21 @@
       "short_name": "Leads",
       "description": "View and manage CRM leads",
       "url": "/leads",
-      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/pwa-icon/192", "sizes": "192x192" }]
     },
     {
       "name": "Properties",
       "short_name": "Properties",
       "description": "View property listings and units",
       "url": "/properties",
-      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/pwa-icon/192", "sizes": "192x192" }]
     },
     {
       "name": "Sales Pipeline",
       "short_name": "Sales",
       "description": "Track closed deals and payment milestones",
       "url": "/sales",
-      "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+      "icons": [{ "src": "/pwa-icon/192", "sizes": "192x192" }]
     }
   ]
 }

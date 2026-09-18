@@ -5,17 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'RICAF PropertyFlow CRM') }}</title>
+    @php
+        $__setting = rescue(fn() => \App\Models\CompanySetting::getCached(), null);
+        $__tenantObj = function_exists('tenant') ? tenant() : null;
+        $__appName = $__setting?->company_name ?? ($__tenantObj ? ($__tenantObj->name ?? 'Buckcrest Havens Limited') : config('app.name', 'NAW PropertyFlow CRM'));
+        $__appIcon = url('/pwa-icon/192');
+    @endphp
+    <title>{{ $__appName }}</title>
     
-    <!-- PWA Meta Tags & Icons -->
-    <link rel="manifest" href="/manifest.json">
-    <meta name="theme-color" content="#F37021">
+    <!-- PWA Meta Tags & Icons (Multi-Tenant Dynamic) -->
+    <link rel="manifest" href="{{ url('/manifest.json') }}">
+    <meta name="theme-color" content="#0B2545">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="RICAF CRM">
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
-    <link rel="icon" type="image/png" href="/icons/icon-192x192.png">
+    <meta name="apple-mobile-web-app-title" content="{{ $__appName }}">
+    <link rel="apple-touch-icon" href="{{ $__appIcon }}">
+    <link rel="icon" type="image/png" href="{{ $__appIcon }}">
 
     <!-- Immediate PWA Prompt Capture -->
     <script>
@@ -42,7 +48,7 @@
 
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('/sw.js')
-                .then((reg) => console.log('RICAF PWA ServiceWorker ready'))
+                .then((reg) => console.log('PWA ServiceWorker ready'))
                 .catch((err) => console.log('SW error', err));
         }
     </script>
@@ -887,7 +893,7 @@
                         <div class="hidden sm:inline-flex items-center">
                             <button onclick="window.installPwaApp()" 
                                     class="inline-flex items-center space-x-1.5 bg-gradient-to-r from-brand-500 to-brand-600 hover:from-brand-600 hover:to-brand-700 text-white text-xs font-bold px-3 py-1 rounded-xl shadow-md shadow-brand-500/20 transition-all transform hover:scale-105 active:scale-95"
-                                    title="Install RICAF CRM on this device">
+                                    title="Install {{ $__appName }} on this device">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
                                 </svg>
@@ -1708,9 +1714,9 @@
          }"
          x-show="showInstallBanner" x-cloak
          class="fixed top-3 left-1/2 transform -translate-x-1/2 z-50 w-11/12 max-w-md bg-white dark:bg-slate-800 border border-brand-200 dark:border-brand-500/30 rounded-2xl shadow-2xl p-3.5 flex items-center space-x-3 transition-all duration-300">
-        <img src="/icons/icon-192x192.png" alt="RICAF App" class="w-10 h-10 rounded-xl object-contain bg-orange-50 border border-orange-100 p-1 flex-shrink-0">
+        <img src="{{ $__appIcon }}" alt="{{ $__appName }}" class="w-10 h-10 rounded-xl object-contain bg-slate-50 border border-slate-150 p-1 flex-shrink-0">
         <div class="flex-1 min-w-0">
-            <h4 class="text-xs font-extrabold text-dark-900 dark:text-white leading-tight">Install RICAF CRM App</h4>
+            <h4 class="text-xs font-extrabold text-dark-900 dark:text-white leading-tight">Install {{ $__appName }} App</h4>
             <p class="text-[11px] text-gray-500 dark:text-slate-400 mt-0.5">Add to Home Screen for fast offline access</p>
         </div>
         <div class="flex items-center space-x-1.5 flex-shrink-0">

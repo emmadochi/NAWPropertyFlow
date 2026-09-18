@@ -1,9 +1,9 @@
-const CACHE_NAME = 'ricaf-crm-v2';
+const CACHE_NAME = 'propertyflow-pwa-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/manifest.json',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
+  '/pwa-icon/192',
+  '/pwa-icon/512',
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js',
   'https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap'
