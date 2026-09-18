@@ -53,6 +53,41 @@
         </div>
     </div>
 
+    @if($lead->is_flagged_fake)
+    <!-- Flagged Lead / Phone Verification Alert Banner -->
+    <div class="bg-rose-50 border-2 border-rose-300 rounded-2xl p-5 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div class="flex items-start space-x-3.5">
+            <div class="w-11 h-11 rounded-xl bg-rose-600 text-white flex items-center justify-center font-black text-xl flex-shrink-0 shadow-md shadow-rose-600/20">
+                ⚠️
+            </div>
+            <div>
+                <div class="flex flex-wrap items-center gap-2">
+                    <h3 class="text-sm font-black text-rose-900 uppercase tracking-wide">
+                        Suspected Dead / Fake / Unreachable Number Flagged
+                    </h3>
+                    <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-rose-200 text-rose-800 border border-rose-300">
+                        {{ $lead->unreachable_count }} Failed Attempts
+                    </span>
+                </div>
+                <p class="text-xs text-rose-700 mt-1.5 leading-relaxed">
+                    <strong>Audit Flag:</strong> {{ $lead->flagged_reason ?? 'Repeatedly unreachable or marked as non-existent number.' }}
+                    @if($lead->flagged_at)
+                        <span class="text-rose-500 font-semibold block sm:inline sm:ml-2">• Flagged {{ $lead->flagged_at->format('d M Y, h:i A') }}</span>
+                    @endif
+                </p>
+                <div class="mt-2 text-[11px] text-rose-800/90 font-medium bg-rose-100/60 p-2.5 rounded-xl border border-rose-200">
+                    🛡️ <strong>Buckcrest Havens Policy:</strong> This lead has been temporarily disqualified from executive performance targets. To restore it to active status, please obtain a verified alternate phone number from the prospect and update it below, or log a successful confirmed connection.
+                </div>
+            </div>
+        </div>
+        <div class="flex-shrink-0 flex items-center space-x-2">
+            <button @click="editLeadOpen = true" class="w-full md:w-auto px-4 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-xl shadow-md transition-all whitespace-nowrap">
+                ✏️ Update Phone Number
+            </button>
+        </div>
+    </div>
+    @endif
+
     <!-- Main Content Layout -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         
@@ -69,12 +104,21 @@
                     </div>
                 </div>
 
-                <!-- Contact Details List -->
-                <div class="space-y-4 text-sm">
                 <!-- Contact Details List with Live Tracking -->
                 <div class="space-y-4 text-sm">
                     <div>
-                        <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider mb-1">Phone Number</span>
+                        <div class="flex items-center justify-between mb-1">
+                            <span class="block text-xs font-bold text-gray-400 uppercase tracking-wider">Phone Number</span>
+                            @if($lead->is_flagged_fake)
+                            <span class="text-[10px] font-extrabold px-2 py-0.5 bg-rose-100 text-rose-700 border border-rose-300 rounded-md">
+                                ⚠️ Dead / Unreachable Line
+                            </span>
+                            @elseif($lead->unreachable_count > 0)
+                            <span class="text-[10px] font-bold px-2 py-0.5 bg-amber-100 text-amber-800 rounded-md">
+                                📵 {{ $lead->unreachable_count }} Failed Calls
+                            </span>
+                            @endif
+                        </div>
                         <a href="tel:{{ $lead->phone_number }}" 
                            onclick="trackOutreachClick(event, 'call', 'tel:{{ $lead->phone_number }}')" 
                            class="text-dark-800 font-bold hover:text-brand-600 inline-flex items-center space-x-1.5 p-1 rounded-lg hover:bg-gray-100 transition-colors">
@@ -187,6 +231,7 @@
                                 <option value="payment_promised">💰 Payment Commitment Received</option>
                                 <option value="call_back_later">⏳ Client Requested Call Back</option>
                                 <option value="switched_off">📵 Switched Off / No Answer</option>
+                                <option value="invalid_number">⚠️ Dead / Invalid Number (Flag Fake)</option>
                                 <option value="not_interested">❌ Not Interested</option>
                             </select>
                         </div>

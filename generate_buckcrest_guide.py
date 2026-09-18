@@ -507,12 +507,58 @@ def build_pdf(filename):
     story.append(Paragraph("• <b>Finance Approval Queue:</b> The Finance Department verifies company bank accounts, approves the milestone, and issues the official allocation receipt.", bullet_style))
     story.append(Paragraph("• <b>Commission Computation:</b> Verified deals instantly calculate the consultant's credited commission tally.", bullet_style))
 
-    story.append(Spacer(1, 15))
+    story.append(Spacer(1, 10))
 
     # =========================================================================
-    # SECTION 7: OFFICIAL HANDOVER & CERTIFICATION
+    # SECTION 7: LEAD QUALITY AUDIT & FAKE NUMBER PREVENTION POLICY
     # =========================================================================
-    story.append(Paragraph("7. Certified Handover & Deployment Confirmation", h1_style))
+    story.append(Paragraph("7. Lead Quality Audit & Automated Reachability Verification", h1_style))
+    story.append(Paragraph(
+        "To protect Buckcrest Havens from fabricated prospect numbers and safeguard marketing investments, the CRM enforces an <b>Automated 3-Strike Reachability Rule</b>:",
+        body_style
+    ))
+
+    fraud_table_data = [
+        [Paragraph("Reachability Policy", th_style), Paragraph("System Action & Operational Impact", th_style)],
+        [
+            Paragraph("<b>Strike 1 & Strike 2<br/>(Switched Off / No Answer)</b>", td_bold),
+            Paragraph("Customer Care or telemarketer attempts to connect with the prospect. The attempt timestamp is logged. The lead remains active in the queue for alternate call times.", td_style)
+        ],
+        [
+            Paragraph("<b>Strike 3 or Invalid Line<br/>(3 Consecutive Failures)</b>", td_bold),
+            Paragraph("The lead is <b>automatically flagged as 'Suspected Dead / Fake Line'</b>. The prospect's phone number is highlighted in red, and the capturing executive is placed on notice.", td_style)
+        ],
+        [
+            Paragraph("<b>Quota Disqualification</b>", td_bold),
+            Paragraph("Flagged leads are <b>automatically deducted from the executive's performance quota</b>. Marketers cannot artificially inflate capture tallies with dead or invented phone numbers.", td_style)
+        ],
+        [
+            Paragraph("<b>48-Hour Rectification Window</b>", td_bold),
+            Paragraph("The capturing sales executive receives a high-visibility warning banner on their dashboard to provide an alternate verified phone line before the lead is archived.", td_style)
+        ],
+        [
+            Paragraph("<b>High-Risk Rep Alert<br/>(&ge; 30% Inactive Rate)</b>", td_bold),
+            Paragraph("If an executive submits leads where 30% or more are dead lines (e.g. 10 or 16 out of 20 unreachable), the Management Audit Panel highlights that rep as <b>'High Inactive Risk'</b> for HR review.", td_style)
+        ],
+    ]
+    fraud_table = Table(fraud_table_data, colWidths=[150, 354], style=TableStyle([
+        ('BACKGROUND', (0,0), (-1,0), c_navy),
+        ('BOX', (0,0), (-1,-1), 1, c_border),
+        ('GRID', (0,0), (-1,-1), 0.5, c_border),
+        ('VALIGN', (0,0), (-1,-1), 'TOP'),
+        ('TOPPADDING', (0,0), (-1,-1), 4.5),
+        ('BOTTOMPADDING', (0,0), (-1,-1), 4.5),
+        ('LEFTPADDING', (0,0), (-1,-1), 7),
+        ('RIGHTPADDING', (0,0), (-1,-1), 7),
+    ]))
+    story.append(fraud_table)
+
+    story.append(Spacer(1, 10))
+
+    # =========================================================================
+    # SECTION 8: OFFICIAL HANDOVER & CERTIFICATION
+    # =========================================================================
+    story.append(Paragraph("8. Certified Handover & Deployment Confirmation", h1_style))
     
     sign_box_data = [
         [Paragraph("<b>OFFICIAL DEPLOYMENT SIGN-OFF & HANDOVER CERTIFICATE</b>", ParagraphStyle('SH', parent=styles['Normal'], fontName='Helvetica-Bold', fontSize=9, textColor=c_navy))],

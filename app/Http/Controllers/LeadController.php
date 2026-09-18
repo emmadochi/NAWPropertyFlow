@@ -44,6 +44,13 @@ class LeadController extends Controller
         if ($request->filled('source')) {
             $query->where('lead_source', $request->source);
         }
+        if ($request->has('flagged') && $request->flagged !== '') {
+            if ($request->flagged === '1' || $request->flagged === 'true') {
+                $query->where('is_flagged_fake', true);
+            } elseif ($request->flagged === '0' || $request->flagged === 'false') {
+                $query->where('is_flagged_fake', false);
+            }
+        }
 
         $leads = $query->orderBy('created_at', 'desc')->paginate(10)->withQueryString();
 

@@ -240,6 +240,11 @@
                             <span class="font-black text-dark-900 {{ $row['leads_captured'] > 0 ? 'text-dark-900' : 'text-gray-300' }}">
                                 {{ $row['leads_captured'] }}
                             </span>
+                            @if(!empty($row['flagged_fake_leads']) && $row['flagged_fake_leads'] > 0)
+                                <span class="block text-[9px] font-bold text-rose-600 leading-tight mt-0.5" title="{{ $row['flagged_fake_leads'] }} unreachable/fake leads disqualified from target">
+                                    ⚠️ -{{ $row['flagged_fake_leads'] }} fake
+                                </span>
+                            @endif
                         </td>
 
                         <!-- Daily Rhythm (Mon–Sun) -->

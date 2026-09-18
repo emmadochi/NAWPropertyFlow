@@ -80,10 +80,38 @@ class ActivityQuickLogController extends Controller
                 $lead->status = 'Contacted';
             }
         }
+        // Fraud detection & unreachable counter handling
+        $flagAlert = null;
+        if ($outcome === 'switched_off') {
+            $lead->unreachable_count = ($lead->unreachable_count ?? 0) + 1;
+            if ($lead->unreachable_count >= 3) {
+                $lead->is_flagged_fake = true;
+                $lead->flagged_reason = "Failed {$lead->unreachable_count} consecutive call attempts (Number switched off / unreachable)";
+                $lead->flagged_at = now();
+                $flagAlert = "🚨 Lead flagged as Suspected Inactive ({$lead->unreachable_count} failed calls).";
+            }
+        } elseif ($outcome === 'invalid_number') {
+            $lead->unreachable_count = max(3, ($lead->unreachable_count ?? 0) + 1);
+            $lead->is_flagged_fake = true;
+            $lead->flagged_reason = "Flagged by {$user->name}: Invalid, non-existent, or fabricated number";
+            $lead->flagged_at = now();
+            $flagAlert = "🚨 Lead flagged: Invalid / Non-existent phone number.";
+        } elseif (in_array($outcome, ['active_chat', 'spoke_with_client', 'scheduled_inspection', 'negotiation', 'payment_promised', 'office_visit'])) {
+            // Successful contact verified - reset counter and clear flag if present
+            if ($lead->is_flagged_fake) {
+                $lead->is_flagged_fake = false;
+                $lead->flagged_reason = null;
+                $lead->flagged_at = null;
+                $flagAlert = "✅ Number verified active. Fraud flag cleared.";
+            }
+            $lead->unreachable_count = 0;
+        }
+
         $lead->save();
 
         // Human-readable labels for standard outcomes
         $outcomeLabels = [
+            'spoke_with_client'    => 'Spoke with Client (Qualified)',
             'active_chat'          => 'Active Ongoing Discussion',
             'shared_brochure'      => 'Shared Price List & Brochure',
             'scheduled_inspection' => 'Site Inspection Booked',
@@ -92,6 +120,7 @@ class ActivityQuickLogController extends Controller
             'payment_promised'     => 'Commitment to Pay Received',
             'call_back_later'      => 'Client Requested Call Back',
             'switched_off'         => 'Number Switched Off / Busy',
+            'invalid_number'       => 'Invalid / Non-Existent / Fake Number',
             'not_interested'       => 'Client Not Interested',
         ];
 
@@ -110,6 +139,15 @@ class ActivityQuickLogController extends Controller
             'description'   => $description,
         ]);
 
+        if ($flagAlert) {
+            LeadActivity::create([
+                'lead_id'       => $lead->id,
+                'user_id'       => $user->id,
+                'activity_type' => 'Verification Alert',
+                'description'   => $flagAlert . ($notes ? " (Note: {$notes})" : ""),
+            ]);
+        }
+
         // Automatically schedule follow-up if date is set
         if (!empty($validated['next_follow_up_date'])) {
             FollowUp::create([
@@ -126,6 +164,9 @@ class ActivityQuickLogController extends Controller
             'lead_id'           => $lead->id,
             'new_status'        => $lead->status,
             'description'       => $description,
+            'is_flagged_fake'   => $lead->is_flagged_fake,
+            'unreachable_count' => $lead->unreachable_count,
+            'flagged_reason'    => $lead->flagged_reason,
             'last_contacted_at' => $lead->last_contacted_at->format('d M Y, h:i A'),
         ]);
     }

@@ -64,6 +64,8 @@ class RetailPerformanceController extends Controller
         $scorecard = [];
         $aggregates = [
             'leads_captured'        => 0,
+            'valid_leads_captured'  => 0,
+            'flagged_fake_leads'    => 0,
             'calls_logged'          => 0,
             'whatsapp_logged'       => 0,
             'inspections_scheduled' => 0,
@@ -80,6 +82,13 @@ class RetailPerformanceController extends Controller
             $leadsCaptured = Lead::where('assigned_to', $consultant->id)
                 ->whereBetween('created_at', [$startDate, $endDate])
                 ->count();
+
+            $flaggedFakeLeads = Lead::where('assigned_to', $consultant->id)
+                ->where('is_flagged_fake', true)
+                ->whereBetween('created_at', [$startDate, $endDate])
+                ->count();
+
+            $validLeadsCaptured = max(0, $leadsCaptured - $flaggedFakeLeads);
 
             $callsLogged = LeadActivity::where('user_id', $consultant->id)
                 ->where(function($q) {
@@ -166,6 +175,8 @@ class RetailPerformanceController extends Controller
             $row = [
                 'user'                  => $consultant,
                 'leads_captured'        => $leadsCaptured,
+                'valid_leads_captured'  => $validLeadsCaptured,
+                'flagged_fake_leads'    => $flaggedFakeLeads,
                 'daily_lead_counts'     => $dailyLeadCounts,
                 'calls_logged'          => $callsLogged,
                 'whatsapp_logged'       => $whatsappLogged,
@@ -184,6 +195,8 @@ class RetailPerformanceController extends Controller
 
             // Update team aggregates
             $aggregates['leads_captured']        += $leadsCaptured;
+            $aggregates['valid_leads_captured']  += $validLeadsCaptured;
+            $aggregates['flagged_fake_leads']    += $flaggedFakeLeads;
             $aggregates['calls_logged']          += $callsLogged;
             $aggregates['whatsapp_logged']       += $whatsappLogged;
             $aggregates['inspections_scheduled'] += $inspectionsSched;

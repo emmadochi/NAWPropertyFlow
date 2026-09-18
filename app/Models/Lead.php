@@ -50,11 +50,18 @@ class Lead extends Model
         'last_contact_channel',
         'portal_token',
         'portal_token_created_at',
+        'unreachable_count',
+        'is_flagged_fake',
+        'flagged_reason',
+        'flagged_at',
     ];
 
     protected $casts = [
         'last_contacted_at' => 'datetime',
         'portal_token_created_at' => 'datetime',
+        'flagged_at' => 'datetime',
+        'is_flagged_fake' => 'boolean',
+        'unreachable_count' => 'integer',
     ];
 
     /**
@@ -143,5 +150,20 @@ class Lead extends Model
     public function scopeOfBranch($query, $branchId)
     {
         return $query->where('branch_id', $branchId);
+    }
+
+    public function scopeFlaggedFake($query)
+    {
+        return $query->where('is_flagged_fake', true);
+    }
+
+    public function scopeReachable($query)
+    {
+        return $query->where('is_flagged_fake', false);
+    }
+
+    public function isFlaggedFake(): bool
+    {
+        return (bool) $this->is_flagged_fake;
     }
 }
