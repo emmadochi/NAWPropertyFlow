@@ -189,8 +189,7 @@
         <div class="flex items-center space-x-2 min-w-0">
             @if($__isBuckcrest)
                 <div class="w-8 h-8 rounded-lg bg-[#09090B] border border-[#C9A44C]/50 p-1 flex items-center justify-center flex-shrink-0 shadow-sm">
-                    <img src="{{ global_asset('company/buckcrest-crest.png') }}"
-                         onerror="this.onerror=null; this.src='{{ url('company/buckcrest-crest.png') }}'"
+                    <img src="{{ \App\Support\BuckcrestAssets::crestDataUri() }}"
                          alt="Buckcrest"
                          class="w-full h-full object-contain">
                 </div>
@@ -236,8 +235,7 @@
                     <div class="flex items-center space-x-3 min-w-0">
                         @if($__isBuckcrest)
                             <div class="w-10 h-10 rounded-xl bg-[#09090B] border border-[#C9A44C]/50 p-1.5 flex items-center justify-center flex-shrink-0 shadow-md">
-                                <img src="{{ global_asset('company/buckcrest-crest.png') }}"
-                                     onerror="this.onerror=null; this.src='{{ url('company/buckcrest-crest.png') }}'"
+                                <img src="{{ \App\Support\BuckcrestAssets::crestDataUri() }}"
                                      alt="Buckcrest Havens"
                                      class="w-full h-full object-contain">
                             </div>

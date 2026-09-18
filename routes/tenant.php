@@ -70,6 +70,31 @@ Route::middleware(array_values(array_filter([
     Route::get('/manifest.webmanifest', [\App\Http\Controllers\PwaController::class, 'manifest'])->name('tenant.webmanifest');
     Route::get('/pwa-icon/{size?}', [\App\Http\Controllers\PwaController::class, 'icon'])->name('tenant.pwa.icon');
 
+    // Guaranteed static company assets route (bypasses tenancy prefix and missing symlinks)
+    Route::get('/company/{file}', function ($file) {
+        if (str_contains($file, 'buckcrest-crest')) {
+            return response(\App\Support\BuckcrestAssets::crestPngBinary(), 200, [
+                'Content-Type'  => 'image/png',
+                'Cache-Control' => 'public, max-age=86400',
+            ]);
+        }
+        $candidates = [
+            public_path("company/{$file}"),
+            public_path("storage/company/{$file}"),
+            storage_path("app/public/company/{$file}"),
+        ];
+        foreach ($candidates as $path) {
+            if (file_exists($path) && is_readable($path)) {
+                $mime = mime_content_type($path) ?: 'image/png';
+                return response(file_get_contents($path), 200, [
+                    'Content-Type'  => $mime,
+                    'Cache-Control' => 'public, max-age=86400',
+                ]);
+            }
+        }
+        abort(404);
+    })->name('tenant.company.asset');
+
     // One-click migration runner (run pending tenant migrations without SSH)
     Route::get('/run-migrations', function () {
         try {

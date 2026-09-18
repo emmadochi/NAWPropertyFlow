@@ -53,6 +53,31 @@ Route::get('/icons/icon-512x512.png', function () {
     abort(404);
 });
 
+// Guaranteed static company assets route (bypasses missing symlinks / cPanel rewrite edge cases)
+Route::get('/company/{file}', function ($file) {
+    if (str_contains($file, 'buckcrest-crest')) {
+        return response(\App\Support\BuckcrestAssets::crestPngBinary(), 200, [
+            'Content-Type'  => 'image/png',
+            'Cache-Control' => 'public, max-age=86400',
+        ]);
+    }
+    $candidates = [
+        public_path("company/{$file}"),
+        public_path("storage/company/{$file}"),
+        storage_path("app/public/company/{$file}"),
+    ];
+    foreach ($candidates as $path) {
+        if (file_exists($path) && is_readable($path)) {
+            $mime = mime_content_type($path) ?: 'image/png';
+            return response(file_get_contents($path), 200, [
+                'Content-Type'  => $mime,
+                'Cache-Control' => 'public, max-age=86400',
+            ]);
+        }
+    }
+    abort(404);
+})->name('company.asset');
+
 // ─── CRM Routes (Standalone Mode) ───────────────────────────────────────────
 if (! \App\Providers\TenancyServiceProvider::isTenancyActive()) {
     require __DIR__.'/tenant.php';

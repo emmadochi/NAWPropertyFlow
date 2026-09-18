@@ -123,19 +123,24 @@ class PwaController extends Controller
                 ? public_path('icons/buckcrest-512.png') 
                 : public_path('icons/buckcrest-192.png');
 
-            if (file_exists($buckcrestIcon)) {
-                return response()->file($buckcrestIcon, [
+            if (file_exists($buckcrestIcon) && is_readable($buckcrestIcon)) {
+                return response(file_get_contents($buckcrestIcon), 200, [
                     'Content-Type'  => 'image/png',
                     'Cache-Control' => 'public, max-age=86400',
                 ]);
             }
+
+            return response(\App\Support\BuckcrestAssets::crestPngBinary(), 200, [
+                'Content-Type'  => 'image/png',
+                'Cache-Control' => 'public, max-age=86400',
+            ]);
         }
 
         if ($setting && $setting->logo_path) {
             $logoFullPath = public_path('storage/' . $setting->logo_path);
-            if (file_exists($logoFullPath)) {
+            if (file_exists($logoFullPath) && is_readable($logoFullPath)) {
                 $mimeType = mime_content_type($logoFullPath) ?: 'image/png';
-                return response()->file($logoFullPath, [
+                return response(file_get_contents($logoFullPath), 200, [
                     'Content-Type'  => $mimeType,
                     'Cache-Control' => 'public, max-age=86400',
                 ]);
