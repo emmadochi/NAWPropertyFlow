@@ -195,8 +195,8 @@
         <div class="logo-box">
             @if($isBuckcrest)
                 <div style="background: #09090B; border: 1.5px solid rgba(201, 164, 76, 0.4); border-radius: 1.1rem; padding: 0.6rem 1.4rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px -5px rgba(0,0,0,0.35);">
-                    <img src="{{ asset('company/buckcrest-logo.png') }}" 
-                         onerror="this.src='{{ asset('storage/company/buckcrest-logo.png') }}'" 
+                    <img src="{{ global_asset('company/buckcrest-logo.png') }}" 
+                         onerror="this.onerror=null; this.src='{{ url('company/buckcrest-logo.png') }}'" 
                          alt="{{ $companyName }}" 
                          style="max-height: 48px; width: auto; object-fit: contain;">
                 </div>

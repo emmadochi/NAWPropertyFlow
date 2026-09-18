@@ -21,6 +21,7 @@ use App\Http\Controllers\System\TenantController;
 
 // ─── PWA Manifest & Dynamic Endpoints ────────────────────────────────────
 Route::get('/manifest.json', [\App\Http\Controllers\PwaController::class, 'manifest'])->name('manifest');
+Route::get('/manifest.webmanifest', [\App\Http\Controllers\PwaController::class, 'manifest'])->name('manifest.webmanifest');
 Route::get('/pwa-icon/{size?}', [\App\Http\Controllers\PwaController::class, 'icon'])->name('pwa.icon');
 
 Route::get('/sw.js', function () {
