@@ -122,31 +122,26 @@ Addressing the operational problem where sales executives submit dead, fabricate
 
 ---
 
+### 6. Multi-Tenant Dynamic PWA Branding & Logo Isolation
+Eliminated hardcoded RICAF logos and branding from the Progressive Web App (PWA):
+- **Dynamic PWA Controller**: [`PwaController.php`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/app/Http/Controllers/PwaController.php)
+  - Dynamically builds `/manifest.json` using the current tenant's `CompanySetting` or tenant identity (e.g. "Buckcrest Havens Limited").
+  - Dynamically streams the tenant's actual uploaded logo via `/pwa-icon/192` and `/pwa-icon/512`.
+- **Apache Rewrite Bypass**: Updated [`public/.htaccess`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/public/.htaccess) to ensure `/manifest.json` routes through Laravel rather than serving static disk files.
+- **Cache Invalidation**: Bumped service worker cache in [`public/sw.js`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/public/sw.js) to `propertyflow-pwa-v4` to automatically purge old cached RICAF icons from clients' mobile devices and browsers.
+- **Dynamic Layout Tags**: Updated [`resources/views/layouts/app.blade.php`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/resources/views/layouts/app.blade.php) so mobile app install banners, Apple touch icons, and meta tags reflect the client's company name and logo dynamically.
+- **Neutral Fallback Icons**: Replaced physical RICAF image files in `public/icons/` with clean, modern PropertyFlow real estate icons.
+
+---
+
 ## Live Server Deployment Instructions (cPanel / Terminal)
 
-To apply these updates and the new database columns on the live server (`bhl.nawpropertyflow.com.ng`), run the following command in your terminal / SSH:
+To pull this update on your live server, run:
 
 ```bash
-cd /home/stufedoc/bhl.nawpropertyflow.com.ng && \
+cd /home/stufedoc/public_html/nawpropertyflow.com.ng && \
 git pull origin main && \
-php artisan tenants:run migrate --path=database/migrations/tenant --force && \
 php artisan view:clear && \
 php artisan cache:clear && \
 php artisan config:clear
 ```
-
-*Note: If executing directly within a specific tenant database on MySQL command line or phpMyAdmin (`stufedoc_nawcrm_bhl`), the migration adds `unreachable_count`, `is_flagged_fake`, `flagged_reason`, and `flagged_at` to the `leads` table.*
-
----
-
-## Client Deliverables
-- **Official Operations Guide PDF**:
-  - Available at: [`public/documents/Buckcrest_Havens_CRM_User_Operations_Guide.pdf`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/public/documents/Buckcrest_Havens_CRM_User_Operations_Guide.pdf)
-  - Root copy: [`Buckcrest_Havens_CRM_User_Operations_Guide.pdf`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/Buckcrest_Havens_CRM_User_Operations_Guide.pdf)
-  - Includes full breakdown of Customer Care calling, Sales Rep privacy isolation, the Automated 3-Strike Reachability Verification Rule, and quota deduction policies.
-
-  - `app/Models/Lead.php` &rarr; Syntax OK
-  - `app/Http/Controllers/LeadController.php` &rarr; Syntax OK
-  - `app/Http/Controllers/ActivityQuickLogController.php` &rarr; Syntax OK
-  - `app/Http/Controllers/RetailPerformanceController.php` &rarr; Syntax OK
-  - `routes/tenant.php` &rarr; Syntax OK
