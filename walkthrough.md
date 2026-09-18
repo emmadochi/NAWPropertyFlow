@@ -95,9 +95,56 @@ Addressing the need for marketers to upload prospects continuously on a daily ba
 
 ---
 
-## Validation & Code Quality
-- Verified database schemas for tenant databases (`nawcrm_buckcrest` and `nawcrm_naw`). Added `outreach_location`, `last_contacted_at`, and `last_contact_channel` columns to the `leads` table.
-- Verified PHP syntax across all modified files:
+---
+
+### 5. Automated 3-Strike Lead Reachability & Fake Number Fraud Detection
+Addressing the operational problem where sales executives submit dead, fabricated, or switched-off phone numbers (e.g. submitting 20 leads with 10 or 16 unreachable numbers):
+- **Tenant Migration**: [`database/migrations/tenant/2026_09_17_224000_add_lead_verification_and_fraud_detection.php`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/database/migrations/tenant/2026_09_17_224000_add_lead_verification_and_fraud_detection.php)
+  - Adds `unreachable_count`, `is_flagged_fake`, `flagged_reason`, and `flagged_at` to the `leads` table.
+- **Automated Verification Engine**: [`ActivityQuickLogController.php`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/app/Http/Controllers/ActivityQuickLogController.php)
+  - **1st & 2nd Failed Call**: Increments `unreachable_count` and logs timestamp.
+  - **3rd Consecutive Failure or Explicit "Dead / Invalid" Selection**:
+    - Automatically sets `is_flagged_fake = true`.
+    - Automatically disqualifies the lead from weekly sales quotas.
+    - Flags the capturing executive with a 48-hour rectification window.
+  - **Verified Connection Reset**: Any verified conversation or WhatsApp engagement resets `unreachable_count = 0` and clears the flag.
+- **Lead Quality & Reachability Audit Panel for Management**: [`leads/index.blade.php`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/resources/views/leads/index.blade.php)
+  - Provides a real-time reachability health score (%) across the pipeline.
+  - Generates an executive-by-executive audit table flagging reps with high unreachable rates.
+  - Highlights any rep with $\ge 30\%$ unreachable leads with a high-visibility badge: `🚨 High Inactive Risk (>30%)`.
+- **Sales Executive Warning Banner**:
+  - Reps with flagged leads see an alert on their dashboard instructing them to obtain alternate working numbers within 48 hours.
+- **Strict Privacy Scoping**: [`LeadController.php`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/app/Http/Controllers/LeadController.php)
+  - Sales executives can strictly **only view their own assigned leads** (blocked from other reps' contact details with a `403 Forbidden` guard).
+  - Customer Care and Administrators retain full directory visibility for centralized verification and cold outreach.
+- **Disqualification on Performance Scorecard**: [`RetailPerformanceController.php`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/app/Http/Controllers/RetailPerformanceController.php) & [`retail_weekly.blade.php`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/resources/views/reports/retail_weekly.blade.php)
+  - Tracks valid reachable leads vs flagged fake numbers and displays deductions (`⚠️ -X fake`) directly on the league table.
+
+---
+
+## Live Server Deployment Instructions (cPanel / Terminal)
+
+To apply these updates and the new database columns on the live server (`bhl.nawpropertyflow.com.ng`), run the following command in your terminal / SSH:
+
+```bash
+cd /home/stufedoc/bhl.nawpropertyflow.com.ng && \
+git pull origin main && \
+php artisan tenants:run migrate --path=database/migrations/tenant --force && \
+php artisan view:clear && \
+php artisan cache:clear && \
+php artisan config:clear
+```
+
+*Note: If executing directly within a specific tenant database on MySQL command line or phpMyAdmin (`stufedoc_nawcrm_bhl`), the migration adds `unreachable_count`, `is_flagged_fake`, `flagged_reason`, and `flagged_at` to the `leads` table.*
+
+---
+
+## Client Deliverables
+- **Official Operations Guide PDF**:
+  - Available at: [`public/documents/Buckcrest_Havens_CRM_User_Operations_Guide.pdf`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/public/documents/Buckcrest_Havens_CRM_User_Operations_Guide.pdf)
+  - Root copy: [`Buckcrest_Havens_CRM_User_Operations_Guide.pdf`](file:///c:/xampp/htdocs/NAWPropertyFlowCRM/Buckcrest_Havens_CRM_User_Operations_Guide.pdf)
+  - Includes full breakdown of Customer Care calling, Sales Rep privacy isolation, the Automated 3-Strike Reachability Verification Rule, and quota deduction policies.
+
   - `app/Models/Lead.php` &rarr; Syntax OK
   - `app/Http/Controllers/LeadController.php` &rarr; Syntax OK
   - `app/Http/Controllers/ActivityQuickLogController.php` &rarr; Syntax OK
