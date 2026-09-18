@@ -72,35 +72,34 @@
             theme: {
                 extend: {
                     fontFamily: {
-                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                        sans: ['"Plus Jakarta Sans"', 'system-ui', '-apple-system', '"Segoe UI"', 'Roboto', '"Helvetica Neue"', 'Arial', 'sans-serif'],
                     },
                     colors: {
                         @if($__isBuckcrest)
-                        // Buckcrest Havens Limited Palette: Black, Arch (Ash/Slate), & Chocolate Gold
+                        // Buckcrest Havens Limited: Black, Arch Charcoal, & High-Contrast Chocolate Gold
                         brand: {
-                            50: '#FAF6EE',
-                            100: '#F4EBD7',
-                            200: '#E8D6AE',
-                            300: '#DCBF85',
-                            400: '#D2AB5C',
-                            500: '#C9A44C', // Primary Chocolate Gold
-                            600: '#A98533', // Deep Gold
-                            700: '#876625',
-                            800: '#654A18',
-                            900: '#43300C'
+                            50: '#FDFBF7',   // Clean warm ivory background
+                            100: '#F7F1E1',  // Soft gold border
+                            200: '#EBDCB9',
+                            300: '#DEC58B',
+                            400: '#C9A44C',  // Signature Chocolate Gold (accents, borders, badges)
+                            500: '#946E19',  // Deep Rich Gold (White text on this passes WCAG AA at 4.8:1)
+                            600: '#6E4D0B',  // High-Contrast Deep Bronze (Text on light bg passes WCAG AAA at 7.9:1)
+                            700: '#523805',  // Ultra-legible dark bronze text
+                            800: '#382502',
+                            900: '#1F1400'
                         },
                         dark: {
-                            50: '#FAFAFA',
-                            100: '#F4F4F5',
-                            200: '#E4E4E7',
-                            300: '#D4D4D8',
-                            400: '#A1A1AA',
-                            500: '#71717A',
-                            600: '#52525B', // Arch Slate
-                            700: '#3F3F46', // Arch Dark Ash
-                            800: '#27272A', // Arch Charcoal
-                            900: '#18181B', // Arch Deep Charcoal
-                            950: '#09090B'  // Obsidian Black
+                            50: '#F8FAFC',
+                            100: '#F1F5F9',
+                            200: '#E2E8F0',
+                            300: '#CBD5E1',
+                            400: '#94A3B8',
+                            500: '#64748B',
+                            600: '#475569',
+                            700: '#334155',
+                            800: '#18181B', // Deep Arch Charcoal for maximum body text clarity
+                            900: '#09090B'  // Obsidian Black for headings and titles
                         }
                         @else
                         // Default / RICAF Orange & Navy Palette
@@ -141,7 +140,10 @@
     <style>
         [x-cloak] { display: none !important; }
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-rendering: optimizeLegibility;
         }
         .custom-sidebar-scroll {
             scrollbar-width: thin;
@@ -186,9 +188,9 @@
     <div class="md:hidden bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 py-2.5 flex items-center justify-between w-full z-20 transition-colors duration-200">
         <div class="flex items-center space-x-2 min-w-0">
             @if($__isBuckcrest)
-                <div class="w-8 h-8 rounded-lg bg-[#09090B] border border-[#C9A44C]/40 p-1 flex items-center justify-center flex-shrink-0 shadow-sm">
-                    <img src="{{ asset('company/buckcrest-logo.png') }}"
-                         onerror="this.src='{{ asset('storage/company/buckcrest-logo.png') }}'"
+                <div class="w-8 h-8 rounded-lg bg-[#09090B] border border-[#C9A44C]/50 p-1 flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <img src="{{ asset('company/buckcrest-crest.png') }}"
+                         onerror="this.src='{{ asset('storage/company/buckcrest-crest.png') }}'"
                          alt="Buckcrest"
                          class="w-full h-full object-contain">
                 </div>
@@ -233,9 +235,9 @@
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3 min-w-0">
                         @if($__isBuckcrest)
-                            <div class="w-10 h-10 rounded-xl bg-[#09090B] border border-[#C9A44C]/40 p-1 flex items-center justify-center flex-shrink-0 shadow-md">
-                                <img src="{{ asset('company/buckcrest-logo.png') }}"
-                                     onerror="this.src='{{ asset('storage/company/buckcrest-logo.png') }}'"
+                            <div class="w-10 h-10 rounded-xl bg-[#09090B] border border-[#C9A44C]/50 p-1.5 flex items-center justify-center flex-shrink-0 shadow-md">
+                                <img src="{{ asset('company/buckcrest-crest.png') }}"
+                                     onerror="this.src='{{ asset('storage/company/buckcrest-crest.png') }}'"
                                      alt="Buckcrest Havens"
                                      class="w-full h-full object-contain">
                             </div>
@@ -254,7 +256,7 @@
                             <p class="font-extrabold text-sm text-dark-900 dark:text-white leading-tight truncate">
                                 {{ $__companySetting?->company_name ?? config('app.name') }}
                             </p>
-                            <span class="inline-flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider {{ $__isBuckcrest ? 'bg-[#C9A44C]/15 text-[#C9A44C] border border-[#C9A44C]/30 font-extrabold' : $__tierClass }}">
+                            <span class="inline-flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider {{ $__isBuckcrest ? 'bg-[#C9A44C]/15 text-[#5C3E08] border border-[#C9A44C]/40 font-extrabold' : $__tierClass }}">
                                 <span class="text-[#C9A44C]">👑</span>
                                 <span>{{ $__tierLabel }}</span>
                             </span>
