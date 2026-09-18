@@ -6,7 +6,14 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     @php
         $companySetting = rescue(fn() => \App\Models\CompanySetting::getCached(), null);
-        $companyName = $companySetting?->company_name ?? config('app.name', 'RICAF PropertyFlow CRM');
+        $tenantObj = function_exists('tenant') ? tenant() : null;
+        $tenantId = $tenantObj ? ($tenantObj->id ?? null) : null;
+        $host = request()->getHost();
+        $companyName = $companySetting?->company_name ?? ($tenantObj ? ($tenantObj->name ?? 'Buckcrest Havens Limited') : config('app.name', 'RICAF PropertyFlow CRM'));
+        $isBuckcrest = in_array($tenantId, ['bhl', 'buckcrest']) 
+            || str_contains($host, 'bhl') 
+            || str_contains($host, 'buckcrest') 
+            || str_contains(strtolower($companyName), 'buckcrest');
     @endphp
     <title>Sign In &bull; {{ $companyName }}</title>
     <!-- Google Fonts -->
@@ -18,7 +25,11 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body {
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            @if($isBuckcrest)
+            background: radial-gradient(circle at 50% 20%, #18181B 0%, #09090B 80%, #000000 100%);
+            @else
             background: linear-gradient(135deg, #0B2545 0%, #134074 50%, #081C33 100%);
+            @endif
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -33,7 +44,7 @@
             border-radius: 1.75rem;
             padding: 2.5rem 2rem;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.45);
-            border: 1px solid rgba(255, 255, 255, 0.15);
+            border: 1px solid {{ $isBuckcrest ? 'rgba(201, 164, 76, 0.35)' : 'rgba(255, 255, 255, 0.15)' }};
             position: relative;
             z-index: 10;
         }
@@ -45,20 +56,26 @@
         }
         .logo-box img {
             max-height: 56px;
-            max-width: 200px;
+            max-width: 220px;
             object-fit: contain;
         }
         .logo-icon {
             width: 54px;
             height: 54px;
+            @if($isBuckcrest)
+            background: #09090B;
+            border: 1.5px solid #C9A44C;
+            box-shadow: 0 10px 15px -3px rgba(201, 164, 76, 0.3);
+            @else
             background: linear-gradient(135deg, #FEA500 0%, #D4AF37 100%);
+            box-shadow: 0 10px 15px -3px rgba(254, 165, 0, 0.3);
+            @endif
             border-radius: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 10px 15px -3px rgba(254, 165, 0, 0.3);
         }
-        .logo-icon svg { width: 28px; height: 28px; color: #0B2545; }
+        .logo-icon svg { width: 28px; height: 28px; color: {{ $isBuckcrest ? '#C9A44C' : '#0B2545' }}; }
         .form-title { font-size: 1.45rem; font-weight: 800; color: #0f172a; text-align: center; font-family: 'Space Grotesk', sans-serif; }
         .form-subtitle { font-size: 0.8rem; color: #64748b; text-align: center; margin-top: 0.25rem; margin-bottom: 1.5rem; }
         .form-group { margin-bottom: 1.1rem; }
@@ -75,15 +92,21 @@
             transition: all 0.2s ease;
         }
         .form-input:focus {
-            border-color: #FEA500;
+            border-color: {{ $isBuckcrest ? '#C9A44C' : '#FEA500' }};
             background-color: #ffffff;
-            box-shadow: 0 0 0 4px rgba(254, 165, 0, 0.15);
+            box-shadow: 0 0 0 4px {{ $isBuckcrest ? 'rgba(201, 164, 76, 0.2)' : 'rgba(254, 165, 0, 0.15)' }};
         }
         .btn-submit {
             width: 100%;
             padding: 0.85rem 1.25rem;
             border-radius: 0.75rem;
+            @if($isBuckcrest)
+            background: linear-gradient(135deg, #C9A44C 0%, #B38E37 50%, #876625 100%);
+            box-shadow: 0 10px 20px -5px rgba(201, 164, 76, 0.45);
+            @else
             background: linear-gradient(135deg, #FEA500 0%, #E09200 100%);
+            box-shadow: 0 10px 20px -5px rgba(254, 165, 0, 0.4);
+            @endif
             color: #ffffff;
             font-weight: 800;
             font-size: 0.85rem;
@@ -91,13 +114,16 @@
             letter-spacing: 0.05em;
             border: none;
             cursor: pointer;
-            box-shadow: 0 10px 20px -5px rgba(254, 165, 0, 0.4);
             transition: all 0.2s ease;
             margin-top: 0.25rem;
         }
         .btn-submit:hover {
             transform: translateY(-1px);
+            @if($isBuckcrest)
+            box-shadow: 0 12px 24px -5px rgba(201, 164, 76, 0.55);
+            @else
             box-shadow: 0 12px 24px -5px rgba(254, 165, 0, 0.5);
+            @endif
         }
         .quick-roles {
             margin-top: 1.5rem;
@@ -153,9 +179,9 @@
             justify-content: center;
         }
         .role-btn:hover {
-            background-color: #fffbeb;
-            border-color: #fde68a;
-            color: #b45309;
+            background-color: {{ $isBuckcrest ? '#faf5ea' : '#fffbeb' }};
+            border-color: {{ $isBuckcrest ? '#e5d2a6' : '#fde68a' }};
+            color: {{ $isBuckcrest ? '#876625' : '#b45309' }};
             transform: translateY(-1px);
         }
         .role-icon { font-size: 0.95rem; margin-bottom: 0.15rem; }
@@ -167,7 +193,14 @@
         
         <!-- Logo / Branding -->
         <div class="logo-box">
-            @if($companySetting?->logo_path && file_exists(public_path('storage/' . $companySetting->logo_path)))
+            @if($isBuckcrest)
+                <div style="background: #09090B; border: 1.5px solid rgba(201, 164, 76, 0.4); border-radius: 1.1rem; padding: 0.6rem 1.4rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 10px 20px -5px rgba(0,0,0,0.35);">
+                    <img src="{{ asset('company/buckcrest-logo.png') }}" 
+                         onerror="this.src='{{ asset('storage/company/buckcrest-logo.png') }}'" 
+                         alt="{{ $companyName }}" 
+                         style="max-height: 48px; width: auto; object-fit: contain;">
+                </div>
+            @elseif($companySetting?->logo_path && file_exists(public_path('storage/' . $companySetting->logo_path)))
                 <img src="{{ asset('storage/' . $companySetting->logo_path) }}" alt="{{ $companyName }}">
             @else
                 <div class="logo-icon">

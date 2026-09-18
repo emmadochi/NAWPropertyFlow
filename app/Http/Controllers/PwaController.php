@@ -15,9 +15,16 @@ class PwaController extends Controller
     {
         $setting = rescue(fn() => CompanySetting::getCached(), null);
         $tenant = function_exists('tenant') ? tenant() : null;
+        $tenantId = $tenant ? ($tenant->id ?? null) : null;
+        $host = $request->getHost();
 
         $name = $setting?->company_name 
             ?? ($tenant ? ($tenant->name ?? 'Buckcrest Havens Limited') : config('app.name', 'NAW PropertyFlow CRM'));
+
+        $isBuckcrest = in_array($tenantId, ['bhl', 'buckcrest']) 
+            || str_contains($host, 'bhl') 
+            || str_contains($host, 'buckcrest') 
+            || str_contains(strtolower($name), 'buckcrest');
 
         $shortName = Str::limit($name, 16, '');
         $description = "Property Management and Sales CRM for " . $name;
@@ -34,8 +41,8 @@ class PwaController extends Controller
             'start_url'        => '/',
             'scope'            => '/',
             'display'          => 'standalone',
-            'background_color' => '#FFFFFF',
-            'theme_color'      => '#0B2545',
+            'background_color' => $isBuckcrest ? '#09090B' : '#FFFFFF',
+            'theme_color'      => $isBuckcrest ? '#09090B' : '#0B2545',
             'orientation'      => 'portrait-primary',
             'icons'            => [
                 [
@@ -100,6 +107,29 @@ class PwaController extends Controller
     public function icon(Request $request, $size = 192)
     {
         $setting = rescue(fn() => CompanySetting::getCached(), null);
+        $tenant = function_exists('tenant') ? tenant() : null;
+        $tenantId = $tenant ? ($tenant->id ?? null) : null;
+        $host = $request->getHost();
+        $name = $setting?->company_name ?? ($tenant ? ($tenant->name ?? '') : '');
+
+        $isBuckcrest = in_array($tenantId, ['bhl', 'buckcrest']) 
+            || str_contains($host, 'bhl') 
+            || str_contains($host, 'buckcrest') 
+            || str_contains(strtolower($name), 'buckcrest');
+
+        // Buckcrest high-res app icon
+        if ($isBuckcrest) {
+            $buckcrestIcon = ((int)$size >= 512) 
+                ? public_path('icons/buckcrest-512.png') 
+                : public_path('icons/buckcrest-192.png');
+
+            if (file_exists($buckcrestIcon)) {
+                return response()->file($buckcrestIcon, [
+                    'Content-Type'  => 'image/png',
+                    'Cache-Control' => 'public, max-age=86400',
+                ]);
+            }
+        }
 
         if ($setting && $setting->logo_path) {
             $logoFullPath = public_path('storage/' . $setting->logo_path);

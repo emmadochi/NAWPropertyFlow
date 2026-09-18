@@ -8,17 +8,23 @@
     @php
         $__setting = rescue(fn() => \App\Models\CompanySetting::getCached(), null);
         $__tenantObj = function_exists('tenant') ? tenant() : null;
+        $__tenantId = $__tenantObj ? ($__tenantObj->id ?? null) : null;
+        $__host = request()->getHost();
         $__appName = $__setting?->company_name ?? ($__tenantObj ? ($__tenantObj->name ?? 'Buckcrest Havens Limited') : config('app.name', 'NAW PropertyFlow CRM'));
+        $__isBuckcrest = in_array($__tenantId, ['bhl', 'buckcrest']) 
+            || str_contains($__host, 'bhl') 
+            || str_contains($__host, 'buckcrest') 
+            || str_contains(strtolower($__appName), 'buckcrest');
         $__appIcon = url('/pwa-icon/192');
     @endphp
     <title>{{ $__appName }}</title>
     
     <!-- PWA Meta Tags & Icons (Multi-Tenant Dynamic) -->
     <link rel="manifest" href="{{ url('/manifest.json') }}">
-    <meta name="theme-color" content="#0B2545">
+    <meta name="theme-color" content="{{ $__isBuckcrest ? '#09090B' : '#0B2545' }}">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="{{ $__isBuckcrest ? 'black-translucent' : 'default' }}">
     <meta name="apple-mobile-web-app-title" content="{{ $__appName }}">
     <link rel="apple-touch-icon" href="{{ $__appIcon }}">
     <link rel="icon" type="image/png" href="{{ $__appIcon }}">
@@ -69,6 +75,35 @@
                         sans: ['"Plus Jakarta Sans"', 'sans-serif'],
                     },
                     colors: {
+                        @if($__isBuckcrest)
+                        // Buckcrest Havens Limited Palette: Black, Arch (Ash/Slate), & Chocolate Gold
+                        brand: {
+                            50: '#FAF6EE',
+                            100: '#F4EBD7',
+                            200: '#E8D6AE',
+                            300: '#DCBF85',
+                            400: '#D2AB5C',
+                            500: '#C9A44C', // Primary Chocolate Gold
+                            600: '#A98533', // Deep Gold
+                            700: '#876625',
+                            800: '#654A18',
+                            900: '#43300C'
+                        },
+                        dark: {
+                            50: '#FAFAFA',
+                            100: '#F4F4F5',
+                            200: '#E4E4E7',
+                            300: '#D4D4D8',
+                            400: '#A1A1AA',
+                            500: '#71717A',
+                            600: '#52525B', // Arch Slate
+                            700: '#3F3F46', // Arch Dark Ash
+                            800: '#27272A', // Arch Charcoal
+                            900: '#18181B', // Arch Deep Charcoal
+                            950: '#09090B'  // Obsidian Black
+                        }
+                        @else
+                        // Default / RICAF Orange & Navy Palette
                         brand: {
                             50: '#fff7ed',
                             100: '#ffedd5',
@@ -93,6 +128,7 @@
                             800: '#1e293b',
                             900: '#0f172a'
                         }
+                        @endif
                     }
                 }
             }
@@ -149,7 +185,14 @@
     <!-- Mobile Header -->
     <div class="md:hidden bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-800 px-4 py-2.5 flex items-center justify-between w-full z-20 transition-colors duration-200">
         <div class="flex items-center space-x-2 min-w-0">
-            @if($__companySetting?->logo_path)
+            @if($__isBuckcrest)
+                <div class="w-8 h-8 rounded-lg bg-[#09090B] border border-[#C9A44C]/40 p-1 flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <img src="{{ asset('company/buckcrest-logo.png') }}"
+                         onerror="this.src='{{ asset('storage/company/buckcrest-logo.png') }}'"
+                         alt="Buckcrest"
+                         class="w-full h-full object-contain">
+                </div>
+            @elseif($__companySetting?->logo_path)
                 <img src="{{ asset('storage/' . $__companySetting->logo_path) }}"
                      alt="Logo"
                      class="w-7 h-7 rounded-lg object-contain bg-gray-50 border border-gray-100 flex-shrink-0">
@@ -189,7 +232,14 @@
             <div class="px-5 py-4 border-b border-gray-100 dark:border-slate-800 flex-shrink-0">
                 <div class="flex items-center justify-between">
                     <div class="flex items-center space-x-3 min-w-0">
-                        @if($__companySetting?->logo_path)
+                        @if($__isBuckcrest)
+                            <div class="w-10 h-10 rounded-xl bg-[#09090B] border border-[#C9A44C]/40 p-1 flex items-center justify-center flex-shrink-0 shadow-md">
+                                <img src="{{ asset('company/buckcrest-logo.png') }}"
+                                     onerror="this.src='{{ asset('storage/company/buckcrest-logo.png') }}'"
+                                     alt="Buckcrest Havens"
+                                     class="w-full h-full object-contain">
+                            </div>
+                        @elseif($__companySetting?->logo_path)
                             <img src="{{ asset('storage/' . $__companySetting->logo_path) }}"
                                  alt="Company Logo"
                                  class="w-9 h-9 rounded-lg object-contain bg-gray-50 border border-gray-100 flex-shrink-0">
@@ -204,8 +254,8 @@
                             <p class="font-extrabold text-sm text-dark-900 dark:text-white leading-tight truncate">
                                 {{ $__companySetting?->company_name ?? config('app.name') }}
                             </p>
-                            <span class="inline-flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider {{ $__tierClass }}">
-                                <span class="text-amber-500">👑</span>
+                            <span class="inline-flex items-center gap-1 mt-0.5 px-2 py-0.5 rounded-full text-[10px] font-extrabold uppercase tracking-wider {{ $__isBuckcrest ? 'bg-[#C9A44C]/15 text-[#C9A44C] border border-[#C9A44C]/30 font-extrabold' : $__tierClass }}">
+                                <span class="text-[#C9A44C]">👑</span>
                                 <span>{{ $__tierLabel }}</span>
                             </span>
                         </div>
