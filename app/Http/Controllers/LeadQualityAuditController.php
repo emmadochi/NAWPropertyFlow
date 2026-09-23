@@ -426,6 +426,40 @@ class LeadQualityAuditController extends Controller
             ? $user->branch_id 
             : (session('selected_branch_id') !== 'all' ? session('selected_branch_id') : null);
 
+        // Self-healing: Ensure audit and engagement columns exist on leads table
+        if (\Illuminate\Support\Facades\Schema::hasTable('leads')) {
+            try {
+                \Illuminate\Support\Facades\Schema::table('leads', function (\Illuminate\Database\Schema\Blueprint $table) {
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('leads', 'outreach_location')) {
+                        $table->string('outreach_location')->nullable()->after('lead_source');
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('leads', 'last_contacted_at')) {
+                        $table->dateTime('last_contacted_at')->nullable()->after('status');
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('leads', 'last_contact_channel')) {
+                        $table->string('last_contact_channel')->nullable()->after('last_contacted_at');
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('leads', 'unreachable_count')) {
+                        $table->integer('unreachable_count')->default(0)->after('last_contact_channel');
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('leads', 'is_flagged_fake')) {
+                        $table->boolean('is_flagged_fake')->default(false)->after('unreachable_count');
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('leads', 'flagged_reason')) {
+                        $table->string('flagged_reason')->nullable()->after('is_flagged_fake');
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('leads', 'flagged_at')) {
+                        $table->dateTime('flagged_at')->nullable()->after('flagged_reason');
+                    }
+                    if (!\Illuminate\Support\Facades\Schema::hasColumn('leads', 'lead_temperature')) {
+                        $table->string('lead_temperature', 20)->nullable()->after('status');
+                    }
+                });
+            } catch (\Throwable $e) {
+                // Ignore if already added concurrently
+            }
+        }
+
         // Ensure 3 distinct test sales executives exist for comparison
         $exec1 = User::firstOrCreate(
             ['email' => 'chidinma.audit@bhl.com'],
