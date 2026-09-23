@@ -21,6 +21,9 @@ class CampaignService
 
         $query = Lead::query()->withoutGlobalScopes(); // bypass branch scope for global campaigns
 
+        // Never broadcast to fraud-flagged or inactive leads — no exceptions
+        $query->where('is_flagged_fake', false);
+
         // Apply branch scope if campaign is branch-specific
         if ($campaign->branch_id) {
             $query->where('branch_id', $campaign->branch_id);

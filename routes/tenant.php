@@ -27,6 +27,7 @@ use App\Http\Controllers\HRController;
 use App\Http\Controllers\StaffProfileController;
 use App\Http\Controllers\CampaignController;
 use App\Http\Controllers\DripSequenceController;
+use App\Http\Controllers\LeadQualityAuditController;
 use App\Http\Controllers\DepartmentTargetController;
 use App\Http\Controllers\DepartmentReportController;
 use App\Http\Controllers\DepartmentController;
@@ -344,6 +345,15 @@ Route::middleware(array_values(array_filter([
         // Leads
         Route::get('leads/import/template', [LeadController::class, 'importTemplate'])->name('leads.import-template');
         Route::post('leads/import', [LeadController::class, 'import'])->name('leads.import');
+
+        // Lead Quality & Executive Audit Board — must be before resource to avoid {lead} conflict
+        Route::get('leads/quality-audit', [LeadQualityAuditController::class, 'index'])->name('leads.quality-audit');
+        Route::get('leads/quality-audit/export', [LeadQualityAuditController::class, 'export'])->name('leads.quality-audit.export');
+        Route::post('leads/bulk-reassign', [LeadQualityAuditController::class, 'bulkReassign'])->name('leads.bulk-reassign');
+        Route::patch('leads/{lead}/clear-flag', [LeadQualityAuditController::class, 'clearFlag'])->name('leads.clear-flag');
+        Route::patch('leads/{lead}/reassign', [LeadQualityAuditController::class, 'reassign'])->name('leads.reassign');
+        Route::patch('leads/{lead}/temperature', [LeadQualityAuditController::class, 'setTemperature'])->name('leads.set-temperature');
+
         Route::resource('leads', LeadController::class);
         Route::post('leads/{lead}/assign', [LeadController::class, 'assign'])->name('leads.assign');
         Route::patch('leads/{lead}/status', [LeadController::class, 'updateStatus'])->name('leads.update-status');
@@ -461,6 +471,7 @@ Route::middleware(array_values(array_filter([
 
         // Marketing & Campaigns
         Route::middleware(['permission:marketing.view,marketing.send_broadcast,marketing.manage_drip', 'feature:marketing'])->group(function () {
+            Route::get('campaigns/analytics', [CampaignController::class, 'analyticsOverview'])->name('campaigns.analytics');
             Route::resource('campaigns', CampaignController::class)->except(['edit', 'update']);
             Route::post('campaigns/upload-image', [CampaignController::class, 'uploadImage'])->name('campaigns.upload-image');
             Route::post('campaigns/{campaign}/send', [CampaignController::class, 'send'])->name('campaigns.send');

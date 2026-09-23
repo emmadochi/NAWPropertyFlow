@@ -9,6 +9,7 @@ use App\Services\CampaignService;
 use App\Mail\CampaignMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 
@@ -246,6 +247,88 @@ class CampaignController extends Controller
         $campaign->load('creator', 'branch');
         $analytics = $this->campaignService->analytics($campaign);
         return view('campaigns.show', compact('campaign', 'analytics'));
+    }
+
+    public function analyticsOverview()
+    {
+        // Overall KPI Totals
+        $totalCampaigns = Campaign::count();
+        $totalAudience = (int) Campaign::sum('audience_count');
+        $totalSent = (int) Campaign::sum('sent_count');
+        $totalOpened = (int) Campaign::sum('opened_count');
+        $totalClicked = (int) Campaign::sum('clicked_count');
+        $totalUnsubscribed = (int) Campaign::sum('unsubscribed_count');
+        $failedCount = CampaignContact::where('status', 'failed')->count();
+
+        $avgOpenRate = $totalSent > 0 ? round(($totalOpened / $totalSent) * 100, 1) : 0;
+        $avgClickRate = $totalSent > 0 ? round(($totalClicked / $totalSent) * 100, 1) : 0;
+        $deliveryRate = $totalAudience > 0 ? round(($totalSent / $totalAudience) * 100, 1) : 0;
+
+        // Channel breakdown (email, sms, whatsapp)
+        $channelCounts = Campaign::select(
+            'type',
+            DB::raw('count(*) as count'),
+            DB::raw('COALESCE(sum(sent_count), 0) as total_sent'),
+            DB::raw('COALESCE(sum(opened_count), 0) as total_opened'),
+            DB::raw('COALESCE(sum(clicked_count), 0) as total_clicked')
+        )
+            ->groupBy('type')
+            ->get()
+            ->keyBy('type');
+
+        // Status breakdown
+        $statusCounts = Campaign::select('status', DB::raw('count(*) as count'))
+            ->groupBy('status')
+            ->pluck('count', 'status')
+            ->toArray();
+
+        // Monthly sent & engagement trend (last 6 months)
+        $driver = DB::connection()->getDriverName();
+        $dateExpr = $driver === 'sqlite' ? "strftime('%Y-%m', created_at)" : 'DATE_FORMAT(created_at, "%Y-%m")';
+        $monthLabelExpr = $driver === 'sqlite' ? "strftime('%b %Y', created_at)" : 'DATE_FORMAT(created_at, "%b %Y")';
+
+        $monthlyData = Campaign::where('created_at', '>=', now()->subMonths(6))
+            ->select(
+                DB::raw("{$dateExpr} as ym"),
+                DB::raw("{$monthLabelExpr} as month_label"),
+                DB::raw('count(*) as campaign_count'),
+                DB::raw('COALESCE(sum(sent_count), 0) as total_sent'),
+                DB::raw('COALESCE(sum(opened_count), 0) as total_opened'),
+                DB::raw('COALESCE(sum(clicked_count), 0) as total_clicked')
+            )
+            ->groupBy('ym', 'month_label')
+            ->orderBy('ym')
+            ->get();
+
+        // Top 5 campaigns by open rate (where sent_count > 0)
+        $topCampaigns = Campaign::where('sent_count', '>', 0)
+            ->orderByRaw('(opened_count / sent_count) DESC')
+            ->limit(5)
+            ->get();
+
+        // Recent 5 campaigns
+        $recentCampaigns = Campaign::with('creator')
+            ->orderBy('created_at', 'desc')
+            ->limit(5)
+            ->get();
+
+        return view('campaigns.analytics', compact(
+            'totalCampaigns',
+            'totalAudience',
+            'totalSent',
+            'totalOpened',
+            'totalClicked',
+            'totalUnsubscribed',
+            'failedCount',
+            'avgOpenRate',
+            'avgClickRate',
+            'deliveryRate',
+            'channelCounts',
+            'statusCounts',
+            'monthlyData',
+            'topCampaigns',
+            'recentCampaigns'
+        ));
     }
 
     public function send(Campaign $campaign)

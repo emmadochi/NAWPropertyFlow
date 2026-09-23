@@ -515,10 +515,18 @@ class LeadController extends Controller
             }
 
             $cleanPhone = preg_replace('/[^0-9+]/', '', $rawPhone);
-            if (strlen(preg_replace('/[^0-9]/', '', $cleanPhone)) < 9) {
+            $digitsPhone = preg_replace('/[^0-9]/', '', $cleanPhone);
+            if (strlen($digitsPhone) < 9) {
                 $errors[] = "Row {$rowNum} ({$fullName}): Invalid phone number ({$rawPhone}).";
                 $invalidCount++;
                 continue;
+            }
+
+            // Normalize Nigerian phone numbers: +234 / 234 -> 0, or 10-digit without leading 0 -> 0...
+            if (str_starts_with($digitsPhone, '234') && strlen($digitsPhone) >= 13) {
+                $cleanPhone = '0' . substr($digitsPhone, 3);
+            } elseif (strlen($digitsPhone) === 10 && !str_starts_with($digitsPhone, '0')) {
+                $cleanPhone = '0' . $digitsPhone;
             }
 
             // Check duplicate phone in database
@@ -537,6 +545,12 @@ class LeadController extends Controller
             $cleanWhatsapp = null;
             if (!empty($rawWhatsapp) && stripos($rawWhatsapp, 'E+') === false) {
                 $cleanWhatsapp = preg_replace('/[^0-9+]/', '', $rawWhatsapp);
+                $digitsWa = preg_replace('/[^0-9]/', '', $cleanWhatsapp);
+                if (str_starts_with($digitsWa, '234') && strlen($digitsWa) >= 13) {
+                    $cleanWhatsapp = '0' . substr($digitsWa, 3);
+                } elseif (strlen($digitsWa) === 10 && !str_starts_with($digitsWa, '0')) {
+                    $cleanWhatsapp = '0' . $digitsWa;
+                }
             }
 
             $assignedTo = $defaultAssignee;
