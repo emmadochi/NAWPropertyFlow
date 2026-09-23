@@ -19,10 +19,10 @@ class CompanySettingController extends Controller
         $settings = CompanySetting::firstOrCreate(
             ['id' => 1],
             [
-                'company_name' => 'NAW Properties Ltd',
-                'email' => 'info@nawproperties.com',
+                'company_name' => 'Ricaf Nigeria Limited',
+                'email' => 'info@ricafltd.com',
                 'phone' => '+234 800 000 0000',
-                'address' => 'Lekki Phase 1, Lagos, Nigeria',
+                'address' => 'Suite D7, 3rd Floor, Kuriftu Plaza, Plot 519, Olu Awotesu Street, Jabi, Abuja, Nigeria',
             ]
         );
 
