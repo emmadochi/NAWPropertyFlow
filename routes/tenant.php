@@ -349,6 +349,8 @@ Route::middleware(array_values(array_filter([
         // Lead Quality & Executive Audit Board — must be before resource to avoid {lead} conflict
         Route::get('leads/quality-audit', [LeadQualityAuditController::class, 'index'])->name('leads.quality-audit');
         Route::get('leads/quality-audit/export', [LeadQualityAuditController::class, 'export'])->name('leads.quality-audit.export');
+        Route::post('leads/quality-audit/seed-demo', [LeadQualityAuditController::class, 'seedDemoData'])->name('leads.quality-audit.seed-demo');
+        Route::post('leads/quality-audit/clear-demo', [LeadQualityAuditController::class, 'clearDemoData'])->name('leads.quality-audit.clear-demo');
         Route::post('leads/bulk-reassign', [LeadQualityAuditController::class, 'bulkReassign'])->name('leads.bulk-reassign');
         Route::patch('leads/{lead}/clear-flag', [LeadQualityAuditController::class, 'clearFlag'])->name('leads.clear-flag');
         Route::patch('leads/{lead}/reassign', [LeadQualityAuditController::class, 'reassign'])->name('leads.reassign');

@@ -349,6 +349,15 @@
                         <span x-data="{ count: 0 }" x-init="window.addEventListener('sidebar-badges-updated', e => { count = e.detail.inspections || 0 })" x-show="count > 0" x-text="count" class="px-2 py-0.5 text-[9px] font-extrabold rounded-full bg-blue-100 text-blue-700 dark:bg-blue-950 dark:text-blue-300" x-cloak></span>
                     </a>
                     @endif
+
+                    @if(Auth::user()->isSuperAdmin() || Auth::user()->isCompanyAdmin() || Auth::user()->hasPermission('hr.manage_users'))
+                    <a href="{{ route('settings.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('settings.index') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <span>Sales Team &amp; Executives</span>
+                    </a>
+                    @endif
                     @endif
 
 
@@ -707,8 +716,17 @@
 
 
                     {{-- ENTERPRISE CONFIG & SETTINGS --}}
-                    @if(Auth::user()->isSuperAdmin() || Auth::user()->hasPermission('system.manage_roles') || Auth::user()->isCompanyAdmin())
+                    @if(Auth::user()->isSuperAdmin() || Auth::user()->hasPermission('system.manage_roles') || Auth::user()->isCompanyAdmin() || Auth::user()->hasPermission('hr.manage_users'))
                     <div class="mt-5 mb-1 text-[11px] font-extrabold text-gray-400 dark:text-slate-500 uppercase tracking-wider px-4">Enterprise Config</div>
+
+                    @if(Auth::user()->isSuperAdmin() || Auth::user()->hasPermission('hr.manage_users') || Auth::user()->isCompanyAdmin())
+                    <a href="{{ route('settings.index') }}" class="flex items-center space-x-3 px-4 py-2.5 rounded-xl font-medium text-sm transition-all {{ request()->routeIs('settings.index') ? 'bg-brand-50 text-brand-600 border border-brand-100 dark:bg-slate-800 dark:text-brand-400 dark:border-brand-500/30' : 'text-gray-600 hover:bg-gray-50 hover:text-dark-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white border border-transparent dark:border-transparent' }}">
+                        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <span>Team &amp; Staff Access</span>
+                    </a>
+                    @endif
 
                     {{-- Branch Settings: Professional+ (multi_branch) --}}
                     @if(in_array(Auth::user()->role, ['super_admin', 'company_admin']) && $__cs?->hasFeature('multi_branch'))

@@ -70,6 +70,43 @@
             </p>
         </div>
         <div class="flex items-center flex-wrap gap-2">
+            @if(Auth::user()->isSuperAdmin() || Auth::user()->isCompanyAdmin() || Auth::user()->hasPermission('hr.manage_users'))
+                <a href="{{ route('settings.index') }}"
+                   class="inline-flex items-center space-x-2 px-3.5 py-2.5 bg-brand-50 hover:bg-brand-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-brand-200 dark:border-slate-700 text-brand-700 dark:text-brand-300 font-bold text-xs rounded-xl shadow-sm transition-all"
+                   title="Add or manage Sales Executives and team members">
+                    <svg class="w-4 h-4 text-brand-600 dark:text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"/>
+                    </svg>
+                    <span>+ Add / Manage Executives</span>
+                </a>
+            @endif
+
+            @if(Auth::user()->isSuperAdmin() || Auth::user()->isCompanyAdmin() || Auth::user()->hasRole('sales_manager'))
+                <form action="{{ route('leads.quality-audit.seed-demo') }}" method="POST" class="inline" onsubmit="return confirm('Generate comprehensive test audit data (Hot, Warm, Cold deals, WhatsApp-only prospects, and 3 executive profiles)?');">
+                    @csrf
+                    <button type="submit"
+                        class="inline-flex items-center space-x-1.5 px-3.5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs rounded-xl shadow-sm transition-all"
+                        title="Generate realistic test data for all charts, donuts, WhatsApp-only leads, and executive risk scores">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                        <span>⚡ Generate Audit Test Data</span>
+                    </button>
+                </form>
+
+                @if(\App\Models\Lead::withoutGlobalScopes()->where('lead_source', 'like', '[Demo/Test]%')->count() > 0)
+                <form action="{{ route('leads.quality-audit.clear-demo') }}" method="POST" onsubmit="return confirm('Wipe all generated test/demo leads? This will safely remove test records without touching real client leads.');" class="inline">
+                    @csrf
+                    <button type="submit"
+                        class="inline-flex items-center space-x-1 px-3 py-2.5 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 font-bold text-xs rounded-xl transition-all"
+                        title="Safely remove all test audit data">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                        <span>Clear Test Data</span>
+                    </button>
+                </form>
+                @endif
+            @endif
+
             <button @click="filterOpen = !filterOpen"
                 class="inline-flex items-center space-x-2 px-4 py-2.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-gray-700 dark:text-slate-200 font-bold text-xs rounded-xl shadow-sm hover:bg-gray-50 transition-all">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -271,17 +308,22 @@
     </div>
 
     {{-- ═══ EXECUTIVE COMPARISON TABLE (admin/manager only) ═══ --}}
-    @if($isAdminOrManager && !empty($executiveComparison))
+    @if($isAdminOrManager)
     <div class="bg-white dark:bg-slate-900 border border-gray-150 dark:border-slate-800 rounded-3xl shadow-sm overflow-hidden">
-        <div class="p-5 border-b border-gray-150 dark:border-slate-800 flex items-center justify-between">
+        <div class="p-5 border-b border-gray-150 dark:border-slate-800 flex items-center justify-between flex-wrap gap-3">
             <div>
                 <h3 class="text-base font-extrabold text-dark-950 dark:text-white flex items-center gap-2">
                     <span class="w-2 h-2 rounded-full bg-amber-500"></span>
-                    Executive Lead Quality Comparison
+                    Executive Lead Quality &amp; Risk Comparison
                 </h3>
-                <p class="text-xs text-gray-500 dark:text-slate-400 mt-0.5">Ranked by highest fake/invalid lead percentage. Red rows = ≥30% flag rate.</p>
+                <p class="text-xs text-gray-500 dark:text-slate-400 mt-0.5">Ranked by fake/invalid lead rate and deal conversions. Red rows indicate high risk profile (≥30% flag rate).</p>
             </div>
+            <a href="{{ route('settings.index') }}" class="inline-flex items-center space-x-1.5 text-xs font-bold text-brand-600 dark:text-brand-400 hover:text-brand-700 bg-brand-50 dark:bg-slate-800 border border-brand-200 dark:border-slate-700 px-3 py-1.5 rounded-xl transition-all">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
+                <span>Add / Manage Executives</span>
+            </a>
         </div>
+        @if(!empty($executiveComparison))
         <div class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
                 <thead>
@@ -332,6 +374,26 @@
                 </tbody>
             </table>
         </div>
+        @else
+        <div class="p-8 text-center space-y-3">
+            <div class="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center mx-auto">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+            </div>
+            <h4 class="text-sm font-extrabold text-dark-900 dark:text-white">No Executive Leads Recorded for {{ $periodLabels[$period] ?? $period }}</h4>
+            <p class="text-xs text-gray-500 dark:text-slate-400 max-w-md mx-auto">Either no leads were assigned to sales executives during this date range, or no executive accounts exist yet.</p>
+            <div class="flex items-center justify-center flex-wrap gap-3 pt-2">
+                <a href="{{ route('settings.index') }}" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all">
+                    + Add Sales Executive
+                </a>
+                <form action="{{ route('leads.quality-audit.seed-demo') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs rounded-xl shadow-sm transition-all">
+                        ⚡ Generate Test Data
+                    </button>
+                </form>
+            </div>
+        </div>
+        @endif
     </div>
     @endif
 
