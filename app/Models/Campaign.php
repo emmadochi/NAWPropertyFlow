@@ -14,12 +14,14 @@ class Campaign extends Model
     protected $fillable = [
         'name', 'type', 'status', 'subject', 'body', 'from_name', 'from_email',
         'audience_segment', 'audience_filters', 'audience_count',
+        'attachments',
         'sent_count', 'opened_count', 'clicked_count', 'unsubscribed_count',
         'scheduled_at', 'sent_at', 'created_by', 'branch_id',
     ];
 
     protected $casts = [
         'audience_filters' => 'array',
+        'attachments'      => 'array',
         'scheduled_at'     => 'datetime',
         'sent_at'          => 'datetime',
     ];

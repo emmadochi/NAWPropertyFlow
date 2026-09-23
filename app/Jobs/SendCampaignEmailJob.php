@@ -100,7 +100,8 @@ class SendCampaignEmailJob implements ShouldQueue
                     $this->campaign->subject ?? 'Campaign Update',
                     $body,
                     $this->campaign->from_email,
-                    $this->campaign->from_name
+                    $this->campaign->from_name,
+                    $this->campaign->attachments ?? []
                 )
             );
 

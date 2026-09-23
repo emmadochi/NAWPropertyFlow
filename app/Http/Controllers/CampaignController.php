@@ -4,9 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Models\Campaign;
 use App\Models\CampaignContact;
+use App\Models\Property;
 use App\Services\CampaignService;
+use App\Mail\CampaignMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 
 class CampaignController extends Controller
 {
@@ -30,7 +34,52 @@ class CampaignController extends Controller
     {
         // Let's get list of branches for segment filter if needed, and list of users/sales officers
         $users = \App\Models\User::orderBy('name')->get();
-        return view('campaigns.create', compact('users'));
+
+        // Get properties that have images for instant 1-click insertion into campaigns
+        $properties = Property::withoutGlobalScopes()
+            ->select('id', 'name', 'estate_name', 'images', 'price', 'location')
+            ->whereNotNull('images')
+            ->orderBy('name')
+            ->get();
+
+        return view('campaigns.create', compact('users', 'properties'));
+    }
+
+    /**
+     * Async image upload handler for WYSIWYG editor and attachments.
+     */
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|file|mimes:jpeg,png,jpg,webp,gif|max:10240',
+        ]);
+
+        if (!$request->hasFile('image') || !$request->file('image')->isValid()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No valid image file received.',
+            ], 422);
+        }
+
+        $file = $request->file('image');
+        $originalName = $file->getClientOriginalName();
+        $mime = $file->getClientMimeType();
+        $bytes = $file->getSize();
+
+        // Store under storage/app/public/campaigns/images
+        $path = $file->store('campaigns/images', 'public');
+        $url = asset('storage/' . $path);
+        $formattedSize = $this->formatBytes($bytes);
+
+        return response()->json([
+            'success'   => true,
+            'url'       => $url,
+            'path'      => $path,
+            'name'      => $originalName,
+            'size'      => $formattedSize,
+            'mime'      => $mime,
+            'message'   => 'Image uploaded successfully.',
+        ]);
     }
 
     public function store(Request $request)
@@ -40,14 +89,16 @@ class CampaignController extends Controller
         }
 
         $validated = $request->validate([
-            'name'             => 'required|string|max:255',
-            'type'             => 'required|in:email,sms,whatsapp',
-            'subject'          => 'required_if:type,email|nullable|string|max:255',
-            'body'             => 'required|string',
-            'from_name'        => 'nullable|string|max:255',
-            'from_email'       => 'nullable|email|max:255',
-            'audience_status'  => 'nullable|string|max:50',
-            'audience_source'  => 'nullable|string|max:50',
+            'name'                 => 'required|string|max:255',
+            'type'                 => 'required|in:email,sms,whatsapp',
+            'subject'              => 'required_if:type,email|nullable|string|max:255',
+            'body'                 => 'required|string',
+            'from_name'            => 'nullable|string|max:255',
+            'from_email'           => 'nullable|email|max:255',
+            'audience_status'      => 'nullable|string|max:50',
+            'audience_source'      => 'nullable|string|max:50',
+            'attachments.*'        => 'nullable|file|mimes:jpeg,png,jpg,webp,gif,pdf|max:10240',
+            'existing_attachments' => 'nullable|string',
         ]);
 
         $filters = [];
@@ -58,6 +109,41 @@ class CampaignController extends Controller
             $filters['lead_source'] = $validated['audience_source'];
         }
 
+        // Process attachments (both file uploads and existing inline attachments)
+        $attachments = [];
+
+        if (!empty($request->input('existing_attachments'))) {
+            $decoded = json_decode($request->input('existing_attachments'), true);
+            if (is_array($decoded)) {
+                foreach ($decoded as $att) {
+                    if (!empty($att['path']) && !empty($att['name'])) {
+                        $attachments[] = [
+                            'name' => $att['name'],
+                            'path' => $att['path'],
+                            'size' => $att['size'] ?? 'N/A',
+                            'mime' => $att['mime'] ?? 'image/jpeg',
+                            'url'  => !empty($att['url']) ? $att['url'] : asset('storage/' . $att['path']),
+                        ];
+                    }
+                }
+            }
+        }
+
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $file) {
+                if ($file->isValid()) {
+                    $path = $file->store('campaigns/attachments', 'public');
+                    $attachments[] = [
+                        'name' => $file->getClientOriginalName(),
+                        'path' => $path,
+                        'size' => $this->formatBytes($file->getSize()),
+                        'mime' => $file->getClientMimeType(),
+                        'url'  => asset('storage/' . $path),
+                    ];
+                }
+            }
+        }
+
         $campaign = Campaign::create([
             'name'             => $validated['name'],
             'type'             => $validated['type'],
@@ -66,6 +152,7 @@ class CampaignController extends Controller
             'body'             => $validated['body'],
             'from_name'        => $validated['from_name'] ?? null,
             'from_email'       => $validated['from_email'] ?? null,
+            'attachments'      => !empty($attachments) ? $attachments : null,
             'audience_segment' => !empty($filters) ? 'custom' : 'all',
             'audience_filters' => $filters,
             'created_by'       => Auth::id() ?? 1,
@@ -85,14 +172,24 @@ class CampaignController extends Controller
     public function sendTest(Request $request)
     {
         $request->validate([
-            'test_email' => 'required|email',
-            'subject'    => 'required|string',
-            'body'       => 'required|string',
+            'test_email'        => 'required|email',
+            'subject'           => 'required|string',
+            'body'              => 'required|string',
+            'attachments_json'  => 'nullable|string',
         ]);
 
         $testRecipient = $request->input('test_email');
         $subject       = '[TEST PREVIEW] ' . $request->input('subject');
         $htmlBody      = $request->input('body');
+
+        // Parse any preview attachments
+        $attachments = [];
+        if ($request->filled('attachments_json')) {
+            $decoded = json_decode($request->input('attachments_json'), true);
+            if (is_array($decoded)) {
+                $attachments = $decoded;
+            }
+        }
 
         // Replace sample tags
         $placeholders = [
@@ -110,14 +207,21 @@ class CampaignController extends Controller
         $finalHtml = str_replace(array_keys($placeholders), array_values($placeholders), $htmlBody);
 
         try {
-            \Illuminate\Support\Facades\Mail::html($finalHtml, function ($message) use ($testRecipient, $subject) {
-                $message->to($testRecipient)
-                        ->subject($subject);
-            });
+            Mail::to($testRecipient)->send(
+                new CampaignMail(
+                    $subject,
+                    $finalHtml,
+                    $request->input('from_email'),
+                    $request->input('from_name'),
+                    $attachments
+                )
+            );
+
+            $attachmentNotice = !empty($attachments) ? ' (' . count($attachments) . ' attachment(s) included)' : '';
 
             return response()->json([
                 'success' => true,
-                'message' => "✅ Test email successfully delivered to {$testRecipient}!"
+                'message' => "✅ Test email successfully delivered to {$testRecipient}!{$attachmentNotice}"
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -125,6 +229,16 @@ class CampaignController extends Controller
                 'message' => "Mail Error: " . $e->getMessage()
             ], 500);
         }
+    }
+
+    private function formatBytes($bytes, $precision = 1): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+        return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
     public function show(Campaign $campaign)

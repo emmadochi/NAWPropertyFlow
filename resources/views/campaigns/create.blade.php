@@ -86,7 +86,7 @@
         </div>
     </div>
 
-    <form action="{{ route('campaigns.store') }}" method="POST" class="grid grid-cols-1 lg:grid-cols-3 gap-6" id="campaign-create-form">
+    <form action="{{ route('campaigns.store') }}" method="POST" enctype="multipart/form-data" class="grid grid-cols-1 lg:grid-cols-3 gap-6" id="campaign-create-form">
         @csrf
 
         <!-- Main Form Left Panel -->
@@ -174,6 +174,10 @@
 
                             <button type="button" onclick="campaign_exec('insertUnorderedList')" title="Bullet List" class="wysiwyg-btn"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M4 10.5c-.83 0-1.5.67-1.5 1.5s.67 1.5 1.5 1.5 1.5-.67 1.5-1.5-.67-1.5-1.5-1.5zm0-6c-.83 0-1.5.67-1.5 1.5S3.17 7.5 4 7.5 5.5 6.83 5.5 6 4.83 4.5 4 4.5zm0 12c-.83 0-1.5.68-1.5 1.5s.68 1.5 1.5 1.5 1.5-.68 1.5-1.5-.67-1.5-1.5-1.5zM7 19h14v-2H7v2zm0-6h14v-2H7v2zm0-8v2h14V5H7z"/></svg></button>
                             <button type="button" onclick="campaign_insert_link()" title="Insert Link / Button" class="wysiwyg-btn"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M3.9 12c0-1.71 1.39-3.1 3.1-3.1h4V7H7c-2.76 0-5 2.24-5 5s2.24 5 5 5h4v-1.9H7c-1.71 0-3.1-1.39-3.1-3.1zM8 13h8v-2H8v2zm9-6h-4v1.9h4c1.71 0 3.1 1.39 3.1 3.1s-1.39 3.1-3.1 3.1h-4V17h4c2.76 0 5-2.24 5-5s-2.24-5-5-5z"/></svg></button>
+                            <button type="button" @click="openImageModal = true" title="Insert / Upload Image" class="wysiwyg-btn text-brand-600 hover:text-brand-700 hover:bg-orange-50 font-bold flex items-center space-x-1 px-2 border border-brand-200">
+                                <svg class="w-3.5 h-3.5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                <span class="text-[10px]">📷 Image</span>
+                            </button>
                             <button type="button" onclick="campaign_toggle_source(this)" title="Toggle HTML Source" class="wysiwyg-btn ml-auto text-[10px] font-black text-purple-600 hover:text-purple-800 hover:bg-purple-50 px-2">&lt;/&gt; HTML</button>
                         </div>
 
@@ -194,6 +198,68 @@
 
                     <!-- Hidden input for form submission -->
                     <textarea name="body" id="campaign-body-input" class="hidden"></textarea>
+
+                    <!-- Email Attachments / Promo Flyers Section -->
+                    <div class="mt-5 pt-4 border-t border-gray-200 dark:border-slate-700/60">
+                        <div class="flex items-center justify-between mb-2">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase tracking-wider flex items-center space-x-1.5">
+                                    <svg class="w-3.5 h-3.5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                                    <span>Email Campaign Attachments / Promo Flyers</span>
+                                </label>
+                                <p class="text-[11px] text-gray-400 mt-0.5">Attach promotional flyers, floor plans, price charts, or PDF brochures (PNG, JPG, PDF up to 10MB each).</p>
+                            </div>
+                            <button type="button" @click="$refs.attachmentInput.click()" class="px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-brand-600 font-bold text-xs rounded-xl border border-brand-200 flex items-center space-x-1.5 transition-colors">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                                <span>Attach Flyer / File</span>
+                            </button>
+                            <input type="file" x-ref="attachmentInput" name="attachments[]" multiple accept="image/png,image/jpeg,image/webp,image/gif,application/pdf" class="hidden" @change="handleFileSelect($event)">
+                        </div>
+
+                        <!-- Hidden input for pre-uploaded attachments (e.g. from editor uploader) -->
+                        <input type="hidden" name="existing_attachments" :value="JSON.stringify(attachedFiles.filter(f => f.fromUpload))">
+
+                        <!-- Dropzone & List -->
+                        <div class="border-2 border-dashed border-gray-200 dark:border-slate-700 hover:border-brand-400 rounded-2xl p-4 transition-all bg-gray-50/50 dark:bg-slate-850/50"
+                             @dragover.prevent="$el.classList.add('border-brand-500', 'bg-orange-50/30')"
+                             @dragleave.prevent="$el.classList.remove('border-brand-500', 'bg-orange-50/30')"
+                             @drop.prevent="$el.classList.remove('border-brand-500', 'bg-orange-50/30'); handleDrop($event)">
+                            
+                            <div x-show="attachedFiles.length === 0" class="text-center py-4 cursor-pointer" @click="$refs.attachmentInput.click()">
+                                <div class="w-10 h-10 rounded-2xl bg-orange-100 text-brand-600 flex items-center justify-center mx-auto mb-2 font-bold text-lg">📎</div>
+                                <p class="text-xs font-bold text-dark-900 dark:text-white">Click to browse or drag &amp; drop promotional images here</p>
+                                <p class="text-[10px] text-gray-400 mt-1">PNG, JPG, WEBP, or PDF files. Recipients can download these directly from their email inbox.</p>
+                            </div>
+
+                            <!-- Attached files list -->
+                            <div x-show="attachedFiles.length > 0" class="space-y-2">
+                                <div class="flex items-center justify-between text-[11px] font-bold text-gray-500 mb-2">
+                                    <span x-text="attachedFiles.length + ' file(s) attached'"></span>
+                                    <button type="button" @click="$refs.attachmentInput.click()" class="text-brand-500 hover:underline">+ Attach more</button>
+                                </div>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                    <template x-for="(file, idx) in attachedFiles" :key="idx">
+                                        <div class="flex items-center space-x-3 p-2.5 rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-sm relative group">
+                                            <!-- Preview Thumbnail or Icon -->
+                                            <div class="w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0 flex items-center justify-center border border-gray-200 dark:border-slate-700">
+                                                <template x-if="file.isImage && file.preview">
+                                                    <img :src="file.preview" class="w-full h-full object-cover">
+                                                </template>
+                                                <template x-if="!file.isImage || !file.preview">
+                                                    <span class="text-base font-bold text-red-500">📄</span>
+                                                </template>
+                                            </div>
+                                            <div class="flex-1 min-w-0">
+                                                <p class="text-xs font-bold text-dark-900 dark:text-white truncate" x-text="file.name"></p>
+                                                <p class="text-[10px] text-gray-400" x-text="file.size"></p>
+                                            </div>
+                                            <button type="button" @click="removeAttachment(idx)" class="w-6 h-6 rounded-lg bg-gray-100 hover:bg-rose-100 text-gray-400 hover:text-rose-600 flex items-center justify-center transition-colors text-xs font-bold" title="Remove attachment">✕</button>
+                                        </div>
+                                    </template>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- SMS/WhatsApp plain text area -->
@@ -273,7 +339,26 @@
             </div>
             
             <div class="flex-1 overflow-y-auto py-6 flex justify-center bg-gray-100 dark:bg-slate-950 rounded-2xl my-3">
-                <div :class="previewMode === 'mobile' ? 'w-[375px] shadow-2xl border-4 border-gray-800 rounded-3xl bg-white' : 'w-full max-w-2xl bg-white shadow-md rounded-2xl'" class="overflow-hidden p-6 text-gray-800" x-html="renderPreviewContent()">
+                <div :class="previewMode === 'mobile' ? 'w-[375px] shadow-2xl border-4 border-gray-800 rounded-3xl bg-white' : 'w-full max-w-2xl bg-white shadow-md rounded-2xl'" class="overflow-hidden p-6 text-gray-800 flex flex-col justify-between">
+                    <div x-html="renderPreviewContent()"></div>
+                    
+                    <div x-show="attachedFiles.length > 0" class="mt-6 pt-4 border-t border-gray-200">
+                        <span class="text-[10px] font-bold text-gray-400 uppercase tracking-wider block mb-2">📎 Email File Attachments (<span x-text="attachedFiles.length"></span>):</span>
+                        <div class="flex flex-wrap gap-2">
+                            <template x-for="(f, i) in attachedFiles" :key="i">
+                                <span class="inline-flex items-center space-x-1.5 px-3 py-1 bg-gray-50 border border-gray-200 rounded-lg text-xs font-semibold text-gray-700">
+                                    <template x-if="f.isImage && f.preview">
+                                        <img :src="f.preview" class="w-4 h-4 object-cover rounded">
+                                    </template>
+                                    <template x-if="!f.isImage || !f.preview">
+                                        <span>📄</span>
+                                    </template>
+                                    <span x-text="f.name" class="max-w-[160px] truncate"></span>
+                                    <span class="text-[10px] text-gray-400" x-text="'(' + f.size + ')'"></span>
+                                </span>
+                            </template>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -301,6 +386,11 @@
                     <input type="email" x-model="testRecipient" class="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-slate-700 dark:bg-slate-900 text-sm font-semibold focus:border-brand-500 focus:outline-none">
                 </div>
 
+                <div x-show="attachedFiles.length > 0" class="p-2.5 rounded-xl bg-orange-50 border border-orange-200 text-xs font-semibold text-brand-700 flex items-center space-x-2">
+                    <span>📎</span>
+                    <span x-text="attachedFiles.length + ' attachment(s) will be included with this test preview email.'"></span>
+                </div>
+
                 <div x-show="testStatusMessage" class="p-3 rounded-xl text-xs font-bold" :class="testStatusType === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'" x-text="testStatusMessage"></div>
 
                 <div class="flex items-center justify-end space-x-3 pt-3">
@@ -311,7 +401,174 @@
                     </button>
                 </div>
             </div>
-  </div>
+        </div>
+    </div>
+
+    <!-- Modal 3: Insert / Upload Image Modal -->
+    <div x-show="openImageModal" x-cloak class="fixed inset-0 z-50 flex items-center justify-center p-4">
+        <div class="fixed inset-0 bg-dark-900/60 backdrop-blur-sm" @click="openImageModal = false"></div>
+        <div class="relative bg-white dark:bg-slate-900 rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-gray-200 dark:border-slate-700 flex flex-col max-h-[90vh]">
+            
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-3 border-b border-gray-150 dark:border-slate-800">
+                <div class="flex items-center space-x-2.5">
+                    <div class="w-8 h-8 rounded-xl bg-orange-100 text-brand-600 flex items-center justify-center font-bold text-base">🖼️</div>
+                    <div>
+                        <h3 class="text-base font-extrabold text-dark-900 dark:text-white">Insert Image into Newsletter</h3>
+                        <p class="text-[11px] text-gray-400">Upload high-res property photo, promo flyer, or select from catalog.</p>
+                    </div>
+                </div>
+                <button @click="openImageModal = false" class="text-gray-400 hover:text-gray-600 text-lg font-bold">✕</button>
+            </div>
+
+            <!-- Tabs -->
+            <div class="flex items-center space-x-2 mt-4 border-b border-gray-150 dark:border-slate-800 pb-2">
+                <button type="button" @click="imageTab = 'upload'" :class="imageTab === 'upload' ? 'bg-brand-500 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-800'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1">
+                    <span>📁 Upload Image</span>
+                </button>
+                <button type="button" @click="imageTab = 'url'" :class="imageTab === 'url' ? 'bg-brand-500 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-800'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1">
+                    <span>🔗 Image URL</span>
+                </button>
+                <button type="button" @click="imageTab = 'properties'" :class="imageTab === 'properties' ? 'bg-brand-500 text-white shadow-sm' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-800'" class="px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center space-x-1">
+                    <span>🏘️ Property Photos</span>
+                </button>
+            </div>
+
+            <!-- Tab 1: Upload from Device -->
+            <div x-show="imageTab === 'upload'" class="space-y-4 py-4 overflow-y-auto">
+                <div class="border-2 border-dashed border-gray-200 dark:border-slate-700 hover:border-brand-400 rounded-2xl p-5 text-center cursor-pointer transition-colors bg-gray-50/50 dark:bg-slate-850/50"
+                     @click="$refs.inlineImageFileInput.click()">
+                    <input type="file" x-ref="inlineImageFileInput" accept="image/png,image/jpeg,image/webp,image/gif" class="hidden" @change="handleInlineImageUpload($event)">
+                    
+                    <template x-if="!modalImageSrc">
+                        <div>
+                            <div class="w-12 h-12 rounded-2xl bg-orange-100 text-brand-600 flex items-center justify-center mx-auto mb-2 font-bold text-xl">📤</div>
+                            <p class="text-xs font-bold text-dark-900 dark:text-white">Click or drag image file here to upload</p>
+                            <p class="text-[10px] text-gray-400 mt-1">PNG, JPG, WEBP, GIF up to 10MB</p>
+                        </div>
+                    </template>
+                    
+                    <template x-if="modalImageSrc">
+                        <div class="relative group">
+                            <img :src="modalImageSrc" class="max-h-48 mx-auto rounded-xl shadow-md object-contain">
+                            <span class="inline-block mt-2 text-[10px] text-brand-600 font-bold hover:underline">Click to change image</span>
+                        </div>
+                    </template>
+                </div>
+
+                <div x-show="uploadingImage" class="p-3 bg-orange-50 rounded-xl flex items-center space-x-2 text-xs font-bold text-brand-700">
+                    <svg class="animate-spin w-4 h-4 text-brand-500" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                    <span>Uploading image to server...</span>
+                </div>
+
+                <div class="space-y-3" x-show="modalImageSrc">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Click Link / Destination URL (Optional)</label>
+                        <input type="text" x-model="modalImageLink" class="w-full px-3 py-2 border border-gray-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 text-dark-900 dark:text-white" placeholder="https://... (e.g. your WhatsApp link or website listing)">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Alignment</label>
+                            <select x-model="modalImageAlign" class="w-full px-3 py-2 border border-gray-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 text-dark-900 dark:text-white">
+                                <option value="center">Center</option>
+                                <option value="left">Left</option>
+                                <option value="right">Right</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Display Width</label>
+                            <select x-model="modalImageWidth" class="w-full px-3 py-2 border border-gray-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 text-dark-900 dark:text-white">
+                                <option value="100%">Full Width (100%)</option>
+                                <option value="80%">Large (80%)</option>
+                                <option value="60%">Medium (60%)</option>
+                                <option value="40%">Compact (40%)</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center space-x-2 pt-2">
+                        <input type="checkbox" id="modalAlsoAttach" x-model="modalAlsoAttach" class="rounded text-brand-500 focus:ring-brand-500">
+                        <label for="modalAlsoAttach" class="text-xs text-gray-700 dark:text-slate-300 font-semibold cursor-pointer">
+                            Also attach this image as a downloadable email attachment
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 2: Image URL -->
+            <div x-show="imageTab === 'url'" class="space-y-4 py-4 overflow-y-auto">
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Image URL *</label>
+                    <input type="url" x-model="modalImageUrlInput" class="w-full px-3 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 text-dark-900 dark:text-white" placeholder="https://example.com/estate-banner.jpg">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Click Link / Destination URL (Optional)</label>
+                    <input type="text" x-model="modalImageLink" class="w-full px-3 py-2 border border-gray-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 text-dark-900 dark:text-white" placeholder="https://...">
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Alignment</label>
+                        <select x-model="modalImageAlign" class="w-full px-3 py-2 border border-gray-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 text-dark-900 dark:text-white">
+                            <option value="center">Center</option>
+                            <option value="left">Left</option>
+                            <option value="right">Right</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold text-gray-500 uppercase mb-1">Display Width</label>
+                        <select x-model="modalImageWidth" class="w-full px-3 py-2 border border-gray-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 text-dark-900 dark:text-white">
+                            <option value="100%">Full Width (100%)</option>
+                            <option value="80%">Large (80%)</option>
+                            <option value="60%">Medium (60%)</option>
+                            <option value="40%">Compact (40%)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tab 3: RICAF Property Listings Gallery -->
+            <div x-show="imageTab === 'properties'" class="space-y-4 py-4 overflow-y-auto max-h-[380px]">
+                <p class="text-xs text-gray-500">Select any uploaded photo from your property portfolio to insert immediately:</p>
+                
+                <div class="space-y-4">
+                    <template x-for="property in propertyPortfolio" :key="property.id">
+                        <div class="border border-gray-200 dark:border-slate-700 rounded-2xl p-3 bg-gray-50/50 dark:bg-slate-850">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-xs font-bold text-dark-900 dark:text-white" x-text="property.name"></span>
+                                <span class="text-[10px] text-gray-400" x-text="property.location || ''"></span>
+                            </div>
+                            <div class="grid grid-cols-3 sm:grid-cols-4 gap-2">
+                                <template x-for="(img, i) in (property.images || [])" :key="i">
+                                    <div @click="selectPropertyPhoto(img, property.name)"
+                                         class="aspect-video rounded-xl overflow-hidden bg-gray-200 cursor-pointer relative group border-2 border-transparent hover:border-brand-500 hover:shadow-md transition-all">
+                                        <img :src="resolveImageUrl(img)" class="w-full h-full object-cover group-hover:scale-105 transition-transform">
+                                        <div class="absolute inset-0 bg-dark-900/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity">
+                                            <span class="text-[10px] font-bold text-white bg-brand-500 px-2 py-0.5 rounded-full">Select</span>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+                    </template>
+                    <div x-show="propertyPortfolio.length === 0" class="text-center py-6 text-xs text-gray-400">
+                        No property photos available in your catalog yet.
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="flex items-center justify-between pt-4 border-t border-gray-150 dark:border-slate-800">
+                <button type="button" @click="openImageModal = false" class="px-4 py-2 text-xs font-bold text-gray-500 hover:bg-gray-100 rounded-xl">Cancel</button>
+                <button type="button" @click="confirmInsertImage()" :disabled="!canInsertImage()" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md disabled:opacity-50 transition-all flex items-center space-x-1.5">
+                    <span>Insert Image into Editor</span>
+                </button>
+            </div>
+
+        </div>
+    </div>
 
 <style>
 .wysiwyg-btn {
@@ -390,11 +647,28 @@ window.campaignCreator = function() {
         plainBody: '',
         showPreviewModal: false,
         showTestModal: false,
+        openImageModal: false,
         previewMode: 'desktop',
         testRecipient: '{{ Auth::user()->email }}',
         sendingTest: false,
         testStatusMessage: '',
         testStatusType: 'success',
+
+        // Image modal & attachments state
+        imageTab: 'upload',
+        attachedFiles: [],
+        modalImageSrc: '',
+        modalImagePath: '',
+        modalImageName: '',
+        modalImageSize: '',
+        modalImageMime: '',
+        modalImageLink: '',
+        modalImageAlign: 'center',
+        modalImageWidth: '100%',
+        modalAlsoAttach: true,
+        modalImageUrlInput: '',
+        uploadingImage: false,
+        propertyPortfolio: @json($properties ?? []),
 
         init() {
             this.$watch('type', () => this.updatePreview());
@@ -580,6 +854,176 @@ window.campaignCreator = function() {
             }
         },
 
+        resolveImageUrl(img) {
+            if (!img) return '';
+            if (img.startsWith('http://') || img.startsWith('https://')) return img;
+            if (img.startsWith('storage/')) return '{{ asset("") }}' + img;
+            return '{{ asset("storage") }}/' + img;
+        },
+
+        formatFileSize(bytes) {
+            if (!bytes || bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(1)) + ' ' + sizes[i];
+        },
+
+        handleFileSelect(event) {
+            const files = event.target.files;
+            if (!files || !files.length) return;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const isImg = file.type.startsWith('image/');
+                const entry = {
+                    name: file.name,
+                    size: this.formatFileSize(file.size),
+                    isImage: isImg,
+                    preview: '',
+                    fromUpload: false,
+                    file: file
+                };
+                if (isImg) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        entry.preview = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+                this.attachedFiles.push(entry);
+            }
+        },
+
+        handleDrop(event) {
+            const files = event.dataTransfer.files;
+            if (!files || !files.length) return;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const isImg = file.type.startsWith('image/');
+                const entry = {
+                    name: file.name,
+                    size: this.formatFileSize(file.size),
+                    isImage: isImg,
+                    preview: '',
+                    fromUpload: false,
+                    file: file
+                };
+                if (isImg) {
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        entry.preview = e.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                }
+                this.attachedFiles.push(entry);
+            }
+        },
+
+        removeAttachment(index) {
+            this.attachedFiles.splice(index, 1);
+        },
+
+        async handleInlineImageUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            this.uploadingImage = true;
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('_token', '{{ csrf_token() }}');
+
+            try {
+                const res = await fetch('{{ route("campaigns.upload-image") }}', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.success) {
+                    this.modalImageSrc = data.url;
+                    this.modalImagePath = data.path;
+                    this.modalImageName = data.name;
+                    this.modalImageSize = data.size;
+                    this.modalImageMime = data.mime;
+                } else {
+                    alert('Upload failed: ' + (data.message || 'Unknown error'));
+                }
+            } catch (err) {
+                alert('Upload error: ' + err.message);
+            } finally {
+                this.uploadingImage = false;
+            }
+        },
+
+        selectPropertyPhoto(img, propName) {
+            const fullUrl = this.resolveImageUrl(img);
+            this.modalImageSrc = fullUrl;
+            this.modalImagePath = img;
+            this.modalImageName = propName + ' Photo';
+            this.modalImageSize = 'Listing Photo';
+            this.modalImageMime = 'image/jpeg';
+            this.imageTab = 'upload';
+        },
+
+        canInsertImage() {
+            if (this.imageTab === 'upload') {
+                return !!this.modalImageSrc;
+            } else if (this.imageTab === 'url') {
+                return !!this.modalImageUrlInput && this.modalImageUrlInput.length > 5;
+            } else {
+                return !!this.modalImageSrc;
+            }
+        },
+
+        confirmInsertImage() {
+            const src = this.imageTab === 'url' ? this.modalImageUrlInput : this.modalImageSrc;
+            if (!src) return;
+
+            const link = this.modalImageLink;
+            const align = this.modalImageAlign;
+            const width = this.modalImageWidth;
+            
+            let alignStyle = 'margin: 18px auto; text-align: center;';
+            if (align === 'left') {
+                alignStyle = 'margin: 18px auto 18px 0; text-align: left;';
+            } else if (align === 'right') {
+                alignStyle = 'margin: 18px 0 18px auto; text-align: right;';
+            }
+
+            const imgTag = `<img src="${src}" alt="Campaign Photo" style="max-width: 100%; height: auto; border-radius: 12px; display: inline-block; box-shadow: 0 4px 15px rgba(0,0,0,0.08);" />`;
+            let snippet = '';
+            if (link) {
+                snippet = `<div style="${alignStyle} max-width: ${width};"><a href="${link}" target="_blank" style="text-decoration:none;">${imgTag}</a></div><p><br></p>`;
+            } else {
+                snippet = `<div style="${alignStyle} max-width: ${width};">${imgTag}</div><p><br></p>`;
+            }
+
+            const editor = document.getElementById('campaign-editor');
+            if (editor) {
+                editor.focus();
+                document.execCommand('insertHTML', false, snippet);
+                campaign_sync();
+            }
+
+            // If user checked "Also attach this image as downloadable email attachment"
+            if (this.modalAlsoAttach && (this.modalImagePath || this.modalImageSrc)) {
+                const already = this.attachedFiles.some(f => f.url === this.modalImageSrc || f.path === this.modalImagePath);
+                if (!already) {
+                    this.attachedFiles.push({
+                        name: this.modalImageName || 'Campaign_Flyer.jpg',
+                        size: this.modalImageSize || 'Promo Image',
+                        preview: this.modalImageSrc,
+                        url: this.modalImageSrc,
+                        path: this.modalImagePath,
+                        mime: this.modalImageMime || 'image/jpeg',
+                        isImage: true,
+                        fromUpload: true
+                    });
+                }
+            }
+
+            this.openImageModal = false;
+        },
+
         renderPreviewContent() {
             const bodyInput = document.getElementById('campaign-body-input');
             const editor = document.getElementById('campaign-editor');
@@ -608,7 +1052,8 @@ window.campaignCreator = function() {
                     body: JSON.stringify({
                         test_email: this.testRecipient,
                         subject: this.subject || 'RICAF Newsletter Preview',
-                        body: bodyInput ? bodyInput.value : ''
+                        body: bodyInput ? bodyInput.value : '',
+                        attachments_json: JSON.stringify(this.attachedFiles)
                     })
                 });
                 const data = await res.json();

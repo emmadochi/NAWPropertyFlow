@@ -85,6 +85,49 @@
                     @endif
                 </div>
 
+                @if(!empty($campaign->attachments))
+                <div class="space-y-3 pt-4 border-t border-gray-100">
+                    <div class="flex items-center justify-between">
+                        <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider flex items-center space-x-1.5">
+                            <svg class="w-3.5 h-3.5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                            <span>Attached Campaign Images &amp; Flyers ({{ count($campaign->attachments) }})</span>
+                        </span>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        @foreach($campaign->attachments as $att)
+                            @php
+                                $attPath = is_array($att) ? ($att['path'] ?? '') : $att;
+                                $attName = is_array($att) ? ($att['name'] ?? basename($attPath)) : basename($attPath);
+                                $attSize = is_array($att) ? ($att['size'] ?? '') : '';
+                                $attUrl = is_array($att) && !empty($att['url']) ? $att['url'] : asset('storage/' . $attPath);
+                                $isImage = preg_match('/\.(jpg|jpeg|png|webp|gif)$/i', $attName);
+                            @endphp
+                            <div class="flex items-center justify-between p-3 rounded-2xl bg-gray-50 border border-gray-150 hover:border-brand-300 transition-colors group">
+                                <div class="flex items-center space-x-3 overflow-hidden">
+                                    <div class="w-11 h-11 rounded-xl bg-white border border-gray-200 overflow-hidden flex-shrink-0 flex items-center justify-center shadow-xs">
+                                        @if($isImage)
+                                            <img src="{{ $attUrl }}" class="w-full h-full object-cover">
+                                        @else
+                                            <span class="text-lg">📄</span>
+                                        @endif
+                                    </div>
+                                    <div class="overflow-hidden">
+                                        <p class="text-xs font-bold text-dark-900 truncate" title="{{ $attName }}">{{ $attName }}</p>
+                                        @if($attSize)
+                                            <span class="text-[10px] text-gray-400">{{ $attSize }}</span>
+                                        @endif
+                                    </div>
+                                </div>
+                                <a href="{{ $attUrl }}" target="_blank" download class="ml-2 px-2.5 py-1.5 bg-white hover:bg-orange-50 text-brand-600 border border-gray-200 hover:border-brand-200 rounded-lg text-[11px] font-bold transition-colors flex items-center space-x-1 flex-shrink-0">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                                    <span>View / Download</span>
+                                </a>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+                @endif
+
                 <div class="space-y-2 pt-4 border-t border-gray-100">
                     <span class="block text-[10px] font-bold text-gray-400 uppercase">Message Body Preview</span>
                     <div class="border rounded-2xl p-4 bg-gray-50 max-h-[300px] overflow-y-auto text-xs prose">

@@ -70,7 +70,15 @@
                     @forelse($campaigns as $campaign)
                     <tr class="hover:bg-gray-55/40 transition-colors">
                         <td class="px-6 py-4">
-                            <div class="font-semibold text-dark-900">{{ $campaign->name }}</div>
+                            <div class="flex items-center space-x-2">
+                                <span class="font-semibold text-dark-900">{{ $campaign->name }}</span>
+                                @if(!empty($campaign->attachments))
+                                <span class="inline-flex items-center space-x-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-bold bg-orange-50 text-brand-600 border border-brand-200" title="{{ count($campaign->attachments) }} attached flyer(s)">
+                                    <span>📎</span>
+                                    <span>{{ count($campaign->attachments) }}</span>
+                                </span>
+                                @endif
+                            </div>
                             <div class="text-[10px] text-gray-400 mt-0.5">Created {{ $campaign->created_at->diffForHumans() }} by {{ $campaign->creator?->name }}</div>
                         </td>
                         <td class="px-6 py-4">

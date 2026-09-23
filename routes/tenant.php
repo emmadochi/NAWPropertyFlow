@@ -565,6 +565,7 @@ Route::middleware(array_values(array_filter([
         // Marketing & Campaigns
         Route::middleware(['permission:marketing.view,marketing.send_broadcast,marketing.manage_drip', 'feature:marketing'])->group(function () {
             Route::resource('campaigns', CampaignController::class)->except(['edit', 'update']);
+            Route::post('campaigns/upload-image', [CampaignController::class, 'uploadImage'])->name('campaigns.upload-image');
             Route::post('campaigns/{campaign}/send', [CampaignController::class, 'send'])->name('campaigns.send');
             Route::post('campaigns/preview-audience', [CampaignController::class, 'previewAudience'])->name('campaigns.preview-audience');
             Route::post('campaigns/send-test', [CampaignController::class, 'sendTest'])->name('campaigns.send-test');
