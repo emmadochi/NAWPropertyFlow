@@ -151,6 +151,7 @@ class CompanySetting extends Model
         'starter' => [
             'crm',
             'payment_plans',
+            'marketing',
         ],
         'professional' => [
             'crm',
