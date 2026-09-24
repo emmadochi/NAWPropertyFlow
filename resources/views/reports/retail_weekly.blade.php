@@ -62,6 +62,17 @@
                 <span>💬</span>
                 <span>Quick Pulse</span>
             </button>
+
+            @if(!$isExecutive)
+            <!-- Populate Realistic Test Data -->
+            <form method="POST" action="{{ route('reports.retail.seed-sample') }}" onsubmit="return confirm('Populate realistic test data for the retail sales team?')" class="inline">
+                @csrf
+                <button type="submit" class="inline-flex items-center space-x-1.5 px-3 py-2 bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 text-purple-700 dark:text-purple-300 font-bold text-xs rounded-xl border border-purple-200 dark:border-purple-800 transition-all" title="Seed realistic BSTAN-model test data">
+                    <span>🧪</span>
+                    <span>Load Test Data</span>
+                </button>
+            </form>
+            @endif
         </div>
     </div>
 
@@ -453,7 +464,19 @@
                     @empty
                     <tr>
                         <td colspan="16" class="py-12 text-center text-gray-400 text-sm">
-                            No sales consultants found for the selected period or branch criteria.
+                            <div class="max-w-md mx-auto space-y-3">
+                                <span class="text-3xl block">📊</span>
+                                <p class="font-bold text-dark-900 dark:text-white">No sales performance data for this period yet</p>
+                                <p class="text-xs text-gray-400">Consultant outreaches, site inspections, and deals will automatically populate here as they occur in the CRM.</p>
+                                @if(!$isExecutive)
+                                <form method="POST" action="{{ route('reports.retail.seed-sample') }}" onsubmit="return confirm('Populate realistic test data for the retail sales team?')" class="pt-2">
+                                    @csrf
+                                    <button type="submit" class="px-4 py-2 {{ $isBuckcrest ? 'bg-[#946E19] hover:bg-[#785712]' : 'bg-brand-600 hover:bg-brand-700' }} text-white font-bold text-xs rounded-xl shadow-md transition-all">
+                                        🧪 Populate Realistic Demo Data
+                                    </button>
+                                </form>
+                                @endif
+                            </div>
                         </td>
                     </tr>
                     @endforelse

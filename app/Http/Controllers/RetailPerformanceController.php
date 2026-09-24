@@ -714,4 +714,25 @@ class RetailPerformanceController extends Controller
 
         return new StreamedResponse($callback, 200, $headers);
     }
+
+    /**
+     * Seed realistic demo test data directly from the web interface.
+     */
+    public function seedSampleData(Request $request)
+    {
+        $currentUser = Auth::user();
+        if (!$currentUser || (!$currentUser->isCompanyAdmin() && !$currentUser->isSuperAdmin() && !in_array($currentUser->role, ['company_admin', 'super_admin', 'sales_manager']))) {
+            return back()->with('error', 'Only administrative managers can seed demo performance data.');
+        }
+
+        try {
+            $seeder = new \Database\Seeders\RetailPerformanceDemoSeeder();
+            $seeder->run();
+
+            return back()->with('success', 'Realistic sales team performance test data successfully populated for the current sprint!');
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('RetailPerformanceDemoSeeder Error: ' . $e->getMessage());
+            return back()->with('error', 'Failed to populate demo data: ' . $e->getMessage());
+        }
+    }
 }

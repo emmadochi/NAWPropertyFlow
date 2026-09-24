@@ -461,6 +461,7 @@ Route::middleware(array_values(array_filter([
         Route::get('reports/retail-performance/export', [\App\Http\Controllers\RetailPerformanceController::class, 'export'])->name('reports.retail.export');
         Route::post('reports/retail-performance/field-log', [\App\Http\Controllers\RetailPerformanceController::class, 'saveFieldLog'])->name('reports.retail.field-log');
         Route::get('reports/retail-performance/drilldown', [\App\Http\Controllers\RetailPerformanceController::class, 'drilldown'])->name('reports.retail.drilldown');
+        Route::post('reports/retail-performance/seed-sample-data', [\App\Http\Controllers\RetailPerformanceController::class, 'seedSampleData'])->name('reports.retail.seed-sample');
 
         // Reports
         Route::middleware(['permission:finance.view_ledger,hr.manage_targets', 'feature:advanced_reports'])->group(function () {
