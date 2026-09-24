@@ -17,6 +17,10 @@
                 </svg>
                 <span>Print Report / Save PDF</span>
             </button>
+            <a href="{{ route('reports.retail.index') }}" class="inline-flex items-center space-x-2 px-4 py-2.5 bg-dark-900 hover:bg-black text-white font-bold rounded-xl transition-all shadow-md text-xs">
+                <span>🏛️</span>
+                <span>Retail Team Matrix</span>
+            </a>
             <a href="{{ route('reports.export.leads') }}" class="inline-flex items-center space-x-2 px-4 py-2.5 bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 rounded-xl transition-all shadow-sm text-xs font-bold">
                 <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
@@ -30,6 +34,23 @@
                 <span>Export Raw Sales (CSV)</span>
             </a>
         </div>
+    </div>
+
+    <!-- Featured Banner for Retail Performance Matrix -->
+    <div class="bg-gradient-to-r from-dark-900 via-slate-900 to-indigo-950 text-white rounded-3xl p-6 shadow-md flex flex-col md:flex-row md:items-center justify-between gap-4 print:hidden">
+        <div class="space-y-1">
+            <span class="text-[10px] font-black tracking-wider uppercase text-amber-400 bg-amber-400/10 px-2.5 py-0.5 rounded-full border border-amber-400/20">
+                New Executive Scorecard
+            </span>
+            <h2 class="text-xl font-black text-white">Executive Retail Sales Team Performance Matrix</h2>
+            <p class="text-xs text-gray-300 max-w-2xl leading-relaxed">
+                Replicates the multi-tier BSTAN Group scorecard with 100% verified CRM database audits: field canvassing locations, calls, WhatsApp chats, inspections, top-up installments, and realized revenue collections.
+            </p>
+        </div>
+        <a href="{{ route('reports.retail.index') }}" class="inline-flex items-center space-x-2 px-5 py-3 bg-amber-500 hover:bg-amber-600 text-dark-900 font-extrabold text-xs rounded-xl shadow-lg transition-all flex-shrink-0">
+            <span>View Scorecard Matrix</span>
+            <span>&rarr;</span>
+        </a>
     </div>
 
     <!-- Filters Section -->
