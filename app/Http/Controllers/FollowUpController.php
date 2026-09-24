@@ -25,10 +25,10 @@ class FollowUpController extends Controller
     {
         $user = Auth::user();
 
-        // Base query
-        $query = FollowUp::with('lead');
+        // Base query with lead and assigned agent
+        $query = FollowUp::with(['lead.assignedOfficer']);
 
-        if ($user->role === 'sales_executive') {
+        if (in_array($user->role, ['sales_executive', 'sales_agent'])) {
             $query->whereHas('lead', function($q) use ($user) {
                 $q->where('assigned_to', $user->id);
             });
@@ -38,17 +38,57 @@ class FollowUpController extends Controller
         $dueToday = (clone $query)->dueToday()->orderBy('due_date', 'asc')->get();
         $dueTomorrow = (clone $query)->dueTomorrow()->orderBy('due_date', 'asc')->get();
         $overdue = (clone $query)->overdue()->orderBy('due_date', 'asc')->get();
-        $completed = (clone $query)->completed()->orderBy('updated_at', 'desc')->limit(20)->get();
+        $completed = (clone $query)->completed()->orderBy('updated_at', 'desc')->limit(50)->get();
         $allTasks = (clone $query)->orderBy('due_date', 'asc')->get(); // For calendar view
+
+        // Comprehensive Follow-ups for Detailed Table View
+        $tableQuery = (clone $query);
+
+        // Optional status filter
+        if ($filterStatus = $request->get('status')) {
+            if ($filterStatus === 'overdue') {
+                $tableQuery->overdue();
+            } elseif ($filterStatus === 'today') {
+                $tableQuery->dueToday();
+            } elseif ($filterStatus === 'tomorrow') {
+                $tableQuery->dueTomorrow();
+            } elseif ($filterStatus === 'completed') {
+                $tableQuery->completed();
+            } elseif ($filterStatus === 'pending') {
+                $tableQuery->pending();
+            }
+        }
+
+        // Optional search term
+        if ($search = $request->get('search')) {
+            $tableQuery->where(function($q) use ($search) {
+                $q->where('notes', 'like', "%{$search}%")
+                  ->orWhere('type', 'like', "%{$search}%")
+                  ->orWhereHas('lead', function($lq) use ($search) {
+                      $lq->where('full_name', 'like', "%{$search}%")
+                         ->orWhere('phone_number', 'like', "%{$search}%")
+                         ->orWhere('email', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $allFollowUps = $tableQuery->orderByRaw("
+            CASE 
+                WHEN status = 'Pending' AND due_date < NOW() THEN 1
+                WHEN status = 'Pending' AND DATE(due_date) = CURDATE() THEN 2
+                WHEN status = 'Pending' THEN 3
+                ELSE 4
+            END ASC
+        ")->orderBy('due_date', 'asc')->get();
 
         // Get list of leads for modal selection
         $leadQuery = Lead::orderBy('full_name', 'asc');
-        if ($user->role === 'sales_executive') {
+        if (in_array($user->role, ['sales_executive', 'sales_agent'])) {
             $leadQuery->where('assigned_to', $user->id);
         }
         $leads = $leadQuery->get();
 
-        return view('follow_ups.index', compact('dueToday', 'dueTomorrow', 'overdue', 'completed', 'leads', 'allTasks'));
+        return view('follow_ups.index', compact('dueToday', 'dueTomorrow', 'overdue', 'completed', 'leads', 'allTasks', 'allFollowUps'));
     }
 
     /**
