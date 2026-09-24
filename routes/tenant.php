@@ -455,9 +455,12 @@ Route::middleware(array_values(array_filter([
             Route::post('developer/modules/reset', [\App\Http\Controllers\DeveloperModuleController::class, 'resetToTier'])->name('developer.modules.reset');
         });
 
-        // Retail Sales Performance Scorecard (Weekly / Monthly)
+        // Retail Sales Performance Scorecard (Weekly / Monthly Matrix)
         Route::get('reports/retail-performance', [\App\Http\Controllers\RetailPerformanceController::class, 'index'])->name('reports.retail.index');
+        Route::get('reports/retail-performance/print', [\App\Http\Controllers\RetailPerformanceController::class, 'printExecutive'])->name('reports.retail.print');
         Route::get('reports/retail-performance/export', [\App\Http\Controllers\RetailPerformanceController::class, 'export'])->name('reports.retail.export');
+        Route::post('reports/retail-performance/field-log', [\App\Http\Controllers\RetailPerformanceController::class, 'saveFieldLog'])->name('reports.retail.field-log');
+        Route::get('reports/retail-performance/drilldown', [\App\Http\Controllers\RetailPerformanceController::class, 'drilldown'])->name('reports.retail.drilldown');
 
         // Reports
         Route::middleware(['permission:finance.view_ledger,hr.manage_targets', 'feature:advanced_reports'])->group(function () {

@@ -1,81 +1,90 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="space-y-6" x-data="{ dailyCatchupOpen: false, selectedLeads: [], pulseChannel: 'whatsapp', pulseSummary: '' }">
+@php
+    $accentColor = $isBuckcrest ? '#946E19' : '#F37021';
+    $accentHover = $isBuckcrest ? '#785712' : '#d95d14';
+    $brandSoftBg = $isBuckcrest ? 'bg-amber-500/10 text-amber-500 border-amber-500/20' : 'bg-brand-50 text-brand-600 border-brand-100';
+    $brandBadge = $isBuckcrest ? 'bg-[#946E19]/10 text-[#946E19] border-[#946E19]/25' : 'bg-brand-50 text-brand-600 border-brand-100';
+@endphp
 
-    <!-- Top Breadcrumb & Actions Header -->
-    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-4 border-b border-gray-150">
+<div class="space-y-6" x-data="retailScorecardApp()">
+
+    <!-- Top Breadcrumb & Executive Header -->
+    <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4 pb-4 border-b border-gray-150 dark:border-dark-700">
         <div>
             <div class="flex items-center space-x-2 text-xs font-bold text-gray-400 mb-1">
                 <a href="{{ route('reports.index') }}" class="hover:text-brand-600 transition-colors">Reports</a>
                 <span>/</span>
-                <span class="text-brand-600">Retail Team Performance</span>
+                <span class="{{ $isBuckcrest ? 'text-[#946E19]' : 'text-brand-600' }}">Executive Retail Matrix</span>
             </div>
-            <h1 class="text-2xl lg:text-3xl font-black text-dark-900 tracking-tight flex items-center gap-3">
-                <span>📊 Retail Team Performance Scorecard</span>
-                <span class="text-xs px-2.5 py-1 rounded-full font-bold bg-brand-50 text-brand-600 border border-brand-100">
+            <h1 class="text-2xl lg:text-3xl font-black text-dark-900 dark:text-white tracking-tight flex items-center flex-wrap gap-2.5">
+                <span>🏛️ Retail Sales Performance Matrix</span>
+                <span class="text-xs px-3 py-1 rounded-full font-bold {{ $brandBadge }}">
                     {{ $periodLabel }}
                 </span>
             </h1>
-            <p class="text-xs text-gray-500 mt-1">Verified weekly and monthly audit of sales outreaches, client engagements, site inspections, and cash collections.</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                Multi-tier executive scorecard tracking verified field canvassing, customer engagements, site inspections, and realized revenue collections.
+            </p>
         </div>
 
-        <div class="flex flex-wrap items-center gap-2.5">
-            <button @click="dailyCatchupOpen = true" class="inline-flex items-center space-x-2 px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs rounded-xl border border-emerald-200 transition-all shadow-sm">
-                <span>💬</span>
-                <span>Quick Chat / Call Catch-up</span>
+        <!-- Action Toolbar -->
+        <div class="flex flex-wrap items-center gap-2">
+            <!-- Log Field Canvassing Modal Trigger -->
+            <button @click="openFieldLogModal()" 
+                class="inline-flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-bold transition-all shadow-sm {{ $isBuckcrest ? 'bg-[#946E19] hover:bg-[#785712] text-white shadow-amber-900/20' : 'bg-brand-600 hover:bg-brand-700 text-white shadow-brand-500/20' }}">
+                <span>✏️</span>
+                <span>Log Field Canvassing & Notes</span>
             </button>
 
-            <a href="{{ route('reports.retail.export', request()->all()) }}" class="inline-flex items-center space-x-2 px-4 py-2.5 bg-white text-gray-700 hover:bg-gray-50 border border-gray-250 font-bold text-xs rounded-xl shadow-sm transition-all">
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+            <!-- Print Landscape View -->
+            <a href="{{ route('reports.retail.print', request()->all()) }}" target="_blank"
+                class="inline-flex items-center space-x-1.5 px-3.5 py-2 bg-gray-900 hover:bg-dark-900 dark:bg-dark-700 dark:hover:bg-dark-600 text-white font-bold text-xs rounded-xl shadow-sm transition-all">
+                <svg class="w-3.5 h-3.5 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path>
                 </svg>
-                <span>Export to Excel / CSV</span>
+                <span>Print Landscape</span>
             </a>
 
-            <a href="{{ route('leads.index') }}" class="inline-flex items-center space-x-1 px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-white font-bold text-xs rounded-xl shadow-md shadow-brand-500/20 transition-all">
-                <span>View Leads Pipeline &rarr;</span>
+            <!-- Export to CSV / Excel -->
+            <a href="{{ route('reports.retail.export', request()->all()) }}" 
+                class="inline-flex items-center space-x-1.5 px-3.5 py-2 bg-white dark:bg-dark-800 text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-dark-700 border border-gray-250 dark:border-dark-600 font-bold text-xs rounded-xl shadow-sm transition-all">
+                <svg class="w-3.5 h-3.5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path>
+                </svg>
+                <span>Export Excel</span>
             </a>
+
+            <!-- Quick Catch-up Modal Trigger -->
+            <button @click="dailyCatchupOpen = true" 
+                class="inline-flex items-center space-x-1.5 px-3 py-2 bg-emerald-50 dark:bg-emerald-950/40 hover:bg-emerald-100 text-emerald-700 dark:text-emerald-300 font-bold text-xs rounded-xl border border-emerald-200 dark:border-emerald-800/50 transition-all">
+                <span>💬</span>
+                <span>Quick Pulse</span>
+            </button>
         </div>
     </div>
 
-    <!-- Period Filter Bar -->
-    <div class="bg-white rounded-2xl border border-gray-150 p-4 shadow-sm">
+    <!-- Filter & Sprint Selector -->
+    <div class="bg-white dark:bg-dark-800 rounded-2xl border border-gray-150 dark:border-dark-700 p-4 shadow-sm">
         <form method="GET" action="{{ route('reports.retail.index') }}" class="flex flex-wrap items-center gap-3">
             <!-- Period Type Toggle -->
-            <div class="flex items-center bg-gray-100 p-1 rounded-xl">
+            <div class="flex items-center bg-gray-100 dark:bg-dark-700 p-1 rounded-xl">
                 <button type="button" onclick="document.getElementById('period_type_input').value='weekly'; this.form.submit();"
-                    class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all {{ $periodType === 'weekly' ? 'bg-white text-dark-900 shadow-sm' : 'text-gray-500 hover:text-dark-900' }}">
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $periodType === 'weekly' ? 'bg-white dark:bg-dark-800 text-dark-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-dark-900 dark:hover:text-white' }}">
                     Weekly Sprint
                 </button>
                 <button type="button" onclick="document.getElementById('period_type_input').value='monthly'; this.form.submit();"
-                    class="px-3.5 py-1.5 rounded-lg text-xs font-bold transition-all {{ $periodType === 'monthly' ? 'bg-white text-dark-900 shadow-sm' : 'text-gray-500 hover:text-dark-900' }}">
+                    class="px-3 py-1.5 rounded-lg text-xs font-bold transition-all {{ $periodType === 'monthly' ? 'bg-white dark:bg-dark-800 text-dark-900 dark:text-white shadow-sm' : 'text-gray-500 hover:text-dark-900 dark:hover:text-white' }}">
                     Monthly Overview
                 </button>
             </div>
             <input type="hidden" id="period_type_input" name="period_type" value="{{ $periodType }}">
 
-            @if($periodType === 'weekly')
-            <!-- Week Selector -->
-            <div class="flex items-center space-x-2">
-                <label class="text-xs font-bold text-gray-500">Week:</label>
-                <select name="week" onchange="this.form.submit()" class="bg-gray-50 border border-gray-250 rounded-xl px-3 py-1.5 text-xs font-bold text-gray-700 focus:border-brand-500 outline-none">
-                    @for($w = 1; $w <= 52; $w++)
-                        @php
-                            $wStart = \Carbon\Carbon::now()->setISODate($year, $w)->startOfWeek();
-                            $wEnd = \Carbon\Carbon::now()->setISODate($year, $w)->endOfWeek();
-                        @endphp
-                        <option value="{{ $w }}" {{ $w == $week ? 'selected' : '' }}>
-                            Week {{ $w }} ({{ $wStart->format('M d') }} - {{ $wEnd->format('M d') }})
-                        </option>
-                    @endfor
-                </select>
-            </div>
-            @else
-            <!-- Month Selector -->
-            <div class="flex items-center space-x-2">
+            <!-- Month Dropdown -->
+            <div class="flex items-center space-x-1.5">
                 <label class="text-xs font-bold text-gray-500">Month:</label>
-                <select name="month" onchange="this.form.submit()" class="bg-gray-50 border border-gray-250 rounded-xl px-3 py-1.5 text-xs font-bold text-gray-700 focus:border-brand-500 outline-none">
+                <select name="month" onchange="this.form.submit()" class="bg-gray-50 dark:bg-dark-700 border border-gray-250 dark:border-dark-600 rounded-xl px-2.5 py-1.5 text-xs font-bold text-gray-700 dark:text-gray-200 outline-none">
                     @for($m = 1; $m <= 12; $m++)
                         <option value="{{ $m }}" {{ $m == $month ? 'selected' : '' }}>
                             {{ \Carbon\Carbon::create()->month($m)->format('F') }}
@@ -83,23 +92,37 @@
                     @endfor
                 </select>
             </div>
+
+            @if($periodType === 'weekly')
+            <!-- Week of Month Selector -->
+            <div class="flex items-center space-x-1.5">
+                <label class="text-xs font-bold text-gray-500">Sprint Week:</label>
+                <select name="week_number" onchange="this.form.submit()" class="bg-gray-50 dark:bg-dark-700 border border-gray-250 dark:border-dark-600 rounded-xl px-2.5 py-1.5 text-xs font-bold text-gray-700 dark:text-gray-200 outline-none">
+                    <option value="all" {{ $activeWeek === 'all' ? 'selected' : '' }}>All Weeks Combined</option>
+                    <option value="1" {{ $activeWeek == 1 ? 'selected' : '' }}>Week 1 (Day 1 - 7)</option>
+                    <option value="2" {{ $activeWeek == 2 ? 'selected' : '' }}>Week 2 (Day 8 - 14)</option>
+                    <option value="3" {{ $activeWeek == 3 ? 'selected' : '' }}>Week 3 (Day 15 - 21)</option>
+                    <option value="4" {{ $activeWeek == 4 ? 'selected' : '' }}>Week 4 (Day 22 - 28)</option>
+                    <option value="5" {{ $activeWeek == 5 ? 'selected' : '' }}>Week 5 (Day 29 - End)</option>
+                </select>
+            </div>
             @endif
 
             <!-- Year Selector -->
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-1.5">
                 <label class="text-xs font-bold text-gray-500">Year:</label>
-                <select name="year" onchange="this.form.submit()" class="bg-gray-50 border border-gray-250 rounded-xl px-3 py-1.5 text-xs font-bold text-gray-700 focus:border-brand-500 outline-none">
-                    @for($y = now()->year - 1; $y <= now()->year + 1; $y++)
+                <select name="year" onchange="this.form.submit()" class="bg-gray-50 dark:bg-dark-700 border border-gray-250 dark:border-dark-600 rounded-xl px-2.5 py-1.5 text-xs font-bold text-gray-700 dark:text-gray-200 outline-none">
+                    @for($y = now()->year - 2; $y <= now()->year + 1; $y++)
                         <option value="{{ $y }}" {{ $y == $year ? 'selected' : '' }}>{{ $y }}</option>
                     @endfor
                 </select>
             </div>
 
-            <!-- Branch Filter (if applicable) -->
+            <!-- Branch Filter -->
             @if($branches->count() > 1)
-            <div class="flex items-center space-x-2">
+            <div class="flex items-center space-x-1.5">
                 <label class="text-xs font-bold text-gray-500">Branch:</label>
-                <select name="branch_id" onchange="this.form.submit()" class="bg-gray-50 border border-gray-250 rounded-xl px-3 py-1.5 text-xs font-bold text-gray-700 focus:border-brand-500 outline-none">
+                <select name="branch_id" onchange="this.form.submit()" class="bg-gray-50 dark:bg-dark-700 border border-gray-250 dark:border-dark-600 rounded-xl px-2.5 py-1.5 text-xs font-bold text-gray-700 dark:text-gray-200 outline-none">
                     <option value="">All Branches</option>
                     @foreach($branches as $b)
                         <option value="{{ $b->id }}" {{ $branchId == $b->id ? 'selected' : '' }}>{{ $b->name }}</option>
@@ -108,267 +131,380 @@
             </div>
             @endif
 
-            <noscript>
-                <button type="submit" class="px-3 py-1.5 bg-brand-500 text-white rounded-xl text-xs font-bold">Filter</button>
-            </noscript>
+            <span class="ml-auto text-[11px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">
+                ✓ 100% Verified CRM Database Data
+            </span>
         </form>
     </div>
 
-    <!-- Verified Team Aggregates KPI Grid -->
+    <!-- Executive KPI Pulse Overview -->
     <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
-        <div class="bg-white rounded-2xl border border-gray-150 p-4 shadow-sm">
-            <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Leads Captured</span>
-            <span class="text-xl lg:text-2xl font-black text-dark-900 mt-1 block">{{ number_format($aggregates['leads_captured']) }}</span>
-            <span class="text-[10px] text-emerald-600 font-bold mt-0.5 block">New pipeline</span>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-gray-150 p-4 shadow-sm">
-            <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Verified Calls</span>
-            <span class="text-xl lg:text-2xl font-black text-blue-600 mt-1 block">{{ number_format($aggregates['calls_logged']) }}</span>
-            <span class="text-[10px] text-gray-400 font-medium mt-0.5 block">Logged on leads</span>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-gray-150 p-4 shadow-sm">
-            <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">WhatsApp Chats</span>
-            <span class="text-xl lg:text-2xl font-black text-emerald-600 mt-1 block">{{ number_format($aggregates['whatsapp_logged']) }}</span>
-            <span class="text-[10px] text-gray-400 font-medium mt-0.5 block">Ongoing discussions</span>
-        </div>
-
-        <div class="bg-white rounded-2xl border border-gray-150 p-4 shadow-sm">
-            <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Site Inspections</span>
-            <div class="flex items-baseline space-x-1 mt-1">
-                <span class="text-xl lg:text-2xl font-black text-purple-600">{{ $aggregates['inspections_completed'] }}</span>
-                <span class="text-xs text-gray-400 font-bold">/ {{ $aggregates['inspections_scheduled'] }}</span>
+        <!-- Total Inflow Realized -->
+        <div class="col-span-2 md:col-span-2 lg:col-span-2 bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-2xl p-4 shadow-sm relative overflow-hidden">
+            <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
+            <span class="block text-[10px] font-bold text-emerald-100 uppercase tracking-wider">Total Realized Cash Inflow</span>
+            <div class="text-2xl lg:text-3xl font-black mt-1">
+                ₦{{ number_format($aggregates['total_realized_revenue'], 2) }}
             </div>
-            <span class="text-[10px] text-purple-600 font-bold mt-0.5 block">Done / Booked</span>
+            <div class="flex items-center space-x-3 text-[11px] text-emerald-100/90 mt-1 font-medium">
+                <span>New: ₦{{ number_format($aggregates['actual_payments_value'], 0) }}</span>
+                <span>•</span>
+                <span>Top-ups: ₦{{ number_format($aggregates['topups_value'], 0) }}</span>
+            </div>
         </div>
 
-        <div class="bg-white rounded-2xl border border-gray-150 p-4 shadow-sm">
+        <!-- Closed Deals Count -->
+        <div class="bg-white dark:bg-dark-800 rounded-2xl border border-gray-150 dark:border-dark-700 p-4 shadow-sm">
+            <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Closed Deals</span>
+            <span class="text-xl lg:text-2xl font-black text-amber-600 mt-1 block">
+                {{ number_format($aggregates['actual_payments_count']) }}
+            </span>
+            <span class="text-[10px] text-gray-400 mt-0.5 block">Outright & Initial</span>
+        </div>
+
+        <!-- Site Inspections -->
+        <div class="bg-white dark:bg-dark-800 rounded-2xl border border-gray-150 dark:border-dark-700 p-4 shadow-sm">
+            <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Site Inspections</span>
+            <span class="text-xl lg:text-2xl font-black text-purple-600 mt-1 block">
+                {{ number_format($aggregates['inspections_count']) }}
+            </span>
+            <span class="text-[10px] text-gray-400 mt-0.5 block">Physical estate tours</span>
+        </div>
+
+        <!-- Office Visits -->
+        <div class="bg-white dark:bg-dark-800 rounded-2xl border border-gray-150 dark:border-dark-700 p-4 shadow-sm">
             <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Office Visits</span>
-            <span class="text-xl lg:text-2xl font-black text-indigo-600 mt-1 block">{{ number_format($aggregates['office_visits']) }}</span>
-            <span class="text-[10px] text-gray-400 font-medium mt-0.5 block">Corporate walk-ins</span>
+            <span class="text-xl lg:text-2xl font-black text-indigo-600 mt-1 block">
+                {{ number_format($aggregates['office_visits_count']) }}
+            </span>
+            <span class="text-[10px] text-gray-400 mt-0.5 block">Client Walk-ins</span>
         </div>
 
-        <div class="bg-white rounded-2xl border border-gray-150 p-4 shadow-sm">
-            <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Deals Closed</span>
-            <span class="text-xl lg:text-2xl font-black text-amber-600 mt-1 block">{{ number_format($aggregates['new_sales_count']) }}</span>
-            <span class="text-[10px] text-amber-700 font-bold mt-0.5 block">₦{{ number_format($aggregates['new_sales_value'], 0) }}</span>
+        <!-- Verified Calls & WhatsApp -->
+        <div class="bg-white dark:bg-dark-800 rounded-2xl border border-gray-150 dark:border-dark-700 p-4 shadow-sm">
+            <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Calls / WhatsApp</span>
+            <div class="flex items-baseline space-x-1.5 mt-1">
+                <span class="text-xl lg:text-2xl font-black text-blue-600">{{ number_format($aggregates['calls_count']) }}</span>
+                <span class="text-xs text-gray-400 font-bold">/ {{ number_format($aggregates['whatsapp_count']) }}</span>
+            </div>
+            <span class="text-[10px] text-gray-400 mt-0.5 block">Audited engagements</span>
         </div>
 
-        <div class="bg-white rounded-2xl border border-emerald-150 bg-gradient-to-br from-emerald-50/50 to-white p-4 shadow-sm">
-            <span class="block text-[10px] font-bold text-emerald-800 uppercase tracking-wider">Total Cash Inflow</span>
-            <span class="text-lg lg:text-xl font-black text-emerald-700 mt-1 block">₦{{ number_format($aggregates['new_sales_value'] + $aggregates['milestone_collections'], 0) }}</span>
-            <span class="text-[10px] text-gray-500 font-medium mt-0.5 block">Sales + Top-ups</span>
+        <!-- New Contacts Captured -->
+        <div class="bg-white dark:bg-dark-800 rounded-2xl border border-gray-150 dark:border-dark-700 p-4 shadow-sm">
+            <span class="block text-[10px] font-bold text-gray-400 uppercase tracking-wider">Contacts Captured</span>
+            <span class="text-xl lg:text-2xl font-black text-emerald-600 mt-1 block">
+                {{ number_format($aggregates['new_contacts_count']) }}
+            </span>
+            <span class="text-[10px] text-gray-400 mt-0.5 block">{{ $aggregates['contacts_phone_count'] }} with active phone</span>
         </div>
     </div>
 
-    <!-- Main Performance Scorecard Table -->
-    <div class="bg-white rounded-3xl border border-gray-150 shadow-sm overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
+    <!-- Main BSTAN-Model Performance Scorecard Table (10x Enhanced) -->
+    <div class="bg-white dark:bg-dark-800 rounded-3xl border border-gray-150 dark:border-dark-700 shadow-sm overflow-hidden">
+        <!-- Table Header Bar -->
+        <div class="px-6 py-4 border-b border-gray-150 dark:border-dark-700 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-                <h3 class="font-bold text-dark-900 text-base">Sales Consultant League Table</h3>
-                <p class="text-xs text-gray-400">Ranked by revenue generation and genuine customer engagement</p>
+                <h3 class="font-bold text-dark-900 dark:text-white text-base flex items-center gap-2">
+                    <span>Retail Sales Team Performance Scorecard Matrix</span>
+                    <span class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-gray-100 dark:bg-dark-700 text-gray-600 dark:text-gray-300">
+                        {{ count($matrixRows) }} Sales Personnel
+                    </span>
+                </h3>
+                <p class="text-xs text-gray-400 mt-0.5">
+                    Click any highlighted count (Calls, Leads, Deals, Inspections) to inspect genuine CRM transaction audits.
+                </p>
             </div>
-            <span class="text-xs font-bold text-gray-500 bg-gray-50 px-3 py-1 rounded-xl border border-gray-200">
-                {{ count($scorecard) }} Sales Consultants Active
-            </span>
+            
+            <div class="flex items-center space-x-2 text-xs text-gray-500">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block animate-pulse"></span>
+                <span>Real-time Multi-tenant Sync</span>
+            </div>
         </div>
 
+        <!-- Responsive Matrix Table -->
         <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse text-xs">
                 <thead>
-                    <tr class="bg-gray-50/70 border-b border-gray-150 text-[11px] font-extrabold text-gray-500 uppercase tracking-wider">
-                        <th class="py-3.5 px-4">Sales Consultant</th>
-                        <th class="py-3.5 px-3">Field Outreaches</th>
-                        <th class="py-3.5 px-3 text-center">Leads</th>
-                        <th class="py-3.5 px-3 text-center">Daily Rhythm (Mon–Sun)</th>
-                        <th class="py-3.5 px-3 text-center">Calls</th>
-                        <th class="py-3.5 px-3 text-center">WhatsApp</th>
-                        <th class="py-3.5 px-3 text-center">Inspections</th>
-                        <th class="py-3.5 px-3 text-center">Office Visits</th>
-                        <th class="py-3.5 px-3 text-right">New Sales (₦)</th>
-                        <th class="py-3.5 px-3 text-right">Top-ups (₦)</th>
-                        <th class="py-3.5 px-3 text-right">Expected Inflow (₦)</th>
-                        <th class="py-3.5 px-4 text-right">Total Inflow (₦)</th>
+                    <!-- Tier 1 Super Headers (Exact BSTAN Group Structure) -->
+                    <tr class="bg-gray-100/90 dark:bg-dark-900 border-b border-gray-200 dark:border-dark-700 text-[10px] font-black uppercase tracking-wider text-gray-600 dark:text-gray-300">
+                        <th colspan="2" class="py-2.5 px-3 border-r border-gray-200 dark:border-dark-700 text-center bg-gray-200/50 dark:bg-dark-950">CONSULTANT PROFILE</th>
+                        <th colspan="2" class="py-2.5 px-3 border-r border-gray-200 dark:border-dark-700 text-center bg-blue-50/50 dark:bg-blue-950/20 text-blue-800 dark:text-blue-300">LOCATION(S) / EVENT(S)</th>
+                        <th colspan="4" class="py-2.5 px-3 border-r border-gray-200 dark:border-dark-700 text-center bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300">PAYMENTS / REVENUE (₦)</th>
+                        <th colspan="2" class="py-2.5 px-3 border-r border-gray-200 dark:border-dark-700 text-center bg-purple-50/50 dark:bg-purple-950/20 text-purple-800 dark:text-purple-300">ACTIVITIES</th>
+                        <th colspan="4" class="py-2.5 px-3 border-r border-gray-200 dark:border-dark-700 text-center bg-indigo-50/50 dark:bg-indigo-950/20 text-indigo-800 dark:text-indigo-300">ENGAGEMENTS (VERIFIED)</th>
+                        <th colspan="2" class="py-2.5 px-3 text-center bg-amber-50/50 dark:bg-amber-950/20 text-amber-800 dark:text-amber-300">SUMMARY REPORT & OBSERVATIONS</th>
+                    </tr>
+
+                    <!-- Tier 2 Granular Metric Columns -->
+                    <tr class="bg-gray-50/70 dark:bg-dark-850 border-b border-gray-200 dark:border-dark-700 text-[10px] font-extrabold uppercase tracking-wider text-gray-500 dark:text-gray-400">
+                        <th class="py-2.5 px-2 text-center w-10">S/N</th>
+                        <th class="py-2.5 px-3 min-w-[150px] border-r border-gray-200 dark:border-dark-700">Sales Consultant</th>
+                        
+                        <!-- Location(s) / Event(s) -->
+                        <th class="py-2.5 px-3 min-w-[160px]">Locations Visited / Canvassed</th>
+                        <th class="py-2.5 px-2.5 text-center min-w-[70px] border-r border-gray-200 dark:border-dark-700">Office Visits</th>
+                        
+                        <!-- Payments / Revenue -->
+                        <th class="py-2.5 px-2.5 text-right min-w-[110px]">New Sales (₦)</th>
+                        <th class="py-2.5 px-2.5 text-right min-w-[110px]">Part / Top-ups (₦)</th>
+                        <th class="py-2.5 px-2.5 text-right min-w-[110px]">Expected Inflow (₦)</th>
+                        <th class="py-2.5 px-3 text-right min-w-[120px] font-black border-r border-gray-200 dark:border-dark-700 bg-emerald-50/30 dark:bg-emerald-950/10">Total Realized (₦)</th>
+                        
+                        <!-- Activities -->
+                        <th class="py-2.5 px-2 text-center min-w-[65px]">Inspections</th>
+                        <th class="py-2.5 px-3 min-w-[130px] border-r border-gray-200 dark:border-dark-700">Projects Inspected</th>
+                        
+                        <!-- Engagements -->
+                        <th class="py-2.5 px-2 text-center min-w-[55px]">Calls</th>
+                        <th class="py-2.5 px-2 text-center min-w-[55px]">WhatsApp</th>
+                        <th class="py-2.5 px-2 text-center min-w-[45px]">SMS</th>
+                        <th class="py-2.5 px-2.5 text-center min-w-[90px] border-r border-gray-200 dark:border-dark-700">Contacts (P/E)</th>
+                        
+                        <!-- Summary Report & Notes -->
+                        <th class="py-2.5 px-3 min-w-[200px]">Observations & Feedback</th>
+                        <th class="py-2.5 px-2 text-center w-12">Edit</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-100 text-xs">
-                    @forelse($scorecard as $row)
+
+                <tbody class="divide-y divide-gray-100 dark:divide-dark-700">
+                    @forelse($matrixRows as $idx => $row)
                     @php
                         $user = $row['user'];
                         $isMe = ($currentUser->id === $user->id);
+                        $fieldLog = $row['field_log'];
                     @endphp
-                    <tr class="hover:bg-gray-50/80 transition-colors {{ $isMe ? 'bg-brand-50/30' : '' }}">
-                        <!-- Consultant Identity -->
-                        <td class="py-3.5 px-4">
-                            <div class="flex items-center space-x-3">
-                                <div class="w-9 h-9 rounded-full bg-brand-100 text-brand-700 font-black text-xs flex items-center justify-center flex-shrink-0">
+                    <tr class="hover:bg-gray-50/80 dark:hover:bg-dark-750 transition-colors {{ $isMe ? ($isBuckcrest ? 'bg-amber-500/5' : 'bg-brand-50/20') : '' }}">
+                        <!-- S/N -->
+                        <td class="py-3 px-2 text-center text-gray-400 font-bold text-[11px]">
+                            {{ $idx + 1 }}
+                        </td>
+
+                        <!-- Sales Consultant Identity -->
+                        <td class="py-3 px-3 border-r border-gray-200 dark:border-dark-700">
+                            <div class="flex items-center space-x-2.5">
+                                <div class="w-8 h-8 rounded-full {{ $isBuckcrest ? 'bg-[#946E19]/15 text-[#946E19]' : 'bg-brand-100 text-brand-700' }} font-black text-xs flex items-center justify-center flex-shrink-0">
                                     {{ substr($user->name, 0, 2) }}
                                 </div>
                                 <div>
                                     <div class="flex items-center space-x-1.5">
-                                        <span class="font-bold text-dark-900">{{ $user->name }}</span>
+                                        <span class="font-bold text-dark-900 dark:text-white">{{ $user->name }}</span>
                                         @if($isMe)
-                                            <span class="text-[9px] font-bold px-1.5 py-0.5 rounded bg-brand-100 text-brand-700">You</span>
+                                            <span class="text-[9px] font-bold px-1.5 py-0.2 rounded {{ $isBuckcrest ? 'bg-[#946E19]/20 text-[#946E19]' : 'bg-brand-100 text-brand-700' }}">You</span>
                                         @endif
                                     </div>
-                                    <span class="text-[10px] text-gray-400">{{ $user->branch ? $user->branch->name : 'Main Branch' }}</span>
+                                    <span class="text-[10px] text-gray-400 block">{{ $user->branch ? $user->branch->name : 'Main Office' }}</span>
                                 </div>
                             </div>
                         </td>
 
-                        <!-- Outreach Locations -->
-                        <td class="py-3.5 px-3 max-w-[180px]">
-                            @if(!empty($row['outreach_locations']))
-                                <div class="flex flex-wrap gap-1">
-                                    @foreach(array_slice($row['outreach_locations'], 0, 2) as $loc)
-                                        <span class="px-2 py-0.5 bg-gray-100 text-gray-700 rounded-md text-[10px] font-medium truncate max-w-[120px]" title="{{ $loc }}">
-                                            📍 {{ $loc }}
-                                        </span>
-                                    @endforeach
-                                    @if(count($row['outreach_locations']) > 2)
-                                        <span class="px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded text-[9px] font-bold">+{{ count($row['outreach_locations']) - 2 }}</span>
-                                    @endif
-                                </div>
-                            @else
-                                <span class="text-gray-300 text-[11px]">—</span>
-                            @endif
-                        </td>
-
-                        <!-- Leads Captured -->
-                        <td class="py-3.5 px-3 text-center">
-                            <span class="font-black text-dark-900 {{ $row['leads_captured'] > 0 ? 'text-dark-900' : 'text-gray-300' }}">
-                                {{ $row['leads_captured'] }}
-                            </span>
-                            @if(!empty($row['flagged_fake_leads']) && $row['flagged_fake_leads'] > 0)
-                                <span class="block text-[9px] font-bold text-rose-600 leading-tight mt-0.5" title="{{ $row['flagged_fake_leads'] }} unreachable/fake leads disqualified from target">
-                                    ⚠️ -{{ $row['flagged_fake_leads'] }} fake
-                                </span>
-                            @endif
-                        </td>
-
-                        <!-- Daily Rhythm (Mon–Sun) -->
-                        <td class="py-3.5 px-3">
-                            <div class="flex items-center justify-center space-x-1">
-                                @foreach(['Mon' => 'M', 'Tue' => 'T', 'Wed' => 'W', 'Thu' => 'T', 'Fri' => 'F', 'Sat' => 'S', 'Sun' => 'S'] as $dayKey => $dayLabel)
-                                    @php $cnt = $row['daily_lead_counts'][$dayKey] ?? 0; @endphp
-                                    <div class="flex flex-col items-center" title="{{ $dayKey }}: {{ $cnt }} leads uploaded">
-                                        <span class="text-[8px] font-bold {{ $cnt > 0 ? 'text-emerald-700 font-extrabold' : 'text-gray-400' }}">{{ $dayLabel }}</span>
-                                        <span class="w-5 h-5 flex items-center justify-center text-[10px] font-bold rounded-md transition-all {{ $cnt > 0 ? 'bg-emerald-100 text-emerald-800 font-black ring-1 ring-emerald-300' : 'bg-gray-100 text-gray-300' }}">
-                                            {{ $cnt }}
-                                        </span>
-                                    </div>
-                                @endforeach
+                        <!-- Locations Visited / Canvassed -->
+                        <td class="py-3 px-3 text-[11px]">
+                            <div class="text-gray-700 dark:text-gray-300 font-medium leading-relaxed max-w-[180px] break-words">
+                                📍 {{ $row['canvassing_locations'] }}
                             </div>
-                        </td>
-
-                        <!-- Calls Logged -->
-                        <td class="py-3.5 px-3 text-center">
-                            <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-lg font-bold text-xs {{ $row['calls_logged'] > 0 ? 'bg-blue-50 text-blue-700 border border-blue-100' : 'text-gray-300' }}">
-                                {{ $row['calls_logged'] }}
-                            </span>
-                        </td>
-
-                        <!-- WhatsApp Chats -->
-                        <td class="py-3.5 px-3 text-center">
-                            <span class="inline-flex items-center justify-center px-2 py-0.5 rounded-lg font-bold text-xs {{ $row['whatsapp_logged'] > 0 ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'text-gray-300' }}">
-                                {{ $row['whatsapp_logged'] }}
-                            </span>
-                        </td>
-
-                        <!-- Inspections -->
-                        <td class="py-3.5 px-3 text-center">
-                            @if($row['inspections_scheduled'] > 0)
-                                <span class="px-2 py-0.5 rounded-lg text-xs font-bold {{ $row['inspections_completed'] > 0 ? 'bg-purple-50 text-purple-700 border border-purple-100' : 'bg-gray-100 text-gray-600' }}">
-                                    {{ $row['inspections_completed'] }} / {{ $row['inspections_scheduled'] }}
-                                </span>
-                            @else
-                                <span class="text-gray-300">—</span>
-                            @endif
                         </td>
 
                         <!-- Office Visits -->
-                        <td class="py-3.5 px-3 text-center">
-                            <span class="font-bold text-gray-600 {{ $row['office_visits'] > 0 ? 'text-indigo-600 font-extrabold' : 'text-gray-300' }}">
-                                {{ $row['office_visits'] }}
+                        <td class="py-3 px-2.5 text-center border-r border-gray-200 dark:border-dark-700">
+                            <span class="font-bold {{ $row['office_visits_count'] > 0 ? 'text-indigo-600 dark:text-indigo-400 font-black' : 'text-gray-300 dark:text-gray-600' }}">
+                                {{ $row['office_visits_count'] }}
                             </span>
                         </td>
 
-                        <!-- New Sales Value -->
-                        <td class="py-3.5 px-3 text-right">
-                            @if($row['new_sales_count'] > 0)
-                                <span class="font-bold text-amber-700 block">₦{{ number_format($row['new_sales_value'], 0) }}</span>
-                                <span class="text-[10px] text-gray-400">({{ $row['new_sales_count'] }} deal{{ $row['new_sales_count'] > 1 ? 's' : '' }})</span>
+                        <!-- New Sales (₦) with Click-to-Drilldown -->
+                        <td class="py-3 px-2.5 text-right font-mono">
+                            @if($row['actual_payments_count'] > 0)
+                                <button type="button" @click="openDrilldown({{ $user->id }}, 'sales', '{{ addslashes($user->name) }}')"
+                                    class="text-amber-700 dark:text-amber-400 font-bold hover:underline cursor-pointer block w-full text-right"
+                                    title="Click to view verified closed sales">
+                                    ₦{{ number_format($row['actual_payments_value'], 0) }}
+                                    <span class="text-[9px] block text-gray-400">({{ $row['actual_payments_count'] }} deal{{ $row['actual_payments_count'] > 1 ? 's' : '' }})</span>
+                                </button>
                             @else
-                                <span class="text-gray-300">—</span>
+                                <span class="text-gray-300 dark:text-gray-600">—</span>
                             @endif
                         </td>
 
-                        <!-- Milestone Collections (Top-ups) -->
-                        <td class="py-3.5 px-3 text-right">
-                            @if($row['milestone_collections'] > 0)
-                                <span class="font-bold text-emerald-700">₦{{ number_format($row['milestone_collections'], 0) }}</span>
+                        <!-- Part / Top-ups (₦) with Click-to-Drilldown -->
+                        <td class="py-3 px-2.5 text-right font-mono">
+                            @if($row['topups_count'] > 0)
+                                <button type="button" @click="openDrilldown({{ $user->id }}, 'topups', '{{ addslashes($user->name) }}')"
+                                    class="text-emerald-700 dark:text-emerald-400 font-bold hover:underline cursor-pointer block w-full text-right"
+                                    title="Click to view verified milestone receipts">
+                                    ₦{{ number_format($row['topups_value'], 0) }}
+                                    <span class="text-[9px] block text-gray-400">({{ $row['topups_count'] }} topup{{ $row['topups_count'] > 1 ? 's' : '' }})</span>
+                                </button>
                             @else
-                                <span class="text-gray-300">—</span>
+                                <span class="text-gray-300 dark:text-gray-600">—</span>
                             @endif
                         </td>
 
-                        <!-- Expected Collections -->
-                        <td class="py-3.5 px-3 text-right">
-                            @if($row['expected_collections'] > 0)
-                                <span class="font-bold text-gray-500">₦{{ number_format($row['expected_collections'], 0) }}</span>
+                        <!-- Expected Inflow (₦) & Prospective Contacts -->
+                        <td class="py-3 px-2.5 text-right">
+                            @if($row['expected_payments_count'] > 0 || !empty($row['expected_payments_notes']))
+                                <span class="text-gray-600 dark:text-gray-300 font-medium block">
+                                    {{ $row['expected_payments_count'] > 0 ? $row['expected_payments_count'] . ' pipeline' : 'Pending' }}
+                                </span>
+                                @if(!empty($row['expected_payments_notes']))
+                                    <span class="text-[9px] text-gray-400 block truncate max-w-[110px]" title="{{ $row['expected_payments_notes'] }}">
+                                        {{ $row['expected_payments_notes'] }}
+                                    </span>
+                                @endif
                             @else
-                                <span class="text-gray-300">—</span>
+                                <span class="text-gray-300 dark:text-gray-600">—</span>
                             @endif
                         </td>
 
-                        <!-- Total Cash Inflow -->
-                        <td class="py-3.5 px-4 text-right">
-                            <span class="font-black text-dark-900 text-sm {{ $row['total_revenue'] > 0 ? 'text-emerald-700' : 'text-gray-400' }}">
+                        <!-- Total Realized Inflow (₦) -->
+                        <td class="py-3 px-3 text-right font-black border-r border-gray-200 dark:border-dark-700 bg-emerald-50/20 dark:bg-emerald-950/10 font-mono">
+                            <span class="{{ $row['total_revenue'] > 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-300 dark:text-gray-600' }}">
                                 ₦{{ number_format($row['total_revenue'], 0) }}
                             </span>
+                        </td>
+
+                        <!-- Inspections Count with Click-to-Drilldown -->
+                        <td class="py-3 px-2 text-center">
+                            @if($row['inspections_count'] > 0)
+                                <button type="button" @click="openDrilldown({{ $user->id }}, 'inspections', '{{ addslashes($user->name) }}')"
+                                    class="inline-flex items-center justify-center px-2 py-0.5 rounded-lg font-bold bg-purple-50 dark:bg-purple-950/40 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800 hover:bg-purple-100 transition-all cursor-pointer">
+                                    {{ $row['inspections_count'] }}
+                                </button>
+                            @else
+                                <span class="text-gray-300 dark:text-gray-600">—</span>
+                            @endif
+                        </td>
+
+                        <!-- Projects / Estates Inspected -->
+                        <td class="py-3 px-3 text-[11px] border-r border-gray-200 dark:border-dark-700">
+                            <span class="text-gray-600 dark:text-gray-400 font-medium block truncate max-w-[130px]" title="{{ $row['project_locations_inspected'] }}">
+                                {{ $row['project_locations_inspected'] }}
+                            </span>
+                        </td>
+
+                        <!-- Verified Calls with Click-to-Drilldown -->
+                        <td class="py-3 px-2 text-center">
+                            @if($row['calls_count'] > 0)
+                                <button type="button" @click="openDrilldown({{ $user->id }}, 'calls', '{{ addslashes($user->name) }}')"
+                                    class="inline-flex items-center justify-center px-1.5 py-0.5 rounded-md font-bold text-[11px] bg-blue-50 dark:bg-blue-950/40 text-blue-700 dark:text-blue-300 border border-blue-100 dark:border-blue-800 hover:bg-blue-100 cursor-pointer">
+                                    {{ $row['calls_count'] }}
+                                </button>
+                            @else
+                                <span class="text-gray-300 dark:text-gray-600">0</span>
+                            @endif
+                        </td>
+
+                        <!-- WhatsApp with Click-to-Drilldown -->
+                        <td class="py-3 px-2 text-center">
+                            @if($row['whatsapp_count'] > 0)
+                                <button type="button" @click="openDrilldown({{ $user->id }}, 'whatsapp', '{{ addslashes($user->name) }}')"
+                                    class="inline-flex items-center justify-center px-1.5 py-0.5 rounded-md font-bold text-[11px] bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-300 border border-emerald-100 dark:border-emerald-800 hover:bg-emerald-100 cursor-pointer">
+                                    {{ $row['whatsapp_count'] }}
+                                </button>
+                            @else
+                                <span class="text-gray-300 dark:text-gray-600">0</span>
+                            @endif
+                        </td>
+
+                        <!-- SMS -->
+                        <td class="py-3 px-2 text-center font-bold text-gray-500">
+                            {{ $row['sms_count'] }}
+                        </td>
+
+                        <!-- Contacts (Phone / Email) with Click-to-Drilldown -->
+                        <td class="py-3 px-2.5 text-center border-r border-gray-200 dark:border-dark-700">
+                            @if($row['new_contacts_count'] > 0)
+                                <button type="button" @click="openDrilldown({{ $user->id }}, 'leads', '{{ addslashes($user->name) }}')"
+                                    class="font-black text-dark-900 dark:text-white hover:text-brand-600 cursor-pointer text-xs"
+                                    title="Click to view captured leads">
+                                    {{ $row['new_contacts_count'] }}
+                                </button>
+                                <span class="text-[9px] text-gray-400 block font-medium">({{ $row['contacts_phone_count'] }} ph / {{ $row['contacts_email_count'] }} em)</span>
+                            @else
+                                <span class="text-gray-300 dark:text-gray-600">—</span>
+                            @endif
+                        </td>
+
+                        <!-- Summary Observations & Feedback -->
+                        <td class="py-3 px-3 text-[11px]">
+                            <p class="text-gray-700 dark:text-gray-300 line-clamp-2 leading-relaxed" title="{{ $row['observations_recommendations'] }}">
+                                {{ $row['observations_recommendations'] }}
+                            </p>
+                        </td>
+
+                        <!-- Edit / Field Log Action Button -->
+                        <td class="py-3 px-2 text-center">
+                            <button type="button" @click="openFieldLogModal({{ json_encode([
+                                'user_id' => $user->id,
+                                'user_name' => $user->name,
+                                'canvassing_locations' => $row['canvassing_locations'] === 'Territory Prospecting' ? '' : $row['canvassing_locations'],
+                                'office_visits_count' => $row['office_visits_count'],
+                                'expected_payments_count' => $row['expected_payments_count'],
+                                'expected_payments_notes' => $row['expected_payments_notes'],
+                                'observations_recommendations' => $row['observations_recommendations'],
+                                'manager_feedback' => $fieldLog ? $fieldLog->manager_feedback : '',
+                            ]) }})" 
+                                class="p-1 rounded-lg text-gray-400 hover:text-brand-600 hover:bg-gray-100 dark:hover:bg-dark-700 transition-all"
+                                title="Edit weekly field logs and observations for {{ $user->name }}">
+                                ✏️
+                            </button>
                         </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="12" class="py-12 text-center text-gray-400 text-sm">
-                            No sales consultants found for the selected criteria.
+                        <td colspan="16" class="py-12 text-center text-gray-400 text-sm">
+                            No sales consultants found for the selected period or branch criteria.
                         </td>
                     </tr>
                     @endforelse
                 </tbody>
-                <!-- Aggregates Footer Row -->
-                @if(count($scorecard) > 0)
+
+                <!-- Aggregate Totals Footer Row (Identical to BSTAN Group Total Row) -->
+                @if(count($matrixRows) > 0)
                 <tfoot>
-                    <tr class="bg-gray-100/80 border-t-2 border-gray-200 text-xs font-black text-dark-900">
-                        <td class="py-4 px-4 text-dark-900 uppercase tracking-wider">
+                    <tr class="bg-gray-100 dark:bg-dark-900 border-t-2 border-gray-300 dark:border-dark-600 text-xs font-black text-dark-900 dark:text-white">
+                        <td colspan="2" class="py-3.5 px-3 border-r border-gray-300 dark:border-dark-700 text-dark-900 dark:text-white uppercase tracking-wider text-[11px]">
                             TOTAL TEAM AGGREGATE
                         </td>
-                        <td class="py-4 px-3 text-[10px] text-gray-400 font-bold uppercase">All Outreaches</td>
-                        <td class="py-4 px-3 text-center text-sm font-black">{{ number_format($aggregates['leads_captured']) }}</td>
-                        <td class="py-4 px-3 text-center">
-                            <div class="flex items-center justify-center space-x-1">
-                                @foreach(['Mon' => 'M', 'Tue' => 'T', 'Wed' => 'W', 'Thu' => 'T', 'Fri' => 'F', 'Sat' => 'S', 'Sun' => 'S'] as $dayKey => $dayLabel)
-                                    @php $tot = $aggregates['daily_leads'][$dayKey] ?? 0; @endphp
-                                    <div class="flex flex-col items-center" title="Total {{ $dayKey }}: {{ $tot }} leads">
-                                        <span class="text-[8px] font-bold text-gray-500">{{ $dayLabel }}</span>
-                                        <span class="text-[10px] font-black {{ $tot > 0 ? 'text-emerald-700' : 'text-gray-400' }}">{{ $tot }}</span>
-                                    </div>
-                                @endforeach
-                            </div>
+                        <td class="py-3.5 px-3 text-[10px] text-gray-400 font-bold uppercase">All Outreaches</td>
+                        <td class="py-3.5 px-2.5 text-center border-r border-gray-300 dark:border-dark-700 text-indigo-700 dark:text-indigo-400">
+                            {{ number_format($aggregates['office_visits_count']) }}
                         </td>
-                        <td class="py-4 px-3 text-center text-sm font-black text-blue-700">{{ number_format($aggregates['calls_logged']) }}</td>
-                        <td class="py-4 px-3 text-center text-sm font-black text-emerald-700">{{ number_format($aggregates['whatsapp_logged']) }}</td>
-                        <td class="py-4 px-3 text-center text-sm font-black text-purple-700">{{ $aggregates['inspections_completed'] }} / {{ $aggregates['inspections_scheduled'] }}</td>
-                        <td class="py-4 px-3 text-center text-sm font-black text-indigo-700">{{ number_format($aggregates['office_visits']) }}</td>
-                        <td class="py-4 px-3 text-right text-sm font-black text-amber-700">
-                            ₦{{ number_format($aggregates['new_sales_value'], 0) }}
-                            <span class="text-[10px] block font-medium text-gray-500">({{ $aggregates['new_sales_count'] }} deals)</span>
+                        <td class="py-3.5 px-2.5 text-right font-mono text-amber-700 dark:text-amber-400">
+                            ₦{{ number_format($aggregates['actual_payments_value'], 0) }}
+                            <span class="text-[9px] block font-normal text-gray-500">({{ $aggregates['actual_payments_count'] }} deals)</span>
                         </td>
-                        <td class="py-4 px-3 text-right text-sm font-black text-emerald-700">₦{{ number_format($aggregates['milestone_collections'], 0) }}</td>
-                        <td class="py-4 px-3 text-right text-sm font-black text-gray-600">₦{{ number_format($aggregates['expected_collections'], 0) }}</td>
-                        <td class="py-4 px-4 text-right text-base font-black text-emerald-800">
-                            ₦{{ number_format($aggregates['new_sales_value'] + $aggregates['milestone_collections'], 0) }}
+                        <td class="py-3.5 px-2.5 text-right font-mono text-emerald-700 dark:text-emerald-400">
+                            ₦{{ number_format($aggregates['topups_value'], 0) }}
+                            <span class="text-[9px] block font-normal text-gray-500">({{ $aggregates['topups_count'] }} topups)</span>
+                        </td>
+                        <td class="py-3.5 px-2.5 text-right text-gray-600 dark:text-gray-300">
+                            {{ $aggregates['expected_payments_count'] }} leads
+                        </td>
+                        <td class="py-3.5 px-3 text-right font-mono text-emerald-800 dark:text-emerald-300 border-r border-gray-300 dark:border-dark-700 bg-emerald-100/50 dark:bg-emerald-950/30 text-sm">
+                            ₦{{ number_format($aggregates['total_realized_revenue'], 0) }}
+                        </td>
+                        <td class="py-3.5 px-2 text-center text-purple-700 dark:text-purple-400">
+                            {{ number_format($aggregates['inspections_count']) }}
+                        </td>
+                        <td class="py-3.5 px-3 text-[10px] text-gray-400 uppercase border-r border-gray-300 dark:border-dark-700">
+                            All Sites
+                        </td>
+                        <td class="py-3.5 px-2 text-center text-blue-700 dark:text-blue-400">
+                            {{ number_format($aggregates['calls_count']) }}
+                        </td>
+                        <td class="py-3.5 px-2 text-center text-emerald-700 dark:text-emerald-400">
+                            {{ number_format($aggregates['whatsapp_count']) }}
+                        </td>
+                        <td class="py-3.5 px-2 text-center text-gray-500">
+                            {{ number_format($aggregates['sms_count']) }}
+                        </td>
+                        <td class="py-3.5 px-2.5 text-center border-r border-gray-300 dark:border-dark-700">
+                            <span class="block text-dark-900 dark:text-white">{{ number_format($aggregates['new_contacts_count']) }}</span>
+                            <span class="text-[9px] text-gray-400 font-normal">({{ $aggregates['contacts_phone_count'] }} ph)</span>
+                        </td>
+                        <td colspan="2" class="py-3.5 px-3 text-[10px] text-gray-400 italic">
+                            Aggregate metrics compiled from 100% verified CRM records.
                         </td>
                     </tr>
                 </tfoot>
@@ -377,98 +513,179 @@
         </div>
     </div>
 
-    <!-- Weekly Review & Consistency Insights Panel -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-5">
-        <!-- Daily Upload Rhythm Audit -->
-        <div class="bg-white rounded-3xl border border-gray-150 p-6 shadow-sm flex flex-col justify-between">
-            <div>
-                <div class="flex items-center space-x-2 mb-3">
-                    <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold text-sm">📅</span>
-                    <div>
-                        <h4 class="font-bold text-dark-900 text-sm">Daily Upload Cadence</h4>
-                        <p class="text-[11px] text-gray-400">Team prospect ingestion rhythm (Mon–Sun)</p>
-                    </div>
+    <!-- Interactive CRM Audit Drilldown Modal (Alpine.js) -->
+    <div x-cloak x-show="drilldownModalOpen" 
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/70 backdrop-blur-xs transition-opacity">
+        <div class="bg-white dark:bg-dark-800 rounded-3xl max-w-2xl w-full shadow-2xl overflow-hidden border border-gray-150 dark:border-dark-700"
+            @click.away="drilldownModalOpen = false">
+            
+            <div class="px-6 py-4 border-b border-gray-150 dark:border-dark-700 flex items-center justify-between {{ $isBuckcrest ? 'bg-amber-500/5' : 'bg-brand-50/30' }}">
+                <div>
+                    <span class="text-[10px] font-black uppercase tracking-wider text-emerald-600 flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 inline-block"></span>
+                        Verified CRM Database Audit
+                    </span>
+                    <h3 class="text-base font-bold text-dark-900 dark:text-white mt-0.5" x-text="drilldownTitle"></h3>
                 </div>
-
-                <div class="grid grid-cols-7 gap-1.5 py-4 border-y border-gray-100 my-3 text-center">
-                    @foreach(['Mon' => 'Monday', 'Tue' => 'Tuesday', 'Wed' => 'Wednesday', 'Thu' => 'Thursday', 'Fri' => 'Friday', 'Sat' => 'Saturday', 'Sun' => 'Sunday'] as $dK => $dLong)
-                        @php $dayTotal = $aggregates['daily_leads'][$dK] ?? 0; @endphp
-                        <div class="p-2 rounded-xl {{ $dayTotal > 0 ? 'bg-emerald-50 border border-emerald-100' : 'bg-gray-50 border border-gray-100' }}">
-                            <span class="block text-[9px] font-extrabold {{ $dayTotal > 0 ? 'text-emerald-700' : 'text-gray-400' }} uppercase">{{ substr($dK, 0, 3) }}</span>
-                            <span class="block text-base font-black {{ $dayTotal > 0 ? 'text-emerald-800' : 'text-gray-300' }} mt-0.5">{{ $dayTotal }}</span>
-                        </div>
-                    @endforeach
-                </div>
-
-                <p class="text-xs text-gray-500 leading-relaxed">
-                    Consistent daily prospecting ensures active follow-ups and prevents weekend pipeline bunching before Monday executive meetings.
-                </p>
+                <button @click="drilldownModalOpen = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1.5 rounded-lg">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
             </div>
 
-            <div class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between">
-                <span class="text-xs text-gray-400 font-medium">Daily Leads Portal:</span>
-                <a href="{{ route('leads.index') }}" class="text-xs font-bold text-brand-600 hover:text-brand-700 inline-flex items-center space-x-1">
-                    <span>Upload Today's Leads</span>
-                    <span>&rarr;</span>
-                </a>
+            <!-- Modal Body -->
+            <div class="p-6 max-h-[60vh] overflow-y-auto">
+                <template x-if="drilldownLoading">
+                    <div class="py-12 text-center space-y-3">
+                        <div class="w-8 h-8 border-3 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto"></div>
+                        <p class="text-xs text-gray-400 font-medium">Auditing real database records...</p>
+                    </div>
+                </template>
+
+                <template x-if="!drilldownLoading && drilldownItems.length === 0">
+                    <div class="py-12 text-center text-gray-400 space-y-2">
+                        <span class="text-3xl block">📋</span>
+                        <p class="text-sm font-bold text-gray-600 dark:text-gray-300">No records found</p>
+                        <p class="text-xs text-gray-400">Zero entries logged for this specific metric and period.</p>
+                    </div>
+                </template>
+
+                <template x-if="!drilldownLoading && drilldownItems.length > 0">
+                    <div class="space-y-2.5">
+                        <template x-for="(item, i) in drilldownItems" :key="i">
+                            <div class="p-3.5 rounded-2xl bg-gray-50 dark:bg-dark-750 border border-gray-150 dark:border-dark-700 flex items-start justify-between gap-3 hover:border-gray-300 dark:hover:border-dark-600 transition-all">
+                                <div class="space-y-1">
+                                    <div class="flex items-center space-x-2">
+                                        <span class="font-bold text-dark-900 dark:text-white text-xs" x-text="item.title"></span>
+                                        <span class="text-[10px] px-2 py-0.2 rounded-full font-bold bg-gray-200 dark:bg-dark-600 text-gray-700 dark:text-gray-300" x-text="item.badge"></span>
+                                    </div>
+                                    <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-snug" x-text="item.subtitle"></p>
+                                    <div class="flex items-center space-x-3 text-[10px] text-gray-400 pt-0.5">
+                                        <span x-text="item.date"></span>
+                                        <template x-if="item.phone && item.phone !== 'N/A'">
+                                            <div class="flex items-center space-x-2">
+                                                <span>•</span>
+                                                <a :href="'tel:' + item.phone" class="text-blue-600 hover:underline" x-text="item.phone"></a>
+                                                <a :href="'https://wa.me/' + item.phone.replace(/[^0-9]/g, '')" target="_blank" class="text-emerald-600 hover:underline">WhatsApp</a>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                                <template x-if="item.link">
+                                    <a :href="item.link" class="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline flex-shrink-0 flex items-center space-x-1 pt-0.5">
+                                        <span>View</span>
+                                        <span>&rarr;</span>
+                                    </a>
+                                </template>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="px-6 py-3.5 bg-gray-50 dark:bg-dark-850 border-t border-gray-150 dark:border-dark-700 flex items-center justify-between text-xs text-gray-500">
+                <span x-text="drilldownItems.length + ' item(s) logged'"></span>
+                <button type="button" @click="drilldownModalOpen = false" class="px-4 py-2 bg-gray-200 dark:bg-dark-700 text-dark-900 dark:text-white font-bold rounded-xl hover:bg-gray-300 transition-all">
+                    Close Audit
+                </button>
             </div>
         </div>
+    </div>
 
-        <!-- Weekly Meeting Agenda & Audit Checklist -->
-        <div class="bg-white rounded-3xl border border-gray-150 p-6 shadow-sm lg:col-span-2">
-            <div class="flex items-center space-x-2 mb-3">
-                <span class="w-8 h-8 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold text-sm">📋</span>
+    <!-- Weekly Field Outreaches & Observation Log Drawer/Modal -->
+    <div x-cloak x-show="fieldLogModalOpen" 
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/70 backdrop-blur-xs transition-opacity">
+        <div class="bg-white dark:bg-dark-800 rounded-3xl max-w-xl w-full shadow-2xl p-6 md:p-8 space-y-5 border border-gray-150 dark:border-dark-700"
+            @click.away="fieldLogModalOpen = false">
+            
+            <div class="flex justify-between items-center pb-3 border-b border-gray-150 dark:border-dark-700">
+                <div class="flex items-center space-x-2.5">
+                    <span class="w-8 h-8 rounded-xl {{ $isBuckcrest ? 'bg-[#946E19]/15 text-[#946E19]' : 'bg-brand-50 text-brand-600' }} flex items-center justify-center font-bold">📍</span>
+                    <div>
+                        <h3 class="text-base font-bold text-dark-900 dark:text-white">Record Canvassing & Field Observations</h3>
+                        <p class="text-xs text-gray-400">Offline territory prospecting, office walk-ins & pipeline notes</p>
+                    </div>
+                </div>
+                <button @click="fieldLogModalOpen = false" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <form @submit.prevent="submitFieldLog()" class="space-y-4 text-xs">
+                <!-- Consultant Selector -->
                 <div>
-                    <h4 class="font-bold text-dark-900 text-sm">Weekly Sales Review & Audit Framework</h4>
-                    <p class="text-[11px] text-gray-400">Standard operating checklist for Monday pipeline reviews and 1-on-1s</p>
+                    <label class="block font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">Sales Consultant</label>
+                    <select x-model="fieldLogData.user_id" required class="w-full px-3 py-2 bg-gray-50 dark:bg-dark-700 border border-gray-250 dark:border-dark-600 rounded-xl font-bold text-gray-800 dark:text-white outline-none">
+                        @foreach($matrixRows as $r)
+                            <option value="{{ $r['user']->id }}">{{ $r['user']->name }} ({{ $r['user']->branch ? $r['user']->branch->name : 'Main Office' }})</option>
+                        @endforeach
+                    </select>
                 </div>
-            </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-4 text-xs">
-                <div class="p-3.5 rounded-2xl bg-gray-50 border border-gray-100 flex items-start space-x-3">
-                    <span class="w-6 h-6 rounded-full bg-emerald-100 text-emerald-800 font-black text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">1</span>
+                <!-- Canvassing Locations Visited -->
+                <div>
+                    <label class="block font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">
+                        Canvassing Locations Visited / Target Organizations
+                    </label>
+                    <input type="text" x-model="fieldLogData.canvassing_locations" placeholder="e.g. CAC Head Office, Banex Plaza, Ministry of Finance, NNPC Towers" 
+                        class="w-full px-3 py-2 bg-gray-50 dark:bg-dark-700 border border-gray-250 dark:border-dark-600 rounded-xl text-gray-800 dark:text-white outline-none">
+                    <span class="text-[10px] text-gray-400 mt-1 block">Separate multiple locations with commas.</span>
+                </div>
+
+                <!-- Two-column Row: Office Visits & Expected Inflow -->
+                <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <span class="font-bold text-dark-900 block">Daily Ingestion Check</span>
-                        <p class="text-[11px] text-gray-500 mt-0.5">Audit consultant chips (M–S). Reps must upload daily regardless of channel or area.</p>
+                        <label class="block font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">Office Walk-in Visits</label>
+                        <input type="number" min="0" x-model="fieldLogData.office_visits_count" class="w-full px-3 py-2 bg-gray-50 dark:bg-dark-700 border border-gray-250 dark:border-dark-600 rounded-xl text-gray-800 dark:text-white outline-none">
+                    </div>
+                    <div>
+                        <label class="block font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">Expected Deals Count</label>
+                        <input type="number" min="0" x-model="fieldLogData.expected_payments_count" class="w-full px-3 py-2 bg-gray-50 dark:bg-dark-700 border border-gray-250 dark:border-dark-600 rounded-xl text-gray-800 dark:text-white outline-none">
                     </div>
                 </div>
 
-                <div class="p-3.5 rounded-2xl bg-gray-50 border border-gray-100 flex items-start space-x-3">
-                    <span class="w-6 h-6 rounded-full bg-blue-100 text-blue-800 font-black text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">2</span>
-                    <div>
-                        <span class="font-bold text-dark-900 block">Engagement Conversion</span>
-                        <p class="text-[11px] text-gray-500 mt-0.5">Ensure uploaded leads are immediately contacted via verified phone calls and WhatsApp.</p>
-                    </div>
+                <!-- Expected Payments Notes / Pipeline Contacts -->
+                <div>
+                    <label class="block font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">Expected Payments & Hot Contacts</label>
+                    <input type="text" x-model="fieldLogData.expected_payments_notes" placeholder="e.g. Alhaji Mustapha committed ₦5M deposit; Banex trader requesting 12mo plan" 
+                        class="w-full px-3 py-2 bg-gray-50 dark:bg-dark-700 border border-gray-250 dark:border-dark-600 rounded-xl text-gray-800 dark:text-white outline-none">
                 </div>
 
-                <div class="p-3.5 rounded-2xl bg-gray-50 border border-gray-100 flex items-start space-x-3">
-                    <span class="w-6 h-6 rounded-full bg-purple-100 text-purple-800 font-black text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">3</span>
-                    <div>
-                        <span class="font-bold text-dark-900 block">Inspection Follow-through</span>
-                        <p class="text-[11px] text-gray-500 mt-0.5">Compare scheduled vs completed site inspections to prevent prospect drop-off.</p>
-                    </div>
+                <!-- Observations & Recommendations -->
+                <div>
+                    <label class="block font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">Weekly Observations & Market Feedback</label>
+                    <textarea x-model="fieldLogData.observations_recommendations" rows="3" placeholder="Challenges faced, client price resistance, estate demand preferences, marketing collateral needed..."
+                        class="w-full px-3 py-2 bg-gray-50 dark:bg-dark-700 border border-gray-250 dark:border-dark-600 rounded-xl text-gray-800 dark:text-white outline-none"></textarea>
                 </div>
 
-                <div class="p-3.5 rounded-2xl bg-gray-50 border border-gray-100 flex items-start space-x-3">
-                    <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-800 font-black text-[11px] flex items-center justify-center flex-shrink-0 mt-0.5">4</span>
-                    <div>
-                        <span class="font-bold text-dark-900 block">Revenue & Top-ups Audit</span>
-                        <p class="text-[11px] text-gray-500 mt-0.5">Review closed deals, pending milestone installments, and overdue customer collections.</p>
-                    </div>
+                @if(!$isExecutive)
+                <!-- Manager Directives & Feedback (Visible to Management) -->
+                <div>
+                    <label class="block font-bold text-amber-600 uppercase tracking-wider mb-1">Manager Directives & 1-on-1 Feedback</label>
+                    <input type="text" x-model="fieldLogData.manager_feedback" placeholder="Directives given during Monday morning review or weekly performance sprint"
+                        class="w-full px-3 py-2 bg-amber-500/10 border border-amber-500/30 rounded-xl text-dark-900 dark:text-white outline-none">
                 </div>
-            </div>
+                @endif
+
+                <div class="flex justify-end space-x-2 pt-3 border-t border-gray-150 dark:border-dark-700">
+                    <button type="button" @click="fieldLogModalOpen = false" class="px-4 py-2 font-bold text-gray-500 hover:text-gray-700">Cancel</button>
+                    <button type="submit" :disabled="fieldLogSaving" class="px-5 py-2.5 {{ $isBuckcrest ? 'bg-[#946E19] hover:bg-[#785712]' : 'bg-brand-600 hover:bg-brand-700' }} text-white font-bold rounded-xl shadow-md transition-all">
+                        <span x-text="fieldLogSaving ? 'Saving...' : 'Save Weekly Field Log'"></span>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
     <!-- Quick Ongoing Chat Catch-up Modal -->
     <div x-cloak x-show="dailyCatchupOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark-900/60 transition-opacity">
-        <div class="bg-white rounded-3xl max-w-lg w-full shadow-2xl p-6 md:p-8 space-y-5" @click.away="dailyCatchupOpen = false">
-            <div class="flex justify-between items-center pb-3 border-b border-gray-100">
+        <div class="bg-white dark:bg-dark-800 rounded-3xl max-w-lg w-full shadow-2xl p-6 md:p-8 space-y-5" @click.away="dailyCatchupOpen = false">
+            <div class="flex justify-between items-center pb-3 border-b border-gray-100 dark:border-dark-700">
                 <div class="flex items-center space-x-2">
-                    <span class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">💬</span>
+                    <span class="w-8 h-8 rounded-xl bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 flex items-center justify-center font-bold">💬</span>
                     <div>
-                        <h3 class="text-base font-bold text-dark-900">Log Ongoing Conversations</h3>
-                        <p class="text-xs text-gray-500">Record active WhatsApp/call touches without opening individual tabs</p>
+                        <h3 class="text-base font-bold text-dark-900 dark:text-white">Quick Chat / Call Catch-up</h3>
+                        <p class="text-xs text-gray-500">Record fast WhatsApp or phone touches on active assigned leads</p>
                     </div>
                 </div>
                 <button @click="dailyCatchupOpen = false" class="text-gray-400 hover:text-gray-600">
@@ -476,40 +693,36 @@
                 </button>
             </div>
 
-            <p class="text-xs text-gray-600 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100 leading-relaxed">
-                Had back-and-forth chats on your phone or WhatsApp Web today? Confirm your active contacts here so your scorecard updates instantly.
-            </p>
-
             <form id="dailyPulseForm" onsubmit="handleDailyPulseSubmit(event)" class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Communication Channel</label>
+                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">Communication Channel</label>
                     <div class="grid grid-cols-2 gap-2">
-                        <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-gray-200 dark:border-dark-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700">
                             <input type="radio" name="pulse_channel" value="whatsapp" checked class="text-brand-500 focus:ring-brand-500">
-                            <span class="text-xs font-bold text-gray-700">WhatsApp Discussion</span>
+                            <span class="text-xs font-bold text-gray-700 dark:text-gray-300">WhatsApp Discussion</span>
                         </label>
-                        <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-gray-200 cursor-pointer hover:bg-gray-50">
+                        <label class="flex items-center space-x-2 p-2.5 rounded-xl border border-gray-200 dark:border-dark-700 cursor-pointer hover:bg-gray-50 dark:hover:bg-dark-700">
                             <input type="radio" name="pulse_channel" value="call" class="text-brand-500 focus:ring-brand-500">
-                            <span class="text-xs font-bold text-gray-700">Phone Call / Discussion</span>
+                            <span class="text-xs font-bold text-gray-700 dark:text-gray-300">Phone Call / Discussion</span>
                         </label>
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5">Select Client(s) You Spoke With Today</label>
+                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1.5">Select Client(s) You Spoke With Today</label>
                     @php
                         $myLeads = \App\Models\Lead::where(function($q) use ($currentUser) {
-                            if ($currentUser->role === 'sales_executive') {
+                            if ($currentUser->role === 'sales_executive' || $currentUser->role === 'sales_agent') {
                                 $q->where('assigned_to', $currentUser->id);
                             }
                         })->whereNotIn('status', ['Closed Lost'])->orderBy('updated_at', 'desc')->limit(20)->get();
                     @endphp
-                    <div class="max-h-48 overflow-y-auto space-y-1.5 border border-gray-200 p-2.5 rounded-xl bg-gray-50/50 text-xs">
+                    <div class="max-h-48 overflow-y-auto space-y-1.5 border border-gray-200 dark:border-dark-700 p-2.5 rounded-xl bg-gray-50/50 dark:bg-dark-900 text-xs">
                         @forelse($myLeads as $lead)
-                            <label class="flex items-center justify-between p-2 bg-white rounded-lg border border-gray-100 hover:border-gray-300 cursor-pointer">
+                            <label class="flex items-center justify-between p-2 bg-white dark:bg-dark-800 rounded-lg border border-gray-150 dark:border-dark-700 hover:border-gray-300 cursor-pointer">
                                 <div class="flex items-center space-x-2.5">
                                     <input type="checkbox" name="lead_ids[]" value="{{ $lead->id }}" class="rounded text-brand-500 focus:ring-brand-500">
-                                    <span class="font-bold text-dark-900">{{ $lead->full_name }}</span>
+                                    <span class="font-bold text-dark-900 dark:text-white">{{ $lead->full_name }}</span>
                                 </div>
                                 <span class="text-[10px] text-gray-400 font-mono">{{ $lead->phone_number }}</span>
                             </label>
@@ -520,13 +733,13 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1">Brief Discussion Note / Milestone</label>
-                    <input type="text" name="pulse_summary" placeholder="e.g. Sent revised price list; client confirmed interest" class="w-full px-3 py-2 text-xs border border-gray-250 rounded-xl focus:border-brand-500 outline-none">
+                    <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-1">Brief Discussion Note / Milestone</label>
+                    <input type="text" name="pulse_summary" placeholder="e.g. Sent revised price list; client confirmed inspection for Friday" class="w-full px-3 py-2 text-xs border border-gray-250 dark:border-dark-600 rounded-xl focus:border-brand-500 outline-none dark:bg-dark-700 dark:text-white">
                 </div>
 
-                <div class="flex justify-end space-x-2 pt-2 border-t border-gray-100">
+                <div class="flex justify-end space-x-2 pt-2 border-t border-gray-100 dark:border-dark-700">
                     <button type="button" @click="dailyCatchupOpen = false" class="px-4 py-2 text-xs font-bold text-gray-500 hover:text-gray-700">Cancel</button>
-                    <button type="submit" id="pulseSubmitBtn" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md shadow-emerald-600/20 transition-all">
+                    <button type="submit" id="pulseSubmitBtn" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow-md transition-all">
                         Confirm Active Discussions
                     </button>
                 </div>
@@ -538,6 +751,104 @@
 
 @push('scripts')
 <script>
+function retailScorecardApp() {
+    return {
+        dailyCatchupOpen: false,
+        drilldownModalOpen: false,
+        drilldownLoading: false,
+        drilldownTitle: '',
+        drilldownItems: [],
+        
+        fieldLogModalOpen: false,
+        fieldLogSaving: false,
+        fieldLogData: {
+            user_id: '{{ $currentUser->id }}',
+            year: {{ $year }},
+            month: {{ $month }},
+            week_number: {{ $activeWeek === 'all' ? 1 : $activeWeek }},
+            canvassing_locations: '',
+            office_visits_count: 0,
+            expected_payments_count: 0,
+            expected_payments_notes: '',
+            observations_recommendations: '',
+            manager_feedback: ''
+        },
+
+        openDrilldown(userId, metric, userName) {
+            this.drilldownModalOpen = true;
+            this.drilldownLoading = true;
+            this.drilldownItems = [];
+            this.drilldownTitle = `${userName} — Auditing ${metric.toUpperCase()} Records`;
+
+            const startDate = '{{ $startDate->toIso8601String() }}';
+            const endDate = '{{ $endDate->toIso8601String() }}';
+
+            fetch(`{{ route('reports.retail.drilldown') }}?user_id=${userId}&metric=${metric}&start_date=${encodeURIComponent(startDate)}&end_date=${encodeURIComponent(endDate)}`, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                this.drilldownLoading = false;
+                if (data.success) {
+                    this.drilldownTitle = data.title;
+                    this.drilldownItems = data.items;
+                } else {
+                    alert(data.error || 'Failed to fetch drill-down records.');
+                }
+            })
+            .catch(err => {
+                this.drilldownLoading = false;
+                console.error(err);
+                alert('Network error while querying CRM records.');
+            });
+        },
+
+        openFieldLogModal(prefill = null) {
+            if (prefill) {
+                this.fieldLogData.user_id = prefill.user_id;
+                this.fieldLogData.canvassing_locations = prefill.canvassing_locations || '';
+                this.fieldLogData.office_visits_count = prefill.office_visits_count || 0;
+                this.fieldLogData.expected_payments_count = prefill.expected_payments_count || 0;
+                this.fieldLogData.expected_payments_notes = prefill.expected_payments_notes || '';
+                this.fieldLogData.observations_recommendations = prefill.observations_recommendations || '';
+                this.fieldLogData.manager_feedback = prefill.manager_feedback || '';
+            }
+            this.fieldLogModalOpen = true;
+        },
+
+        submitFieldLog() {
+            this.fieldLogSaving = true;
+            fetch('{{ route('reports.retail.field-log') }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Accept': 'application/json'
+                },
+                body: JSON.stringify(this.fieldLogData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                this.fieldLogSaving = false;
+                if (data.success) {
+                    this.fieldLogModalOpen = false;
+                    alert('Weekly field log and observations recorded successfully!');
+                    window.location.reload();
+                } else {
+                    alert(data.message || 'Error saving field activity log.');
+                }
+            })
+            .catch(err => {
+                this.fieldLogSaving = false;
+                console.error(err);
+                alert('Network error while saving field log.');
+            });
+        }
+    };
+}
+
 async function handleDailyPulseSubmit(e) {
     e.preventDefault();
     const form = e.target;
