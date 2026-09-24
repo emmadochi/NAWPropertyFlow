@@ -303,13 +303,13 @@ class RetailPerformanceDemoSeeder extends Seeder
                     ['sale_id' => $sale->id],
                     [
                         'duration_months' => 6,
-                        'plan_type' => 'Milestone Installments',
+                        'plan_type' => 'installment',
                         'base_deal_value' => $c['deal_value'],
                         'total_amount' => $c['deal_value'],
                         'amount_paid' => $c['deal_value'],
                         'balance' => 0,
                         'number_of_installments' => 3,
-                        'status' => 'Active',
+                        'status' => 'active',
                     ]
                 );
 
@@ -321,8 +321,9 @@ class RetailPerformanceDemoSeeder extends Seeder
                     [
                         'amount_due' => $c['deal_value'],
                         'amount_paid' => $c['deal_value'],
+                        'due_date' => $now->copy()->addDays(30)->toDateString(),
                         'paid_at' => $now->copy()->subDays(rand(1, 4)),
-                        'status' => 'Paid',
+                        'status' => 'paid',
                         'bank_reference' => 'BHL/TX/' . rand(100000, 999999),
                     ]
                 );
@@ -362,10 +363,11 @@ class RetailPerformanceDemoSeeder extends Seeder
                     ['sale_id' => $topupSale->id],
                     [
                         'duration_months' => 12,
+                        'plan_type' => 'installment',
                         'total_amount' => $c['topup_val'] * 3,
                         'amount_paid' => $c['topup_val'],
                         'balance' => $c['topup_val'] * 2,
-                        'status' => 'Active',
+                        'status' => 'active',
                     ]
                 );
 
@@ -377,8 +379,9 @@ class RetailPerformanceDemoSeeder extends Seeder
                     [
                         'amount_due' => $c['topup_val'],
                         'amount_paid' => $c['topup_val'],
+                        'due_date' => $now->copy()->addDays(60)->toDateString(),
                         'paid_at' => $now->copy()->subDays(rand(1, 6)),
-                        'status' => 'Paid',
+                        'status' => 'paid',
                         'bank_reference' => 'BHL/TOPUP/' . rand(100000, 999999),
                     ]
                 );

@@ -257,7 +257,7 @@ class RetailPerformanceController extends Controller
                 $title = "Milestone Top-up Installments for {$user->name}";
                 $milestones = rescue(fn() => PaymentMilestone::whereHas('paymentPlan.sale', function($q) use ($userId) {
                     $q->where('sales_officer_id', $userId);
-                })->where('status', 'Paid')
+                })->whereIn('status', ['paid', 'Paid'])
                   ->whereBetween('paid_at', [$startDate, $endDate])
                   ->with(['paymentPlan.sale.lead', 'paymentPlan.sale.property'])
                   ->latest('paid_at')
@@ -407,13 +407,13 @@ class RetailPerformanceController extends Controller
 
             $topupsCount = rescue(fn() => PaymentMilestone::whereHas('paymentPlan.sale', function($q) use ($consultant) {
                 $q->where('sales_officer_id', $consultant->id);
-            })->where('status', 'Paid')
+            })->whereIn('status', ['paid', 'Paid'])
               ->whereBetween('paid_at', [$startDate, $endDate])
               ->count(), 0);
 
             $topupsValue = (float) rescue(fn() => PaymentMilestone::whereHas('paymentPlan.sale', function($q) use ($consultant) {
                 $q->where('sales_officer_id', $consultant->id);
-            })->where('status', 'Paid')
+            })->whereIn('status', ['paid', 'Paid'])
               ->whereBetween('paid_at', [$startDate, $endDate])
               ->sum('amount_paid'), 0);
 
