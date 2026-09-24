@@ -727,111 +727,131 @@
         </div>
     @endif
 
+    <!-- Chart.js Loader & Donut Initializers -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    (function () {
+        function initAuditCharts() {
+            if (typeof Chart === 'undefined') {
+                setTimeout(initAuditCharts, 100);
+                return;
+            }
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const border = isDark ? '#0f172a' : '#ffffff';
+            const textColor = isDark ? '#94a3b8' : '#64748b';
+
+            // 1. Health Donut Chart
+            const healthEl = document.getElementById('healthDonutChart');
+            if (healthEl) {
+                if (window.__healthDonutChart) {
+                    try { window.__healthDonutChart.destroy(); } catch(e){}
+                }
+                const healthLabels = {!! json_encode(array_keys($healthBreakdown)) !!};
+                const healthData   = {!! json_encode(array_values($healthBreakdown)) !!};
+                const totalHealth  = healthData.reduce((s, v) => s + v, 0);
+                const healthColors = ['#10b981', '#25D366', '#f59e0b', '#f43f5e', '#94a3b8', '#cbd5e1'];
+
+                window.__healthDonutChart = new Chart(healthEl, {
+                    type: 'doughnut',
+                    data: {
+                        labels: healthLabels,
+                        datasets: [{
+                            data: totalHealth > 0 ? healthData : [1],
+                            backgroundColor: totalHealth > 0 ? healthColors : ['#e2e8f0'],
+                            borderColor: border,
+                            borderWidth: 3,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: textColor,
+                                    font: { family: 'Plus Jakarta Sans', size: 11, weight: 'bold' },
+                                    padding: 12,
+                                    boxWidth: 12
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(ctx) {
+                                        if (totalHealth === 0) return 'No leads recorded';
+                                        const pct = Math.round((ctx.raw / totalHealth) * 100);
+                                        return ` ${ctx.label}: ${ctx.raw} (${pct}%)`;
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '68%'
+                    }
+                });
+            }
+
+            // 2. Temperature Donut Chart
+            const tempEl = document.getElementById('tempDonutChart');
+            if (tempEl) {
+                if (window.__tempDonutChart) {
+                    try { window.__tempDonutChart.destroy(); } catch(e){}
+                }
+                const tempLabels = {!! json_encode(array_keys($temperatureBreakdown)) !!};
+                const tempData   = {!! json_encode(array_values($temperatureBreakdown)) !!};
+                const totalTemp  = tempData.reduce((s, v) => s + v, 0);
+
+                window.__tempDonutChart = new Chart(tempEl, {
+                    type: 'doughnut',
+                    data: {
+                        labels: tempLabels,
+                        datasets: [{
+                            data: totalTemp > 0 ? tempData : [1],
+                            backgroundColor: totalTemp > 0 ? ['#ef4444', '#f59e0b', '#64748b'] : ['#e2e8f0'],
+                            borderColor: border,
+                            borderWidth: 3,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: textColor,
+                                    font: { family: 'Plus Jakarta Sans', size: 11, weight: 'bold' },
+                                    padding: 12,
+                                    boxWidth: 12
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(ctx) {
+                                        if (totalTemp === 0) return 'No data yet';
+                                        const pct = Math.round((ctx.raw / totalTemp) * 100);
+                                        return ` ${ctx.label}: ${ctx.raw} (${pct}%)`;
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '68%'
+                    }
+                });
+            }
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initAuditCharts);
+        } else {
+            initAuditCharts();
+        }
+        setTimeout(initAuditCharts, 150);
+        setTimeout(initAuditCharts, 500);
+    })();
+    </script>
+
 </div>
 @endsection
-
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const isDark = document.documentElement.classList.contains('dark');
-    const border = isDark ? '#0f172a' : '#ffffff';
-    const textColor = isDark ? '#94a3b8' : '#64748b';
-
-    // === 1. Health Donut Chart ===
-    const healthCtx = document.getElementById('healthDonutChart');
-    if (healthCtx) {
-        const healthLabels = {!! json_encode(array_keys($healthBreakdown)) !!};
-        const healthData   = {!! json_encode(array_values($healthBreakdown)) !!};
-        const totalHealth  = healthData.reduce((s, v) => s + v, 0);
-        const healthColors = ['#10b981', '#25D366', '#f59e0b', '#f43f5e', '#94a3b8', '#cbd5e1'];
-
-        new Chart(healthCtx, {
-            type: 'doughnut',
-            data: {
-                labels: healthLabels,
-                datasets: [{
-                    data: totalHealth > 0 ? healthData : [1],
-                    backgroundColor: totalHealth > 0 ? healthColors : ['#e2e8f0'],
-                    borderColor: border,
-                    borderWidth: 3,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: textColor,
-                            font: { family: 'Plus Jakarta Sans', size: 11, weight: 'bold' },
-                            padding: 12,
-                            boxWidth: 12
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(ctx) {
-                                if (totalHealth === 0) return 'No leads recorded';
-                                const pct = Math.round((ctx.raw / totalHealth) * 100);
-                                return ` ${ctx.label}: ${ctx.raw} (${pct}%)`;
-                            }
-                        }
-                    }
-                },
-                cutout: '68%'
-            }
-        });
-    }
-
-    // === 2. Temperature Donut Chart ===
-    const tempCtx = document.getElementById('tempDonutChart');
-    if (tempCtx) {
-        const tempLabels = {!! json_encode(array_keys($temperatureBreakdown)) !!};
-        const tempData   = {!! json_encode(array_values($temperatureBreakdown)) !!};
-        const totalTemp  = tempData.reduce((s, v) => s + v, 0);
-
-        new Chart(tempCtx, {
-            type: 'doughnut',
-            data: {
-                labels: tempLabels,
-                datasets: [{
-                    data: totalTemp > 0 ? tempData : [1],
-                    backgroundColor: totalTemp > 0 ? ['#ef4444', '#f59e0b', '#64748b'] : ['#e2e8f0'],
-                    borderColor: border,
-                    borderWidth: 3,
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            color: textColor,
-                            font: { family: 'Plus Jakarta Sans', size: 11, weight: 'bold' },
-                            padding: 12,
-                            boxWidth: 12
-                        }
-                    },
-                    tooltip: {
-                        callbacks: {
-                            label: function(ctx) {
-                                if (totalTemp === 0) return 'No data yet';
-                                const pct = Math.round((ctx.raw / totalTemp) * 100);
-                                return ` ${ctx.label}: ${ctx.raw} (${pct}%)`;
-                            }
-                        }
-                    }
-                },
-                cutout: '68%'
-            }
-        });
-    }
-});
-</script>
-@endpush
