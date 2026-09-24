@@ -10,10 +10,37 @@ use Illuminate\Support\Facades\Hash;
 
 class SeedAuditDemoCommand extends Command
 {
-    protected $signature = 'crm:seed-audit-demo {--clear : Clear demo test data instead of seeding}';
+    protected $signature = 'crm:seed-audit-demo {--tenant=} {--clear : Clear demo test data instead of seeding}';
     protected $description = 'Seed or clear comprehensive test data for the Lead Quality & Executive Audit Board';
 
     public function handle(): int
+    {
+        try {
+            $tenantQuery = \App\Models\Tenant::query();
+            if ($tenantId = $this->option('tenant')) {
+                $tenantQuery->where('id', $tenantId);
+            }
+            $tenants = $tenantQuery->get();
+        } catch (\Throwable $e) {
+            $tenants = collect();
+        }
+
+        if ($tenants->isNotEmpty()) {
+            foreach ($tenants as $tenant) {
+                $this->info("--> Initializing Tenancy for: [{$tenant->id}] (" . ($tenant->company_name ?? $tenant->id) . ")");
+                $tenant->run(function () use ($tenant) {
+                    $this->processAuditSeeding();
+                });
+                $this->info("✓ Successfully processed tenant: [{$tenant->id}]");
+            }
+            return Command::SUCCESS;
+        }
+
+        $this->processAuditSeeding();
+        return Command::SUCCESS;
+    }
+
+    private function processAuditSeeding(): void
     {
         if ($this->option('clear')) {
             $testLeadIds = Lead::withoutGlobalScopes()
@@ -25,7 +52,7 @@ class SeedAuditDemoCommand extends Command
             User::whereIn('email', ['chidinma.audit@bhl.com', 'tunde.audit@bhl.com', 'amina.audit@bhl.com'])->delete();
 
             $this->info("✅ Cleared {$deleted} test lead records and test audit accounts.");
-            return Command::SUCCESS;
+            return;
         }
 
         // Self-healing: Ensure audit and engagement columns exist on leads table
@@ -473,6 +500,6 @@ class SeedAuditDemoCommand extends Command
         }
 
         $this->info("✅ Successfully generated {$count} test audit leads across 3 sales executives.");
-        return Command::SUCCESS;
+        return;
     }
 }
