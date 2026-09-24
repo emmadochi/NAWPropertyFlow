@@ -65,20 +65,26 @@ class RetailPerformanceDemoSeeder extends Seeder
             ],
         ];
 
-        $propertyModels = [];
-        foreach ($properties as $pData) {
-            $propertyModels[] = Property::firstOrCreate(
-                ['name' => $pData['name']],
-                [
-                    'estate_name' => $pData['estate_name'],
-                    'location' => $pData['location'],
-                    'description' => $pData['description'],
-                    'price' => $pData['price'],
-                    'status' => $pData['status'],
-                    'bedrooms' => 4,
-                    'bathrooms' => 4,
-                ]
-            );
+        // 1. Ensure realistic properties exist (reuse existing if available)
+        $existingProps = Property::all();
+        $propertyModels = $existingProps->isNotEmpty() ? $existingProps->all() : [];
+
+        if (empty($propertyModels)) {
+            foreach ($properties as $pData) {
+                $propertyModels[] = Property::firstOrCreate(
+                    ['name' => $pData['name']],
+                    [
+                        'estate_name'      => $pData['estate_name'],
+                        'location'         => $pData['location'],
+                        'property_type'    => 'Terrace',
+                        'description'      => $pData['description'],
+                        'price'            => $pData['price'],
+                        'status'           => $pData['status'],
+                        'total_units'      => 20,
+                        'available_units'  => 15,
+                    ]
+                );
+            }
         }
 
         // 2. Create 5 realistic Retail Sales Consultants
