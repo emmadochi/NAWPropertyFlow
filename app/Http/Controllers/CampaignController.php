@@ -192,16 +192,25 @@ class CampaignController extends Controller
             }
         }
 
+        $setting = \App\Models\CompanySetting::getCached();
+        $tenantId = tenant('id') ?? session('tenant_id') ?? '';
+        $host = request()->getHost();
+        $compName = $setting?->company_name ?? (tenant()?->name ?? 'Buckcrest Havens Limited');
+        $isBuckcrest = in_array($tenantId, ['bhl', 'buckcrest']) 
+            || str_contains($host, 'bhl') 
+            || str_contains($host, 'buckcrest') 
+            || str_contains(strtolower($compName), 'buckcrest');
+
         // Replace sample tags
         $placeholders = [
             '@{{name}}'           => Auth::user()->name,
             '@{{email}}'          => $testRecipient,
             '@{{phone}}'          => Auth::user()->phone_number ?? '+234 800 000 0000',
-            '@{{property_name}}'  => 'RICAF Signature Court, Ikoyi',
+            '@{{property_name}}'  => $isBuckcrest ? 'Buckcrest Signature Haven' : 'RICAF Signature Court, Ikoyi',
             '@{{property_price}}' => '₦185,000,000',
-            '@{{company_name}}'   => \App\Models\CompanySetting::getCached()?->company_name ?? 'RICAF Nigeria Limited',
-            '@{{company_phone}}'  => \App\Models\CompanySetting::getCached()?->phone ?? '+234 800 RICAF CRM',
-            '@{{company_email}}'  => \App\Models\CompanySetting::getCached()?->email ?? 'info@ricafltd.com',
+            '@{{company_name}}'   => $setting?->company_name ?? ($isBuckcrest ? 'Buckcrest Havens Limited' : 'RICAF Nigeria Limited'),
+            '@{{company_phone}}'  => $setting?->phone ?? ($isBuckcrest ? '+234 800 BUCKCREST' : '+234 800 RICAF CRM'),
+            '@{{company_email}}'  => $setting?->email ?? ($isBuckcrest ? 'info@buckcresthavensltd.org' : 'info@ricafltd.com'),
             '@{{current_date}}'   => now()->format('d M, Y'),
             '@{{unsubscribe_url}}'=> '#',
         ];

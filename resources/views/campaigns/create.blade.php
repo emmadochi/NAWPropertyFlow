@@ -1,5 +1,18 @@
 @extends('layouts.app')
 
+@php
+    $setting = \App\Models\CompanySetting::getCached();
+    $tenantId = tenant('id') ?? session('tenant_id') ?? '';
+    $host = request()->getHost();
+    $companyName = $setting?->company_name ?? (tenant()?->name ?? 'Buckcrest Havens Limited');
+    $isBuckcrest = in_array($tenantId, ['bhl', 'buckcrest']) 
+        || str_contains($host, 'bhl') 
+        || str_contains($host, 'buckcrest') 
+        || str_contains(strtolower($companyName), 'buckcrest');
+    $companyPhone = $setting?->phone ?? ($isBuckcrest ? '+234 800 BUCKCREST' : '+234 800 RICAF CRM');
+    $companyEmail = $setting?->email ?? ($isBuckcrest ? 'info@buckcresthavensltd.org' : 'info@ricafltd.com');
+@endphp
+
 @section('content')
 <div class="max-w-6xl mx-auto space-y-6" x-data="campaignCreator()">
 
@@ -18,10 +31,10 @@
 
         <div class="flex items-center space-x-3">
             <button type="button" @click="showPreviewModal = true" class="px-4 py-2.5 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 text-dark-900 dark:text-white font-bold text-xs rounded-xl transition-colors flex items-center space-x-1.5 border border-gray-200 dark:border-slate-700">
-                <svg class="w-4 h-4 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                <svg class="w-4 h-4 {{ $isBuckcrest ? 'text-[#946E19]' : 'text-brand-500' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                 <span>Live Preview</span>
             </button>
-            <button type="button" @click="showTestModal = true" class="px-4 py-2.5 bg-orange-50 hover:bg-orange-100 text-brand-600 font-bold text-xs rounded-xl transition-colors flex items-center space-x-1.5 border border-brand-200">
+            <button type="button" @click="showTestModal = true" class="px-4 py-2.5 {{ $isBuckcrest ? 'bg-[#FDFBF7] hover:bg-[#F7F1E1] text-[#6E4D0B] border-[#EBDCB9]' : 'bg-orange-50 hover:bg-orange-100 text-brand-600 border-brand-200' }} font-bold text-xs rounded-xl transition-colors flex items-center space-x-1.5 border">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
                 <span>Send Test to Inbox</span>
             </button>
@@ -29,11 +42,11 @@
     </div>
 
     <!-- Quick Real Estate Templates Gallery -->
-    <div class="bg-gradient-to-r from-orange-50 to-amber-50 dark:from-slate-800 dark:to-slate-850 rounded-2xl p-5 border border-orange-100 dark:border-slate-700 shadow-sm">
+    <div class="bg-gradient-to-r {{ $isBuckcrest ? 'from-[#FDFBF7] to-[#F7F1E1] border-[#EBDCB9]' : 'from-orange-50 to-amber-50 border-orange-100' }} dark:from-slate-800 dark:to-slate-850 rounded-2xl p-5 border dark:border-slate-700 shadow-sm">
         <div class="flex items-center justify-between mb-3">
             <div>
                 <h3 class="text-xs font-black text-dark-900 dark:text-white uppercase tracking-wider flex items-center space-x-1.5">
-                    <span class="text-brand-500">✨</span>
+                    <span class="{{ $isBuckcrest ? 'text-[#946E19]' : 'text-brand-500' }}">✨</span>
                     <span>1-Click Real Estate Luxury Templates</span>
                 </h3>
                 <p class="text-[11px] text-gray-500 dark:text-slate-400">Click any template below to load a pre-designed luxury layout into the editor.</p>
@@ -42,10 +55,10 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
             <button type="button" @click="loadTemplate('launch')" 
                     class="p-3.5 rounded-2xl border transition-all text-left group relative"
-                    :class="activeTemplate === 'launch' ? 'bg-orange-50/90 dark:bg-slate-800 border-brand-500 shadow-md ring-2 ring-brand-500/20' : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-brand-400 hover:shadow-sm'">
+                    :class="activeTemplate === 'launch' ? '{{ $isBuckcrest ? 'bg-[#FDFBF7] dark:bg-slate-800 border-[#946E19] shadow-md ring-2 ring-[#946E19]/20' : 'bg-orange-50/90 dark:bg-slate-800 border-brand-500 shadow-md ring-2 ring-brand-500/20' }}' : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-brand-400 hover:shadow-sm'">
                 <div class="flex items-center justify-between mb-2">
-                    <div class="w-8 h-8 rounded-xl bg-orange-100 text-brand-600 flex items-center justify-center font-bold text-base group-hover:scale-110 transition-transform">🚀</div>
-                    <span x-show="activeTemplate === 'launch'" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-brand-500 text-white">Active</span>
+                    <div class="w-8 h-8 rounded-xl {{ $isBuckcrest ? 'bg-[#F7F1E1] text-[#946E19]' : 'bg-orange-100 text-brand-600' }} flex items-center justify-center font-bold text-base group-hover:scale-110 transition-transform">🚀</div>
+                    <span x-show="activeTemplate === 'launch'" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider {{ $isBuckcrest ? 'bg-[#946E19]' : 'bg-brand-500' }} text-white">Active</span>
                 </div>
                 <h4 class="text-xs font-bold text-dark-900 dark:text-white">New Estate Launch</h4>
                 <p class="text-[10px] text-gray-400 mt-0.5 leading-tight">Hero banner, price perk, plot sizes &amp; inspection CTA.</p>
@@ -53,10 +66,10 @@
 
             <button type="button" @click="loadTemplate('digest')" 
                     class="p-3.5 rounded-2xl border transition-all text-left group relative"
-                    :class="activeTemplate === 'digest' ? 'bg-blue-50/90 dark:bg-slate-800 border-blue-500 shadow-md ring-2 ring-blue-500/20' : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-blue-400 hover:shadow-sm'">
+                    :class="activeTemplate === 'digest' ? '{{ $isBuckcrest ? 'bg-[#FDFBF7] dark:bg-slate-800 border-[#946E19] shadow-md ring-2 ring-[#946E19]/20' : 'bg-blue-50/90 dark:bg-slate-800 border-blue-500 shadow-md ring-2 ring-blue-500/20' }}' : 'bg-white dark:bg-slate-800 border-gray-200 dark:border-slate-700 hover:border-blue-400 hover:shadow-sm'">
                 <div class="flex items-center justify-between mb-2">
-                    <div class="w-8 h-8 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-base group-hover:scale-110 transition-transform">📰</div>
-                    <span x-show="activeTemplate === 'digest'" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-blue-600 text-white">Active</span>
+                    <div class="w-8 h-8 rounded-xl {{ $isBuckcrest ? 'bg-[#F7F1E1] text-[#946E19]' : 'bg-blue-100 text-blue-600' }} flex items-center justify-center font-bold text-base group-hover:scale-110 transition-transform">📰</div>
+                    <span x-show="activeTemplate === 'digest'" class="px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider {{ $isBuckcrest ? 'bg-[#946E19]' : 'bg-blue-600' }} text-white">Active</span>
                 </div>
                 <h4 class="text-xs font-bold text-dark-900 dark:text-white">Monthly Investor Digest</h4>
                 <p class="text-[10px] text-gray-400 mt-0.5 leading-tight">Market commentary, featured property cards &amp; updates.</p>
@@ -118,11 +131,11 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-show="type === 'email'">
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase mb-2">From Name</label>
-                            <input type="text" name="from_name" value="{{ \App\Models\CompanySetting::getCached()?->company_name ?? 'RICAF Nigeria Limited' }}" class="w-full px-3 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 text-dark-900 dark:text-white">
+                            <input type="text" name="from_name" value="{{ $companyName }}" class="w-full px-3 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 text-dark-900 dark:text-white">
                         </div>
                         <div>
                             <label class="block text-[10px] font-bold text-gray-500 dark:text-slate-400 uppercase mb-2">From Email</label>
-                            <input type="email" name="from_email" value="{{ \App\Models\CompanySetting::getCached()?->email ?? 'info@ricafltd.com' }}" class="w-full px-3 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 text-dark-900 dark:text-white">
+                            <input type="email" name="from_email" value="{{ $companyEmail }}" class="w-full px-3 py-2.5 border border-gray-200 dark:border-slate-700 rounded-xl text-xs bg-white dark:bg-slate-900 text-dark-900 dark:text-white">
                         </div>
                     </div>
                 </div>
@@ -209,7 +222,7 @@
                                 </label>
                                 <p class="text-[11px] text-gray-400 mt-0.5">Attach promotional flyers, floor plans, price charts, or PDF brochures (PNG, JPG, PDF up to 10MB each).</p>
                             </div>
-                            <button type="button" @click="$refs.attachmentInput.click()" class="px-3 py-1.5 bg-orange-50 hover:bg-orange-100 text-brand-600 font-bold text-xs rounded-xl border border-brand-200 flex items-center space-x-1.5 transition-colors">
+                            <button type="button" @click="$refs.attachmentInput.click()" class="px-3 py-1.5 {{ $isBuckcrest ? 'bg-[#FDFBF7] hover:bg-[#F7F1E1] text-[#6E4D0B] border-[#EBDCB9]' : 'bg-orange-50 hover:bg-orange-100 text-brand-600 border-brand-200' }} font-bold text-xs rounded-xl border flex items-center space-x-1.5 transition-colors">
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
                                 <span>Attach Flyer / File</span>
                             </button>
@@ -226,7 +239,7 @@
                              @drop.prevent="$el.classList.remove('border-brand-500', 'bg-orange-50/30'); handleDrop($event)">
                             
                             <div x-show="attachedFiles.length === 0" class="text-center py-4 cursor-pointer" @click="$refs.attachmentInput.click()">
-                                <div class="w-10 h-10 rounded-2xl bg-orange-100 text-brand-600 flex items-center justify-center mx-auto mb-2 font-bold text-lg">📎</div>
+                                <div class="w-10 h-10 rounded-2xl {{ $isBuckcrest ? 'bg-[#F7F1E1] text-[#946E19]' : 'bg-orange-100 text-brand-600' }} flex items-center justify-center mx-auto mb-2 font-bold text-lg">📎</div>
                                 <p class="text-xs font-bold text-dark-900 dark:text-white">Click to browse or drag &amp; drop promotional images here</p>
                                 <p class="text-[10px] text-gray-400 mt-1">PNG, JPG, WEBP, or PDF files. Recipients can download these directly from their email inbox.</p>
                             </div>
@@ -312,8 +325,8 @@
                     </div>
                 </div>
 
-                <div class="bg-orange-50 dark:bg-slate-900 rounded-2xl p-4 border border-orange-100 dark:border-slate-700 space-y-2">
-                    <span class="text-[10px] font-bold text-brand-600 uppercase block tracking-wider">Estimated Audience</span>
+                <div class="{{ $isBuckcrest ? 'bg-[#FDFBF7] border-[#EBDCB9]' : 'bg-orange-50 border-orange-100' }} dark:bg-slate-900 rounded-2xl p-4 border dark:border-slate-700 space-y-2">
+                    <span class="text-[10px] font-bold {{ $isBuckcrest ? 'text-[#6E4D0B]' : 'text-brand-600' }} uppercase block tracking-wider">Estimated Audience</span>
                     <div class="flex items-center space-x-2">
                         <span class="text-3xl font-black text-dark-900 dark:text-white" x-text="previewCount">Calculating...</span>
                         <span class="text-xs text-gray-400">recipients matched</span>
@@ -681,26 +694,57 @@ window.campaignCreator = function() {
         loadTemplate(key) {
             this.activeTemplate = key;
             this.type = 'email';
-            const company = '{{ \App\Models\CompanySetting::getCached()?->company_name ?? "RICAF Nigeria Limited" }}';
-            const phone = '{{ \App\Models\CompanySetting::getCached()?->phone ?? "+234 800 RICAF CRM" }}';
+            const isBuckcrest = {{ $isBuckcrest ? 'true' : 'false' }};
+            const company = '{{ $companyName }}';
+            const phone = '{{ $companyPhone }}';
+
+            // Brand theme styling (Buckcrest Obsidian & Chocolate Gold vs Default Orange)
+            const headerBg = isBuckcrest 
+                ? 'linear-gradient(135deg, #18181B 0%, #27272A 45%, #946E19 100%)' 
+                : 'linear-gradient(135deg, #F37021 0%, #ea580c 100%)';
+            const headerBorder = isBuckcrest ? 'border-bottom: 3px solid #C9A44C;' : '';
+            const headerSubColor = isBuckcrest ? '#EBDCB9' : '#ffedd5';
+            
+            const btnBg = isBuckcrest ? '#946E19' : '#F37021';
+            const btnShadow = isBuckcrest ? '0 4px 12px rgba(148, 110, 25, 0.35)' : '0 4px 12px rgba(243, 112, 33, 0.3)';
+            
+            const calloutBg = isBuckcrest ? '#FDFBF7' : '#fff7ed';
+            const calloutBorder = isBuckcrest ? '#C9A44C' : '#F37021';
+            const calloutBoxBorder = isBuckcrest ? 'border: 1px solid #EBDCB9; border-left: 4px solid #C9A44C;' : 'border-left: 4px solid #F37021;';
+            const calloutTitleColor = isBuckcrest ? '#523805' : '#9a3412';
+            const calloutSubColor = isBuckcrest ? '#6E4D0B' : '#c2410c';
+            
+            const cardBg = isBuckcrest ? '#FDFBF7' : '#fffaf5';
+            const cardBorder = isBuckcrest ? '#EBDCB9' : '#fed7aa';
+            const badgeBg = isBuckcrest ? '#F7F1E1' : '#ffedd5';
+            const badgeText = isBuckcrest ? '#6E4D0B' : '#c2410c';
+            const badgeBorder = isBuckcrest ? 'border: 1px solid #DEC58B;' : '';
+            
+            const footerBg = isBuckcrest ? '#18181B' : '#f8fafc';
+            const footerBorder = isBuckcrest ? 'border: 1px solid #27272A; border-top: none;' : 'border: 1px solid #f1f5f9; border-top: none;';
+            const footerText = isBuckcrest ? '#DEC58B' : '#94a3b8';
+            const footerSub = isBuckcrest ? '#A1A1AA' : '#94a3b8';
+            
+            const defaultEstate = isBuckcrest ? 'Buckcrest Signature Haven' : 'RICAF Signature Gardens';
+            const promoCode = isBuckcrest ? 'BUCKCREST-PROMO15' : 'RICAF-PROMO15';
 
             let tpl = '';
             if (key === 'launch') {
-                this.campaignName = '🚀 New Estate Groundbreaking Launch - Special Investor Allotment';
-                this.subject = '🌟 Announcement: RICAF Signature Gardens Launch & 15% Early Investor Discount';
+                this.campaignName = `🚀 ${company} Groundbreaking Launch - Special Investor Allotment`;
+                this.subject = `🌟 Announcement: ${defaultEstate} Launch & 15% Early Investor Discount`;
                 tpl = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
-    <div style="background: linear-gradient(135deg, #F37021 0%, #ea580c 100%); padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0;">
+    <div style="background: ${headerBg}; padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
         <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">${company}</h1>
-        <p style="color: #ffedd5; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Exclusive New Estate Launch</p>
+        <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Exclusive New Estate Launch</p>
     </div>
     <div style="padding: 30px 25px; background: #ffffff; border: 1px solid #f1f5f9; border-top: none;">
         <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-top: 0;">Dear @{{name}},</h2>
-        <p style="font-size: 14px; color: #475569;">We are excited to announce our newest residential &amp; commercial development — <strong>RICAF Signature Gardens</strong>, strategically situated in the fastest-growing investment corridor.</p>
+        <p style="font-size: 14px; color: #475569;">We are excited to announce our newest residential &amp; commercial development — <strong>${defaultEstate}</strong>, strategically situated in the fastest-growing investment corridor.</p>
         
-        <div style="background: #fff7ed; border-left: 4px solid #F37021; padding: 15px; border-radius: 0 12px 12px 0; margin: 20px 0;">
-            <p style="margin: 0; font-size: 14px; font-weight: bold; color: #9a3412;">🎉 Early Bird Special: 15% Launch Discount</p>
-            <p style="margin: 5px 0 0 0; font-size: 13px; color: #c2410c;">Initial Deposit: <strong>20% only</strong> with flexible 12-month installment spread.</p>
+        <div style="background: ${calloutBg}; ${calloutBoxBorder} padding: 15px; border-radius: 0 12px 12px 0; margin: 20px 0;">
+            <p style="margin: 0; font-size: 14px; font-weight: bold; color: ${calloutTitleColor};">🎉 Early Bird Special: 15% Launch Discount</p>
+            <p style="margin: 5px 0 0 0; font-size: 13px; color: ${calloutSubColor};">Initial Deposit: <strong>20% only</strong> with flexible 12-month installment spread.</p>
         </div>
 
         <h3 style="font-size: 16px; font-weight: 700; color: #0f172a; margin-bottom: 10px;">Why Invest in this Estate?</h3>
@@ -711,22 +755,22 @@ window.campaignCreator = function() {
         </ul>
 
         <div style="text-align: center; margin: 30px 0 20px 0;">
-            <a href="tel:${phone}" style="background: #F37021; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 14px; display: inline-block; box-shadow: 0 4px 12px rgba(243, 112, 33, 0.3);">📅 Book Free Site Inspection</a>
+            <a href="tel:${phone}" style="background: ${btnBg}; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 14px; display: inline-block; box-shadow: ${btnShadow};">📅 Book Free Site Inspection</a>
         </div>
     </div>
-    <div style="background: #f8fafc; padding: 20px; text-align: center; font-size: 11px; color: #94a3b8; border-radius: 0 0 16px 16px; border: 1px solid #f1f5f9; border-top: none;">
-        <p style="margin: 0;">${company} • Luxury Real Estate &amp; Developments</p>
-        <p style="margin: 4px 0 0 0;">Need assistance? Call ${phone} or reply directly to this email.</p>
+    <div style="background: ${footerBg}; padding: 20px; text-align: center; font-size: 11px; color: ${footerText}; border-radius: 0 0 16px 16px; ${footerBorder}">
+        <p style="margin: 0; font-weight: 600;">${company} • Luxury Real Estate &amp; Developments</p>
+        <p style="margin: 4px 0 0 0; color: ${footerSub};">Need assistance? Call ${phone} or reply directly to this email.</p>
     </div>
 </div>`;
             } else if (key === 'digest') {
-                this.campaignName = '📰 Monthly Real Estate Market Digest & Property Deals';
-                this.subject = '📈 Nigeria Property Investor Digest: Market Insights & Available Allocations';
+                this.campaignName = `📰 ${company} Monthly Real Estate Market Digest & Deals`;
+                this.subject = `📈 ${company} Property Digest: Market Insights & Available Allocations`;
                 tpl = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
-    <div style="background: linear-gradient(135deg, #F37021 0%, #ea580c 100%); padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0;">
+    <div style="background: ${headerBg}; padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
         <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">${company}</h1>
-        <p style="color: #ffedd5; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Monthly Real Estate Intelligence &amp; Opportunities</p>
+        <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Monthly Real Estate Intelligence &amp; Opportunities</p>
     </div>
     <div style="padding: 30px 25px; background: #ffffff; border: 1px solid #f1f5f9; border-top: none;">
         <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 0;">Market Insight for @{{name}}</h2>
@@ -734,79 +778,79 @@ window.campaignCreator = function() {
         
         <h3 style="font-size: 15px; font-weight: 700; color: #0f172a; border-bottom: 2px solid #f1f5f9; padding-bottom: 8px; margin-top: 25px;">Featured Available Listings</h3>
         
-        <div style="border: 1px solid #fed7aa; background: #fffaf5; border-radius: 12px; padding: 15px; margin: 15px 0;">
-            <span style="background: #ffedd5; color: #c2410c; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 6px;">Hot Listing</span>
+        <div style="border: 1px solid ${cardBorder}; background: ${cardBg}; border-radius: 12px; padding: 15px; margin: 15px 0;">
+            <span style="background: ${badgeBg}; color: ${badgeText}; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 6px; ${badgeBorder}">Hot Listing</span>
             <h4 style="margin: 8px 0 4px 0; font-size: 15px; color: #0f172a;">Prime 500sqm Residential Plot</h4>
             <p style="margin: 0; font-size: 13px; color: #64748b;">Title: Governor's Consent • Flexible 6-month payment plan.</p>
         </div>
 
         <div style="text-align: center; margin: 25px 0 10px 0;">
-            <a href="tel:${phone}" style="background: #F37021; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 13px; display: inline-block; box-shadow: 0 4px 12px rgba(243, 112, 33, 0.3);">Speak to an Investment Advisor</a>
+            <a href="tel:${phone}" style="background: ${btnBg}; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 13px; display: inline-block; box-shadow: ${btnShadow};">Speak to an Investment Advisor</a>
         </div>
     </div>
-    <div style="background: #f8fafc; padding: 15px; text-align: center; font-size: 11px; color: #94a3b8; border-radius: 0 0 16px 16px; border: 1px solid #f1f5f9; border-top: none;">
-        <p style="margin: 0;">${company} • Real Estate Portfolio Management</p>
-        <p style="margin: 4px 0 0 0;">Need assistance? Call ${phone} or reply directly to this email.</p>
+    <div style="background: ${footerBg}; padding: 15px; text-align: center; font-size: 11px; color: ${footerText}; border-radius: 0 0 16px 16px; ${footerBorder}">
+        <p style="margin: 0; font-weight: 600;">${company} • Real Estate Portfolio Management</p>
+        <p style="margin: 4px 0 0 0; color: ${footerSub};">Need assistance? Call ${phone} or reply directly to this email.</p>
     </div>
 </div>`;
             } else if (key === 'promo') {
-                this.campaignName = '🏷️ Flash Promo - Limited Plots at 15% Price Slash';
-                this.subject = '🔥 72-Hour Flash Sale: Own Prime Land with Zero Development Fees';
+                this.campaignName = `🏷️ ${company} Flash Promo - Limited Plots at 15% Price Slash`;
+                this.subject = `🔥 72-Hour Flash Sale: Own Prime Land with Zero Development Fees`;
                 tpl = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
-    <div style="background: linear-gradient(135deg, #F37021 0%, #ea580c 100%); padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0;">
+    <div style="background: ${headerBg}; padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
         <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">${company}</h1>
-        <p style="color: #ffedd5; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">⚡ 72-Hour Flash Sale &amp; Exclusive Price Reductions</p>
+        <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">⚡ 72-Hour Flash Sale &amp; Exclusive Price Reductions</p>
     </div>
     <div style="padding: 30px 25px; background: #ffffff; border: 1px solid #f1f5f9; border-top: none;">
         <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 0;">Hello @{{name}},</h2>
         <p style="font-size: 13px; color: #475569;">For the next 72 hours, ${company} is offering an unprecedented discount on our flagship estates with <strong>instant deed allocation upon 30% downpayment</strong>.</p>
         
-        <div style="background: #fff7ed; border: 1px dashed #F37021; border-radius: 12px; padding: 15px; text-align: center; margin: 20px 0;">
-            <p style="margin: 0; font-size: 12px; color: #9a3412; text-transform: uppercase; font-weight: bold;">Promo Code</p>
-            <p style="margin: 5px 0; font-size: 22px; font-weight: 900; color: #ea580c; letter-spacing: 2px;">RICAF-PROMO15</p>
-            <p style="margin: 0; font-size: 11px; color: #c2410c;">Mention this promo code when speaking to our sales manager.</p>
+        <div style="background: ${calloutBg}; border: 1px dashed ${calloutBorder}; border-radius: 12px; padding: 15px; text-align: center; margin: 20px 0;">
+            <p style="margin: 0; font-size: 12px; color: ${calloutTitleColor}; text-transform: uppercase; font-weight: bold;">Promo Code</p>
+            <p style="margin: 5px 0; font-size: 22px; font-weight: 900; color: ${btnBg}; letter-spacing: 2px;">${promoCode}</p>
+            <p style="margin: 0; font-size: 11px; color: ${calloutSubColor};">Mention this promo code when speaking to our sales manager.</p>
         </div>
 
         <div style="text-align: center; margin: 25px 0 10px 0;">
-            <a href="https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=Hello,%20I%20am%20interested%20in%20the%20RICAF%20Flash%20Promo" style="background: #22c55e; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 13px; display: inline-block; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);">💬 Claim on WhatsApp</a>
+            <a href="https://wa.me/${phone.replace(/[^0-9]/g, '')}?text=Hello,%20I%20am%20interested%20in%20the%20${encodeURIComponent(company)}%20Flash%20Promo" style="background: #22c55e; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 13px; display: inline-block; box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);">💬 Claim on WhatsApp</a>
         </div>
     </div>
-    <div style="background: #f8fafc; padding: 15px; text-align: center; font-size: 11px; color: #94a3b8; border-radius: 0 0 16px 16px; border: 1px solid #f1f5f9; border-top: none;">
-        <p style="margin: 0;">${company} • Luxury Real Estate &amp; Developments</p>
-        <p style="margin: 4px 0 0 0;">Need assistance? Call ${phone} or reply directly to this email.</p>
+    <div style="background: ${footerBg}; padding: 15px; text-align: center; font-size: 11px; color: ${footerText}; border-radius: 0 0 16px 16px; ${footerBorder}">
+        <p style="margin: 0; font-weight: 600;">${company} • Luxury Real Estate &amp; Developments</p>
+        <p style="margin: 4px 0 0 0; color: ${footerSub};">Need assistance? Call ${phone} or reply directly to this email.</p>
     </div>
 </div>`;
             } else if (key === 'progress') {
-                this.campaignName = '🏗️ Site Construction & Milestone Progress Report';
-                this.subject = '📸 Construction Progress Update: Road Grading & Infrastructure on Schedule';
+                this.campaignName = `🏗️ ${company} Site Construction & Milestone Progress Report`;
+                this.subject = `📸 Construction Progress Update: Road Grading & Infrastructure on Schedule`;
                 tpl = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
-    <div style="background: linear-gradient(135deg, #F37021 0%, #ea580c 100%); padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0;">
+    <div style="background: ${headerBg}; padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
         <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">${company}</h1>
-        <p style="color: #ffedd5; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Development Milestone Update</p>
+        <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Development Milestone Update</p>
     </div>
     <div style="padding: 30px 25px; background: #ffffff; border: 1px solid #f1f5f9; border-top: none;">
         <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 0;">Dear Valued Buyer (@{{name}}),</h2>
         <p style="font-size: 13px; color: #475569;">We are delighted to share the latest on-site milestone report for our ongoing projects. Quality control and delivery timelines remain our highest priority.</p>
         
-        <div style="background: #fff7ed; border-radius: 12px; padding: 15px; margin: 20px 0; border: 1px solid #fed7aa;">
+        <div style="background: ${calloutBg}; border-radius: 12px; padding: 15px; margin: 20px 0; border: 1px solid ${cardBorder};">
             <p style="margin: 0 0 5px 0; font-size: 13px; font-weight: bold; color: #0f172a;">Site Progress: <strong>75% Completed</strong></p>
-            <div style="width: 100%; background: #fed7aa; height: 10px; border-radius: 5px; overflow: hidden;">
-                <div style="background: #F37021; width: 75%; height: 100%;"></div>
+            <div style="width: 100%; background: ${cardBorder}; height: 10px; border-radius: 5px; overflow: hidden;">
+                <div style="background: ${btnBg}; width: 75%; height: 100%;"></div>
             </div>
-            <p style="margin: 10px 0 0 0; font-size: 12px; color: #9a3412;">Perimeter fencing and drainage systems finalized. Electrification underway.</p>
+            <p style="margin: 10px 0 0 0; font-size: 12px; color: ${calloutTitleColor};">Perimeter fencing and drainage systems finalized. Electrification underway.</p>
         </div>
 
         <p style="font-size: 13px; color: #475569;">You can also access your real-time payment schedule and property documents anytime on your Client Portal.</p>
         
         <div style="text-align: center; margin: 25px 0 10px 0;">
-            <a href="tel:${phone}" style="background: #F37021; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 13px; display: inline-block; box-shadow: 0 4px 12px rgba(243, 112, 33, 0.3);">Contact Project Engineer</a>
+            <a href="tel:${phone}" style="background: ${btnBg}; color: #ffffff; text-decoration: none; padding: 14px 28px; border-radius: 12px; font-weight: bold; font-size: 13px; display: inline-block; box-shadow: ${btnShadow};">Contact Project Engineer</a>
         </div>
     </div>
-    <div style="background: #f8fafc; padding: 15px; text-align: center; font-size: 11px; color: #94a3b8; border-radius: 0 0 16px 16px; border: 1px solid #f1f5f9; border-top: none;">
-        <p style="margin: 0;">${company} • Construction &amp; Development Department</p>
-        <p style="margin: 4px 0 0 0;">Need assistance? Call ${phone} or reply directly to this email.</p>
+    <div style="background: ${footerBg}; padding: 15px; text-align: center; font-size: 11px; color: ${footerText}; border-radius: 0 0 16px 16px; ${footerBorder}">
+        <p style="margin: 0; font-weight: 600;">${company} • Construction &amp; Development Department</p>
+        <p style="margin: 4px 0 0 0; color: ${footerSub};">Need assistance? Call ${phone} or reply directly to this email.</p>
     </div>
 </div>`;
             }
