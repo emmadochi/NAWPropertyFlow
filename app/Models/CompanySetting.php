@@ -213,9 +213,18 @@ class CompanySetting extends Model
      */
     public function hasFeature(string $feature): bool
     {
-        // 1. If Developer has explicitly configured enabled modules, respect that exact list
+        // 1. If Developer has explicitly configured enabled modules, respect that list
         if (is_array($this->enabled_modules) && !empty($this->enabled_modules)) {
-            return in_array($feature, $this->enabled_modules);
+            if (in_array($feature, $this->enabled_modules)) {
+                return true;
+            }
+
+            // Marketing campaigns are part of the core Sales & CRM suite for all tiers
+            if ($feature === 'marketing' && in_array('crm', $this->enabled_modules)) {
+                return true;
+            }
+
+            return false;
         }
 
         // 2. Fallback to package tier defaults
@@ -233,7 +242,11 @@ class CompanySetting extends Model
     public function getActiveModuleKeys(): array
     {
         if (is_array($this->enabled_modules) && !empty($this->enabled_modules)) {
-            return $this->enabled_modules;
+            $modules = $this->enabled_modules;
+            if (in_array('crm', $modules) && !in_array('marketing', $modules)) {
+                $modules[] = 'marketing';
+            }
+            return array_values(array_unique($modules));
         }
 
         $tier = $this->package_tier ?? 'enterprise';

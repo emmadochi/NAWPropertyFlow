@@ -21,8 +21,8 @@ class PermissionMiddleware
 
         $user = Auth::user();
 
-        // 1. Super Admin always bypasses
-        if ($user->isSuperAdmin()) {
+        // 1. Super Admin and Company Admin always bypass
+        if ($user->isSuperAdmin() || $user->isCompanyAdmin() || in_array($user->role, ['super_admin', 'company_admin'])) {
             return $next($request);
         }
 

@@ -53,8 +53,8 @@ class ProvisionTenantCommand extends Command
         
         $modules = $this->option('modules');
         if (empty($modules)) {
-            // Default to pure CRM system as requested
-            $modules = ['crm', 'payment_plans'];
+            // Default to CRM system with marketing campaigns & payment plans
+            $modules = ['crm', 'payment_plans', 'marketing'];
         }
 
         $dbPrefix = config('tenancy.database.prefix', 'nawcrm_');

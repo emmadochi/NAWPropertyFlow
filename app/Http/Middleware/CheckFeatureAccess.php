@@ -15,9 +15,18 @@ class CheckFeatureAccess
      */
     public function handle(Request $request, Closure $next, string $feature): Response
     {
-        $settings = \App\Models\CompanySetting::first();
+        // 1. Super Admins always have access to all platform features
+        $user = auth()->user();
+        if ($user && ($user->isSuperAdmin() || $user->role === 'super_admin')) {
+            return $next($request);
+        }
+
+        $settings = \App\Models\CompanySetting::getCached() ?? \App\Models\CompanySetting::first();
         
-        if (!$settings || !$settings->hasFeature($feature)) {
+        // 2. Safe check on company feature access
+        $hasAccess = $settings ? $settings->hasFeature($feature) : in_array($feature, ['crm', 'marketing', 'payment_plans']);
+
+        if (!$hasAccess) {
             // Check if request expects JSON
             if ($request->expectsJson()) {
                 return response()->json(['error' => 'Your current package does not include access to this feature. Please upgrade your plan.'], 403);
