@@ -14,6 +14,7 @@ use App\Models\Branch;
 use App\Models\CompanySetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Schema;
 use Carbon\Carbon;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -42,6 +43,14 @@ class RetailPerformanceController extends Controller
      */
     public function saveFieldLog(Request $request)
     {
+        if (!Schema::hasTable('sales_weekly_field_logs')) {
+            $msg = 'Please run "php artisan tenants:migrate" on the server to enable weekly canvassing logs.';
+            if ($request->expectsJson()) {
+                return response()->json(['success' => false, 'message' => $msg], 400);
+            }
+            return back()->with('error', $msg);
+        }
+
         $validated = $request->validate([
             'user_id'                      => 'required|exists:users,id',
             'year'                         => 'required|integer|min:2020|max:2035',
@@ -108,12 +117,12 @@ class RetailPerformanceController extends Controller
         switch ($metric) {
             case 'calls':
                 $title = "Calls Logged by {$user->name}";
-                $followUps = FollowUp::where('assigned_officer_id', $userId)
+                $followUps = rescue(fn() => FollowUp::whereHas('lead', fn($q) => $q->where('assigned_to', $userId))
                     ->whereIn('type', ['call', 'phone'])
-                    ->whereBetween('follow_up_date', [$startDate, $endDate])
+                    ->whereBetween('due_date', [$startDate, $endDate])
                     ->with('lead')
-                    ->latest('follow_up_date')
-                    ->get();
+                    ->latest('due_date')
+                    ->get(), collect());
 
                 foreach ($followUps as $f) {
                     $items[] = [
@@ -121,17 +130,17 @@ class RetailPerformanceController extends Controller
                         'phone'       => $f->lead ? $f->lead->phone_number : 'N/A',
                         'subtitle'    => $f->notes ?: 'Scheduled prospect phone call',
                         'badge'       => 'Call Follow-up',
-                        'date'        => Carbon::parse($f->follow_up_date)->format('d M, Y h:i A'),
+                        'date'        => $f->due_date ? Carbon::parse($f->due_date)->format('d M, Y h:i A') : $f->created_at->format('d M, Y h:i A'),
                         'link'        => $f->lead_id ? route('leads.show', $f->lead_id) : null,
                     ];
                 }
 
-                $activities = LeadActivity::where('user_id', $userId)
+                $activities = rescue(fn() => LeadActivity::where('user_id', $userId)
                     ->where('activity_type', 'like', '%Call%')
                     ->whereBetween('created_at', [$startDate, $endDate])
                     ->with('lead')
                     ->latest()
-                    ->get();
+                    ->get(), collect());
 
                 foreach ($activities as $a) {
                     $items[] = [
@@ -147,12 +156,12 @@ class RetailPerformanceController extends Controller
 
             case 'whatsapp':
                 $title = "WhatsApp Outreach by {$user->name}";
-                $followUps = FollowUp::where('assigned_officer_id', $userId)
+                $followUps = rescue(fn() => FollowUp::whereHas('lead', fn($q) => $q->where('assigned_to', $userId))
                     ->where('type', 'whatsapp')
-                    ->whereBetween('follow_up_date', [$startDate, $endDate])
+                    ->whereBetween('due_date', [$startDate, $endDate])
                     ->with('lead')
-                    ->latest('follow_up_date')
-                    ->get();
+                    ->latest('due_date')
+                    ->get(), collect());
 
                 foreach ($followUps as $f) {
                     $items[] = [
@@ -160,25 +169,43 @@ class RetailPerformanceController extends Controller
                         'phone'       => $f->lead ? $f->lead->phone_number : 'N/A',
                         'subtitle'    => $f->notes ?: 'WhatsApp broadcast/chat engagement',
                         'badge'       => 'WhatsApp Chat',
-                        'date'        => Carbon::parse($f->follow_up_date)->format('d M, Y h:i A'),
+                        'date'        => $f->due_date ? Carbon::parse($f->due_date)->format('d M, Y h:i A') : $f->created_at->format('d M, Y h:i A'),
                         'link'        => $f->lead_id ? route('leads.show', $f->lead_id) : null,
+                    ];
+                }
+
+                $waActivities = rescue(fn() => LeadActivity::where('user_id', $userId)
+                    ->where('activity_type', 'like', '%WhatsApp%')
+                    ->whereBetween('created_at', [$startDate, $endDate])
+                    ->with('lead')
+                    ->latest()
+                    ->get(), collect());
+
+                foreach ($waActivities as $a) {
+                    $items[] = [
+                        'title'       => $a->lead ? $a->lead->full_name : 'WhatsApp Discussion',
+                        'phone'       => $a->lead ? $a->lead->phone_number : 'N/A',
+                        'subtitle'    => $a->description,
+                        'badge'       => 'WhatsApp Touch',
+                        'date'        => $a->created_at->format('d M, Y h:i A'),
+                        'link'        => $a->lead_id ? route('leads.show', $a->lead_id) : null,
                     ];
                 }
                 break;
 
             case 'inspections':
                 $title = "Site Inspections Conducted by {$user->name}";
-                $inspections = Inspection::where('assigned_to', $userId)
+                $inspections = rescue(fn() => Inspection::where('assigned_to', $userId)
                     ->whereBetween('inspection_date', [$startDate, $endDate])
                     ->with(['lead', 'property'])
                     ->latest('inspection_date')
-                    ->get();
+                    ->get(), collect());
 
                 foreach ($inspections as $ins) {
                     $items[] = [
                         'title'       => ($ins->lead ? $ins->lead->full_name : 'Prospect') . ' → ' . ($ins->property ? ($ins->property->estate_name ?? $ins->property->name) : 'Estate Tour'),
                         'phone'       => $ins->lead ? $ins->lead->phone_number : 'N/A',
-                        'subtitle'    => "Status: {$ins->status} • Location: " . ($ins->property ? $ins->property->location : 'Abuja Site'),
+                        'subtitle'    => "Status: {$ins->status} • Location: " . ($ins->property ? ($ins->property->location ?? 'Site') : 'Abuja Site'),
                         'badge'       => $ins->status,
                         'date'        => Carbon::parse($ins->inspection_date)->format('d M, Y h:i A'),
                         'link'        => $ins->lead_id ? route('leads.show', $ins->lead_id) : null,
@@ -188,16 +215,16 @@ class RetailPerformanceController extends Controller
 
             case 'leads':
                 $title = "Contacts & Prospects Captured by {$user->name}";
-                $leads = Lead::where('assigned_to', $userId)
+                $leads = rescue(fn() => Lead::where('assigned_to', $userId)
                     ->whereBetween('created_at', [$startDate, $endDate])
                     ->latest()
-                    ->get();
+                    ->get(), collect());
 
                 foreach ($leads as $l) {
                     $items[] = [
                         'title'       => $l->full_name,
                         'phone'       => $l->phone_number . ($l->email ? " • {$l->email}" : ''),
-                        'subtitle'    => "Source: {$l->lead_source} • Outreach Territory: " . ($l->outreach_location ?: 'General Direct'),
+                        'subtitle'    => "Source: {$l->lead_source}" . (!empty($l->outreach_location) ? " • Territory: {$l->outreach_location}" : ''),
                         'badge'       => ucfirst($l->status),
                         'date'        => $l->created_at->format('d M, Y'),
                         'link'        => route('leads.show', $l->id),
@@ -207,12 +234,12 @@ class RetailPerformanceController extends Controller
 
             case 'sales':
                 $title = "Closed Deals by {$user->name}";
-                $sales = Sale::where('sales_officer_id', $userId)
+                $sales = rescue(fn() => Sale::where('sales_officer_id', $userId)
                     ->where('status', 'Closed Won')
                     ->whereBetween('deal_closed_at', [$startDate, $endDate])
                     ->with(['lead', 'property'])
                     ->latest('deal_closed_at')
-                    ->get();
+                    ->get(), collect());
 
                 foreach ($sales as $s) {
                     $items[] = [
@@ -228,20 +255,21 @@ class RetailPerformanceController extends Controller
 
             case 'topups':
                 $title = "Milestone Top-up Installments for {$user->name}";
-                $milestones = PaymentMilestone::whereHas('paymentPlan.sale', function($q) use ($userId) {
+                $milestones = rescue(fn() => PaymentMilestone::whereHas('paymentPlan.sale', function($q) use ($userId) {
                     $q->where('sales_officer_id', $userId);
                 })->where('status', 'Paid')
                   ->whereBetween('paid_at', [$startDate, $endDate])
                   ->with(['paymentPlan.sale.lead', 'paymentPlan.sale.property'])
                   ->latest('paid_at')
-                  ->get();
+                  ->get(), collect());
 
                 foreach ($milestones as $m) {
                     $sale = $m->paymentPlan?->sale;
+                    $val = (float) ($m->amount_paid ?: $m->amount_due);
                     $items[] = [
-                        'title'       => ($sale && $sale->lead ? $sale->lead->full_name : 'Client') . ' — ₦' . number_format($m->amount, 2),
+                        'title'       => ($sale && $sale->lead ? $sale->lead->full_name : 'Client') . ' — ₦' . number_format($val, 2),
                         'phone'       => $sale && $sale->lead ? $sale->lead->phone_number : 'N/A',
-                        'subtitle'    => "Milestone Stage: {$m->name} • Ref: " . ($m->reference ?? 'Verified'),
+                        'subtitle'    => "Milestone: " . ($m->label ?? 'Installment') . " • Ref: " . ($m->bank_reference ?? 'Verified'),
                         'badge'       => 'Paid Milestone',
                         'date'        => $m->paid_at ? Carbon::parse($m->paid_at)->format('d M, Y') : 'N/A',
                         'link'        => $sale ? route('sales.show', $sale->id) : null,
@@ -295,7 +323,7 @@ class RetailPerformanceController extends Controller
         }
 
         $currentUser = Auth::user();
-        $isExecutive = in_array($currentUser->role, ['sales_executive', 'sales_agent', 'marketer']);
+        $isExecutive = in_array($currentUser->role ?? '', ['sales_executive', 'sales_agent', 'marketer']);
 
         // Query sales consultants & retail marketers
         $consultantsQuery = User::where(function($q) {
@@ -310,18 +338,23 @@ class RetailPerformanceController extends Controller
 
         if ($branchId) {
             $consultantsQuery->where('branch_id', $branchId);
-        } elseif ($currentUser->branch_id && !in_array($currentUser->role, ['super_admin', 'company_admin'])) {
+        } elseif ($currentUser && $currentUser->branch_id && !in_array($currentUser->role, ['super_admin', 'company_admin'])) {
             $consultantsQuery->where('branch_id', $currentUser->branch_id);
         }
 
         $consultants = $consultantsQuery->orderBy('name', 'asc')->get();
 
-        // Load existing field logs for the period
-        $fieldLogsQuery = SalesWeeklyFieldLog::where('year', $year)->where('month', $month);
-        if ($activeWeek !== 'all') {
-            $fieldLogsQuery->where('week_number', $activeWeek);
+        // Safely load existing field logs (if table exists)
+        $fieldLogs = collect();
+        if (Schema::hasTable('sales_weekly_field_logs')) {
+            $fieldLogsQuery = SalesWeeklyFieldLog::where('year', $year)->where('month', $month);
+            if ($activeWeek !== 'all') {
+                $fieldLogsQuery->where('week_number', $activeWeek);
+            }
+            $fieldLogs = rescue(fn() => $fieldLogsQuery->get()->groupBy('user_id'), collect());
         }
-        $fieldLogs = $fieldLogsQuery->get()->groupBy('user_id');
+
+        $hasOutreachCol = Schema::hasColumn('leads', 'outreach_location');
 
         $matrixRows = [];
         $aggregates = [
@@ -348,62 +381,65 @@ class RetailPerformanceController extends Controller
             // 1. Canvassing locations
             $canvassingLocations = $primaryLog ? $primaryLog->canvassing_locations : null;
             if (!$canvassingLocations) {
-                $distinctLeadLocs = Lead::where('assigned_to', $consultant->id)
-                    ->whereNotNull('outreach_location')
-                    ->whereBetween('created_at', [$startDate, $endDate])
-                    ->pluck('outreach_location')
-                    ->unique()
-                    ->values()
-                    ->all();
+                $distinctLeadLocs = [];
+                if ($hasOutreachCol) {
+                    $distinctLeadLocs = rescue(fn() => Lead::where('assigned_to', $consultant->id)
+                        ->whereNotNull('outreach_location')
+                        ->whereBetween('created_at', [$startDate, $endDate])
+                        ->pluck('outreach_location')
+                        ->unique()
+                        ->values()
+                        ->all(), []);
+                }
                 $canvassingLocations = !empty($distinctLeadLocs) ? implode(', ', $distinctLeadLocs) : 'Territory Prospecting';
             }
 
             // 2. Payments & Top-ups (Verified Finance Records)
-            $actualPaymentsCount = Sale::where('sales_officer_id', $consultant->id)
+            $actualPaymentsCount = rescue(fn() => Sale::where('sales_officer_id', $consultant->id)
                 ->where('status', 'Closed Won')
                 ->whereBetween('deal_closed_at', [$startDate, $endDate])
-                ->count();
+                ->count(), 0);
 
-            $actualPaymentsValue = (float) Sale::where('sales_officer_id', $consultant->id)
+            $actualPaymentsValue = (float) rescue(fn() => Sale::where('sales_officer_id', $consultant->id)
                 ->where('status', 'Closed Won')
                 ->whereBetween('deal_closed_at', [$startDate, $endDate])
-                ->sum('deal_value');
+                ->sum('deal_value'), 0);
 
-            $topupsCount = PaymentMilestone::whereHas('paymentPlan.sale', function($q) use ($consultant) {
+            $topupsCount = rescue(fn() => PaymentMilestone::whereHas('paymentPlan.sale', function($q) use ($consultant) {
                 $q->where('sales_officer_id', $consultant->id);
             })->where('status', 'Paid')
               ->whereBetween('paid_at', [$startDate, $endDate])
-              ->count();
+              ->count(), 0);
 
-            $topupsValue = (float) PaymentMilestone::whereHas('paymentPlan.sale', function($q) use ($consultant) {
+            $topupsValue = (float) rescue(fn() => PaymentMilestone::whereHas('paymentPlan.sale', function($q) use ($consultant) {
                 $q->where('sales_officer_id', $consultant->id);
             })->where('status', 'Paid')
               ->whereBetween('paid_at', [$startDate, $endDate])
-              ->sum('amount');
+              ->sum('amount_paid'), 0);
 
             // 3. Expected payments
             $expectedCount = $primaryLog && $primaryLog->expected_payments_count > 0
                 ? $primaryLog->expected_payments_count
-                : Lead::where('assigned_to', $consultant->id)
+                : rescue(fn() => Lead::where('assigned_to', $consultant->id)
                     ->whereIn('status', ['qualified', 'proposal_sent', 'negotiating'])
                     ->whereBetween('updated_at', [$startDate, $endDate])
-                    ->count();
+                    ->count(), 0);
 
             $expectedContacts = $primaryLog && $primaryLog->expected_payments_notes
                 ? $primaryLog->expected_payments_notes
-                : Lead::where('assigned_to', $consultant->id)
+                : rescue(fn() => Lead::where('assigned_to', $consultant->id)
                     ->whereIn('status', ['qualified', 'proposal_sent', 'negotiating'])
                     ->limit(4)
                     ->pluck('phone_number')
                     ->filter()
-                    ->implode(', ');
+                    ->implode(', '), '');
 
             // 4. Inspections & Estates
-            $inspectionsCount = Inspection::where('assigned_to', $consultant->id)
+            $inspectionsCount = rescue(fn() => Inspection::where('assigned_to', $consultant->id)
                 ->whereBetween('inspection_date', [$startDate, $endDate])
-                ->count();
+                ->count(), 0);
 
-            $projectLocations = Inspection::where('assigned_to', $consultant->id)
+            $projectLocations = rescue(fn() => Inspection::where('assigned_to', $consultant->id)
                 ->whereBetween('inspection_date', [$startDate, $endDate])
                 ->with('property')
                 ->get()
@@ -411,62 +447,62 @@ class RetailPerformanceController extends Controller
                 ->filter()
                 ->unique()
                 ->values()
-                ->all();
+                ->all(), []);
 
             $projectLocationsText = !empty($projectLocations) ? implode(', ', $projectLocations) : 'Office Briefings';
 
             // 5. Office Visits
             $officeVisits = $primaryLog && $primaryLog->office_visits_count > 0
                 ? $primaryLog->office_visits_count
-                : LeadActivity::where('user_id', $consultant->id)
+                : rescue(fn() => LeadActivity::where('user_id', $consultant->id)
                     ->where(fn($q) => $q->where('activity_type', 'like', '%Office%')->orWhere('description', 'like', '%Office%'))
                     ->whereBetween('created_at', [$startDate, $endDate])
-                    ->count();
+                    ->count(), 0);
 
             // 6. Engagements (Calls, SMS, WhatsApp)
-            $callsCount = FollowUp::where('assigned_officer_id', $consultant->id)
+            $callsCount = rescue(fn() => FollowUp::whereHas('lead', fn($q) => $q->where('assigned_to', $consultant->id))
                 ->whereIn('type', ['call', 'phone'])
-                ->whereBetween('follow_up_date', [$startDate, $endDate])
-                ->count()
-                + LeadActivity::where('user_id', $consultant->id)
+                ->whereBetween('due_date', [$startDate, $endDate])
+                ->count(), 0)
+                + rescue(fn() => LeadActivity::where('user_id', $consultant->id)
                     ->where('activity_type', 'like', '%Call%')
                     ->whereBetween('created_at', [$startDate, $endDate])
-                    ->count();
+                    ->count(), 0);
 
-            $smsCount = FollowUp::where('assigned_officer_id', $consultant->id)
+            $smsCount = rescue(fn() => FollowUp::whereHas('lead', fn($q) => $q->where('assigned_to', $consultant->id))
                 ->where('type', 'sms')
-                ->whereBetween('follow_up_date', [$startDate, $endDate])
-                ->count()
-                + LeadActivity::where('user_id', $consultant->id)
+                ->whereBetween('due_date', [$startDate, $endDate])
+                ->count(), 0)
+                + rescue(fn() => LeadActivity::where('user_id', $consultant->id)
                     ->where('activity_type', 'like', '%SMS%')
                     ->whereBetween('created_at', [$startDate, $endDate])
-                    ->count();
+                    ->count(), 0);
 
-            $whatsappCount = FollowUp::where('assigned_officer_id', $consultant->id)
+            $whatsappCount = rescue(fn() => FollowUp::whereHas('lead', fn($q) => $q->where('assigned_to', $consultant->id))
                 ->where('type', 'whatsapp')
-                ->whereBetween('follow_up_date', [$startDate, $endDate])
-                ->count()
-                + LeadActivity::where('user_id', $consultant->id)
+                ->whereBetween('due_date', [$startDate, $endDate])
+                ->count(), 0)
+                + rescue(fn() => LeadActivity::where('user_id', $consultant->id)
                     ->where('activity_type', 'like', '%WhatsApp%')
                     ->whereBetween('created_at', [$startDate, $endDate])
-                    ->count();
+                    ->count(), 0);
 
             // 7. Contacts generated
-            $newContactsCount = Lead::where('assigned_to', $consultant->id)
+            $newContactsCount = rescue(fn() => Lead::where('assigned_to', $consultant->id)
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
+                ->count(), 0);
 
-            $contactsPhoneCount = Lead::where('assigned_to', $consultant->id)
+            $contactsPhoneCount = rescue(fn() => Lead::where('assigned_to', $consultant->id)
                 ->whereNotNull('phone_number')
                 ->where('phone_number', '!=', '')
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
+                ->count(), 0);
 
-            $contactsEmailCount = Lead::where('assigned_to', $consultant->id)
+            $contactsEmailCount = rescue(fn() => Lead::where('assigned_to', $consultant->id)
                 ->whereNotNull('email')
                 ->where('email', '!=', '')
                 ->whereBetween('created_at', [$startDate, $endDate])
-                ->count();
+                ->count(), 0);
 
             // 8. Observations
             $observations = $primaryLog ? ($primaryLog->observations_recommendations ?: $primaryLog->manager_feedback) : null;
@@ -531,13 +567,13 @@ class RetailPerformanceController extends Controller
                 ?: ($b['new_contacts_count'] <=> $a['new_contacts_count']));
         });
 
-        $branches = Branch::orderBy('name', 'asc')->get();
+        $branches = rescue(fn() => Branch::orderBy('name', 'asc')->get(), collect());
 
         // Tenant Branding Resolution
-        $setting     = CompanySetting::getCached();
-        $tenantId    = tenant('id') ?? session('tenant_id') ?? '';
+        $setting     = rescue(fn() => CompanySetting::getCached(), null);
+        $tenantId    = function_exists('tenant') ? (tenant('id') ?? session('tenant_id') ?? '') : '';
         $host        = request()->getHost();
-        $companyName = $setting?->company_name ?? (tenant()?->name ?? 'Buckcrest Havens Limited');
+        $companyName = $setting?->company_name ?? (function_exists('tenant') && tenant() ? tenant()?->name : 'Buckcrest Havens Limited');
         $isBuckcrest = in_array($tenantId, ['bhl', 'buckcrest'])
             || str_contains($host, 'bhl')
             || str_contains($host, 'buckcrest')
@@ -578,84 +614,99 @@ class RetailPerformanceController extends Controller
             'Expires'             => '0',
         ];
 
-        $columns = [
-            'Sales Consultant',
-            'Branch',
-            'Location(s) / Event(s) Visited',
-            'Actual & Successful Payments (Count)',
-            'Actual New Sales Inflow (NGN)',
-            'Top-ups / Milestones (Count)',
-            'Top-ups Inflow (NGN)',
-            'Total Realized Revenue (NGN)',
-            'Expected Payments (Count)',
-            'Expected Payment Prospects',
-            'Site Inspections Conducted',
-            'Project Locations Inspected',
-            'Office Visits Escorted',
-            'Calls Made',
-            'SMS Sent',
-            'WhatsApp Chats',
-            'New Contacts Captured',
-            'Contacts with Phone',
-            'Contacts with Email',
-            'Observations & Recommendations',
-        ];
-
-        $callback = function() use ($columns, $data) {
+        $callback = function() use ($data) {
             $file = fopen('php://output', 'w');
-            // Write UTF-8 BOM so Excel opens special characters correctly
+            
+            // Output UTF-8 BOM for Excel to open symbols (₦) and accents properly
             fprintf($file, chr(0xEF).chr(0xBB).chr(0xBF));
-            fputcsv($file, $columns);
 
-            foreach ($data['matrixRows'] as $row) {
+            // Letterhead
+            fputcsv($file, [$data['companyName']]);
+            fputcsv($file, ['RETAIL SALES TEAM PERFORMANCE SCORECARD MATRIX']);
+            fputcsv($file, ['Period:', $data['periodLabel']]);
+            fputcsv($file, ['Generated at:', now()->format('Y-m-d H:i:s')]);
+            fputcsv($file, []);
+
+            // Tier 1 Header
+            fputcsv($file, [
+                'CONSULTANT PROFILE', '',
+                'LOCATION(S) / EVENT(S)', '',
+                'PAYMENTS / REVENUE', '', '', '',
+                'ACTIVITIES', '',
+                'ENGAGEMENTS (VERIFIED)', '', '', '',
+                'SUMMARY REPORT', ''
+            ]);
+
+            // Tier 2 Columns
+            fputcsv($file, [
+                'S/N',
+                'Sales Consultant',
+                'Locations Visited / Canvassed',
+                'Office Visits',
+                'New Sales (NGN)',
+                'Part / Top-ups (NGN)',
+                'Expected Inflow / Pipeline',
+                'Total Realized (NGN)',
+                'Site Inspections',
+                'Estates Inspected',
+                'Calls Logged',
+                'WhatsApp Chats',
+                'SMS Sent',
+                'Contacts Generated',
+                'Phone Count',
+                'Email Count',
+                'Weekly Observations & Action Points',
+                'Manager Feedback'
+            ]);
+
+            foreach ($data['matrixRows'] as $i => $row) {
+                $user = $row['user'];
+                $fieldLog = $row['field_log'];
+
                 fputcsv($file, [
-                    $row['user']->name,
-                    $row['user']->branch ? $row['user']->branch->name : 'Head Office',
+                    $i + 1,
+                    $user->name . ($user->branch ? " ({$user->branch->name})" : ''),
                     $row['canvassing_locations'],
-                    $row['actual_payments_count'],
+                    $row['office_visits_count'],
                     number_format($row['actual_payments_value'], 2, '.', ''),
-                    $row['topups_count'],
                     number_format($row['topups_value'], 2, '.', ''),
+                    // Prepend tab (\t) to phone numbers/notes so Excel does NOT format as scientific notation
+                    "\t" . ($row['expected_payments_notes'] ?: ($row['expected_payments_count'] > 0 ? "{$row['expected_payments_count']} pipeline" : '')),
                     number_format($row['total_revenue'], 2, '.', ''),
-                    $row['expected_payments_count'],
-                    // Prefix with tab or quote so Excel never corrupts phone numbers into scientific notation
-                    ' ' . $row['expected_payments_notes'],
                     $row['inspections_count'],
                     $row['project_locations_inspected'],
-                    $row['office_visits_count'],
                     $row['calls_count'],
-                    $row['sms_count'],
                     $row['whatsapp_count'],
+                    $row['sms_count'],
                     $row['new_contacts_count'],
                     $row['contacts_phone_count'],
                     $row['contacts_email_count'],
                     $row['observations_recommendations'],
+                    $fieldLog ? $fieldLog->manager_feedback : ''
                 ]);
             }
 
-            // Aggregate totals row
+            // Totals Row
             $agg = $data['aggregates'];
+            fputcsv($file, []);
             fputcsv($file, [
-                'AGGREGATE TOTALS',
-                'ALL BRANCHES',
-                'ALL CANVASSING HUBS',
-                $agg['actual_payments_count'],
-                number_format($agg['actual_payments_value'], 2, '.', ''),
-                $agg['topups_count'],
-                number_format($agg['topups_value'], 2, '.', ''),
-                number_format($agg['total_realized_revenue'], 2, '.', ''),
-                $agg['expected_payments_count'],
-                '-',
-                $agg['inspections_count'],
-                'ALL ESTATE SITES',
+                'TOTAL',
+                'TEAM AGGREGATE',
+                'ALL LOCATIONS',
                 $agg['office_visits_count'],
+                number_format($agg['actual_payments_value'], 2, '.', ''),
+                number_format($agg['topups_value'], 2, '.', ''),
+                "{$agg['expected_payments_count']} deals",
+                number_format($agg['total_realized_revenue'], 2, '.', ''),
+                $agg['inspections_count'],
+                'ALL SITES',
                 $agg['calls_count'],
-                $agg['sms_count'],
                 $agg['whatsapp_count'],
+                $agg['sms_count'],
                 $agg['new_contacts_count'],
                 $agg['contacts_phone_count'],
                 $agg['contacts_email_count'],
-                'EXECUTIVE SUMMARY AUDIT',
+                'Verified CRM Aggregate Output'
             ]);
 
             fclose($file);
