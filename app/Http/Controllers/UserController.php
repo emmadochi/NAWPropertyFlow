@@ -215,6 +215,14 @@ class UserController extends Controller
             }
         }
 
+        // Safety Guard: Reassign all sales and leads credited to this user to the acting administrator
+        // so MySQL cascadeOnDelete never destroys property transactions, payment plans, or receipts!
+        $fallbackUserId = Auth::id() ?? \App\Models\User::where('role', 'super_admin')->value('id');
+        if ($fallbackUserId) {
+            \App\Models\Sale::where('sales_officer_id', $user->id)->update(['sales_officer_id' => $fallbackUserId]);
+            \App\Models\Lead::where('assigned_to', $user->id)->update(['assigned_to' => $fallbackUserId]);
+        }
+
         $user->delete();
 
         return back()->with('success', "{$user->name} has been removed from the team.");

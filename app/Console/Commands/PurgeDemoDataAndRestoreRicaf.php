@@ -82,6 +82,7 @@ class PurgeDemoDataAndRestoreRicaf extends Command
                 ?? User::where('email', 'not like', '%@propertyflow.com')->first();
             if ($realAdmin) {
                 Lead::whereIn('assigned_to', $demoUserIds)->update(['assigned_to' => $realAdmin->id]);
+                Sale::whereIn('sales_officer_id', $demoUserIds)->update(['sales_officer_id' => $realAdmin->id]);
             }
 
             if (Schema::hasTable('salary_structures')) {

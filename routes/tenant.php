@@ -149,6 +149,7 @@ Route::middleware(array_values(array_filter([
 
             if ($fallbackAdminId) {
                 \App\Models\Lead::whereIn('assigned_to', $demoUserIds)->update(['assigned_to' => $fallbackAdminId]);
+                \App\Models\Sale::whereIn('sales_officer_id', $demoUserIds)->update(['sales_officer_id' => $fallbackAdminId]);
             }
 
             // Remove associated HR/Payroll demo records

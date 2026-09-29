@@ -39,14 +39,12 @@
         </div>
 
         <div class="flex space-x-2">
-            @if($lead->status !== 'Closed Won')
             <button @click="recordSaleOpen = true" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-emerald-600/10 transition-all flex items-center space-x-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16v1"></path>
                 </svg>
-                <span>Record Sale</span>
+                <span>{{ $lead->sales->count() > 0 ? '+ Record Additional Sale' : 'Record Sale' }}</span>
             </button>
-            @endif
             <button @click="editLeadOpen = true" class="px-4 py-2.5 bg-white text-gray-700 hover:bg-gray-50 border border-gray-200 rounded-xl transition-all shadow-sm text-sm font-bold">
                 Edit details
             </button>
@@ -577,6 +575,10 @@
                     <div x-show="activeTab === 'payments'" class="space-y-6">
                         <div class="flex justify-between items-center pb-3 border-b border-gray-100">
                             <h4 class="font-bold text-dark-900 text-sm">Property Purchase & Payments</h4>
+                            <button @click="recordSaleOpen = true" class="text-xs font-bold text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-xl transition-all flex items-center space-x-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+                                <span>Record Sale</span>
+                            </button>
                         </div>
 
                         <div class="space-y-4">
@@ -637,7 +639,12 @@
                                 @endif
                             </div>
                             @empty
-                            <p class="text-xs text-gray-500 text-center py-8">No property sales recorded for this lead yet.</p>
+                            <div class="text-center py-8 space-y-3">
+                                <p class="text-xs text-gray-500">No property sales recorded for this lead yet.</p>
+                                <button @click="recordSaleOpen = true" class="inline-flex items-center px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl shadow transition-colors">
+                                    + Record Sale Now
+                                </button>
+                            </div>
                             @endforelse
                         </div>
                     </div>
