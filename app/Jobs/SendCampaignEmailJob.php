@@ -54,6 +54,17 @@ class SendCampaignEmailJob implements ShouldQueue
             $body = $this->campaign->body;
             
             $company = \App\Models\CompanySetting::first();
+            $tenantId = function_exists('tenant') && tenant() ? tenant('id') : '';
+            $isBuckcrest = in_array($tenantId, ['bhl', 'buckcrest'])
+                || ($company && str_contains(strtolower($company->company_name ?? ''), 'buckcrest'));
+            $companyLogo = '';
+            if ($isBuckcrest) {
+                $companyLogo = asset('company/buckcrest-crest.png');
+            } elseif ($company && $company->logo_path && file_exists(public_path('storage/' . $company->logo_path))) {
+                $companyLogo = asset('storage/' . $company->logo_path);
+            } elseif ($company && $company->logo_path) {
+                $companyLogo = asset($company->logo_path);
+            }
             $prop = $lead->propertyInterest;
             $agent = $lead->assignedOfficer;
             
@@ -75,6 +86,7 @@ class SendCampaignEmailJob implements ShouldQueue
                 '{{company_name}}'      => $company ? $company->company_name : 'NAW PropertyFlow CRM',
                 '{{company_phone}}'     => $company ? ($company->phone ?? 'N/A') : 'N/A',
                 '{{company_email}}'     => $company ? ($company->email ?? 'N/A') : 'N/A',
+                '{{company_logo}}'      => $companyLogo,
                 '{{current_date}}'      => now()->format('F d, Y'),
                 '{{promo_expiry_date}}' => now()->addDays(14)->format('F d, Y'),
                 '{{open_day_date}}'     => now()->addDays(7)->format('F d, Y'),

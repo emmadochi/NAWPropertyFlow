@@ -201,6 +201,15 @@ class CampaignController extends Controller
             || str_contains($host, 'buckcrest') 
             || str_contains(strtolower($compName), 'buckcrest');
 
+        $logoUrl = '';
+        if ($isBuckcrest) {
+            $logoUrl = asset('company/buckcrest-crest.png');
+        } elseif ($setting?->logo_path && file_exists(public_path('storage/' . $setting->logo_path))) {
+            $logoUrl = asset('storage/' . $setting->logo_path);
+        } elseif ($setting?->logo_path) {
+            $logoUrl = asset($setting->logo_path);
+        }
+
         // Replace sample tags
         $placeholders = [
             '@{{name}}'           => Auth::user()->name,
@@ -211,6 +220,8 @@ class CampaignController extends Controller
             '@{{company_name}}'   => $setting?->company_name ?? ($isBuckcrest ? 'Buckcrest Havens Limited' : 'RICAF Nigeria Limited'),
             '@{{company_phone}}'  => $setting?->phone ?? ($isBuckcrest ? '+234 800 BUCKCREST' : '+234 800 RICAF CRM'),
             '@{{company_email}}'  => $setting?->email ?? ($isBuckcrest ? 'info@buckcresthavensltd.org' : 'info@ricafltd.com'),
+            '@{{company_logo}}'   => $logoUrl,
+            '{{company_logo}}'    => $logoUrl,
             '@{{current_date}}'   => now()->format('d M, Y'),
             '@{{unsubscribe_url}}'=> '#',
         ];

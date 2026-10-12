@@ -11,6 +11,14 @@
         || str_contains(strtolower($companyName), 'buckcrest');
     $companyPhone = $setting?->phone ?? ($isBuckcrest ? '+234 800 BUCKCREST' : '+234 800 RICAF CRM');
     $companyEmail = $setting?->email ?? ($isBuckcrest ? 'info@buckcresthavensltd.org' : 'info@ricafltd.com');
+    $companyLogoUrl = '';
+    if ($isBuckcrest) {
+        $companyLogoUrl = asset('company/buckcrest-crest.png');
+    } elseif ($setting?->logo_path && file_exists(public_path('storage/' . $setting->logo_path))) {
+        $companyLogoUrl = asset('storage/' . $setting->logo_path);
+    } elseif ($setting?->logo_path) {
+        $companyLogoUrl = asset($setting->logo_path);
+    }
 @endphp
 
 @section('content')
@@ -165,6 +173,7 @@
                                 <div class="px-3 py-1.5 text-[9px] font-black text-brand-600 uppercase tracking-widest bg-brand-50 dark:bg-slate-900">🏢 Company &amp; Contact</div>
                                 <a href="#" @click.prevent="insertCampaignToken('@{{company_name}}'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-300 hover:bg-brand-50 hover:text-brand-700 font-semibold">Company Name</a>
                                 <a href="#" @click.prevent="insertCampaignToken('@{{company_phone}}'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-300 hover:bg-brand-50 hover:text-brand-700 font-semibold">Company Phone</a>
+                                <a href="#" @click.prevent="insertCampaignToken('@{{company_logo}}'); openTokens=false" class="block px-3 py-1.5 text-gray-700 dark:text-slate-300 hover:bg-brand-50 hover:text-brand-700 font-semibold">Company Logo / Crest URL</a>
                             </div>
                         </div>
                     </div>
@@ -190,6 +199,9 @@
                             <button type="button" @click="openImageModal = true" title="Insert / Upload Image" class="wysiwyg-btn text-brand-600 hover:text-brand-700 hover:bg-orange-50 font-bold flex items-center space-x-1 px-2 border border-brand-200">
                                 <svg class="w-3.5 h-3.5 text-brand-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                                 <span class="text-[10px]">📷 Image</span>
+                            </button>
+                            <button type="button" @click="insertBrandHeader()" title="Insert Official Brand Header" class="wysiwyg-btn {{ $isBuckcrest ? 'text-[#6E4D0B] hover:text-[#523805] hover:bg-[#F7F1E1] border-[#EBDCB9]' : 'text-amber-700 hover:text-amber-800 hover:bg-amber-50 border-amber-300' }} font-bold flex items-center space-x-1 px-2 border">
+                                <span class="text-[10px]">{{ $isBuckcrest ? '🛡️ Buckcrest Header' : '👑 Brand Header' }}</span>
                             </button>
                             <button type="button" onclick="campaign_toggle_source(this)" title="Toggle HTML Source" class="wysiwyg-btn ml-auto text-[10px] font-black text-purple-600 hover:text-purple-800 hover:bg-purple-50 px-2">&lt;/&gt; HTML</button>
                         </div>
@@ -691,12 +703,41 @@ window.campaignCreator = function() {
             });
         },
 
+        insertBrandHeader() {
+            const isBuckcrest = {{ $isBuckcrest ? 'true' : 'false' }};
+            const company = '{{ $companyName }}';
+            const logoUrl = '{{ $companyLogoUrl }}';
+            const headerBg = isBuckcrest 
+                ? 'linear-gradient(135deg, #18181B 0%, #27272A 45%, #946E19 100%)' 
+                : 'linear-gradient(135deg, #F37021 0%, #ea580c 100%)';
+            const headerBorder = isBuckcrest ? 'border-bottom: 3px solid #C9A44C;' : '';
+            const headerSubColor = isBuckcrest ? '#EBDCB9' : '#ffedd5';
+            
+            const headerHtml = `
+<div style="background: ${headerBg}; padding: 32px 20px 28px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder} margin-bottom: 20px;">
+    ${logoUrl ? `
+    <div style="margin: 0 auto 12px auto; text-align: center;">
+        <img src="${logoUrl}" alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
+    </div>` : ''}
+    <h1 style="color: #ffffff; margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -0.3px;">${company}</h1>
+    <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;">Luxury Real Estate &amp; Developments</p>
+</div>`;
+
+            const editor = document.getElementById('campaign-editor');
+            if (editor) {
+                editor.focus();
+                document.execCommand('insertHTML', false, headerHtml);
+                campaign_sync();
+            }
+        },
+
         loadTemplate(key) {
             this.activeTemplate = key;
             this.type = 'email';
             const isBuckcrest = {{ $isBuckcrest ? 'true' : 'false' }};
             const company = '{{ $companyName }}';
             const phone = '{{ $companyPhone }}';
+            const logoUrl = '{{ $companyLogoUrl }}';
 
             // Brand theme styling (Buckcrest Obsidian & Chocolate Gold vs Default Orange)
             const headerBg = isBuckcrest 
@@ -734,9 +775,13 @@ window.campaignCreator = function() {
                 this.subject = `🌟 Announcement: ${defaultEstate} Launch & 15% Early Investor Discount`;
                 tpl = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
-    <div style="background: ${headerBg}; padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
-        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">${company}</h1>
-        <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Exclusive New Estate Launch</p>
+    <div style="background: ${headerBg}; padding: 32px 20px 28px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
+        ${logoUrl ? `
+        <div style="margin: 0 auto 12px auto; text-align: center;">
+            <img src="${logoUrl}" alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
+        </div>` : ''}
+        <h1 style="color: #ffffff; margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -0.3px;">${company}</h1>
+        <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;">Exclusive New Estate Launch</p>
     </div>
     <div style="padding: 30px 25px; background: #ffffff; border: 1px solid #f1f5f9; border-top: none;">
         <h2 style="font-size: 20px; font-weight: 800; color: #0f172a; margin-top: 0;">Dear @{{name}},</h2>
@@ -768,9 +813,13 @@ window.campaignCreator = function() {
                 this.subject = `📈 ${company} Property Digest: Market Insights & Available Allocations`;
                 tpl = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
-    <div style="background: ${headerBg}; padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
-        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">${company}</h1>
-        <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Monthly Real Estate Intelligence &amp; Opportunities</p>
+    <div style="background: ${headerBg}; padding: 32px 20px 28px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
+        ${logoUrl ? `
+        <div style="margin: 0 auto 12px auto; text-align: center;">
+            <img src="${logoUrl}" alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
+        </div>` : ''}
+        <h1 style="color: #ffffff; margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -0.3px;">${company}</h1>
+        <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;">Monthly Real Estate Intelligence &amp; Opportunities</p>
     </div>
     <div style="padding: 30px 25px; background: #ffffff; border: 1px solid #f1f5f9; border-top: none;">
         <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 0;">Market Insight for @{{name}}</h2>
@@ -798,9 +847,13 @@ window.campaignCreator = function() {
                 this.subject = `🔥 72-Hour Flash Sale: Own Prime Land with Zero Development Fees`;
                 tpl = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
-    <div style="background: ${headerBg}; padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
-        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">${company}</h1>
-        <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">⚡ 72-Hour Flash Sale &amp; Exclusive Price Reductions</p>
+    <div style="background: ${headerBg}; padding: 32px 20px 28px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
+        ${logoUrl ? `
+        <div style="margin: 0 auto 12px auto; text-align: center;">
+            <img src="${logoUrl}" alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
+        </div>` : ''}
+        <h1 style="color: #ffffff; margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -0.3px;">${company}</h1>
+        <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;">⚡ 72-Hour Flash Sale &amp; Exclusive Price Reductions</p>
     </div>
     <div style="padding: 30px 25px; background: #ffffff; border: 1px solid #f1f5f9; border-top: none;">
         <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 0;">Hello @{{name}},</h2>
@@ -826,9 +879,13 @@ window.campaignCreator = function() {
                 this.subject = `📸 Construction Progress Update: Road Grading & Infrastructure on Schedule`;
                 tpl = `
 <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b; line-height: 1.6;">
-    <div style="background: ${headerBg}; padding: 30px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
-        <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.5px;">${company}</h1>
-        <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;">Development Milestone Update</p>
+    <div style="background: ${headerBg}; padding: 32px 20px 28px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
+        ${logoUrl ? `
+        <div style="margin: 0 auto 12px auto; text-align: center;">
+            <img src="${logoUrl}" alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
+        </div>` : ''}
+        <h1 style="color: #ffffff; margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -0.3px;">${company}</h1>
+        <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;">Development Milestone Update</p>
     </div>
     <div style="padding: 30px 25px; background: #ffffff; border: 1px solid #f1f5f9; border-top: none;">
         <h2 style="font-size: 18px; font-weight: 800; color: #0f172a; margin-top: 0;">Dear Valued Buyer (@{{name}}),</h2>
