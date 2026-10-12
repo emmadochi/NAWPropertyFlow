@@ -7,9 +7,11 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Storage;
 
+use App\Mail\Traits\TenantMailDefaults;
+
 class CampaignMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, TenantMailDefaults;
 
     public $subject;
     public $html;
@@ -24,9 +26,11 @@ class CampaignMail extends Mailable
         $this->html = $html;
         $this->attachmentsList = $attachmentsList;
 
-        if ($fromAddress) {
-            $this->from($fromAddress, $fromName ?? config('mail.from.name'));
-        }
+        $defaultAddress = $this->resolveFromAddress();
+        $finalFromEmail = $fromAddress ?: $defaultAddress->address;
+        $finalFromName = $fromName ?: $defaultAddress->name;
+
+        $this->from($finalFromEmail, $finalFromName);
     }
 
     /**

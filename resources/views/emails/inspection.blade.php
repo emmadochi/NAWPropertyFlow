@@ -8,6 +8,12 @@
 <body style="margin:0; padding:0; background-color:#f8fafc; font-family:'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color:#334155;">
   @php 
     $__setting = \App\Models\CompanySetting::first(); 
+    $__companyName = $__setting?->company_name ?? 'Buckcrest Havens Limited';
+    if (empty($__companyName) || in_array($__companyName, ['Laravel', 'NAW PropertyFlow', 'NAW PropertyFlow CRM'])) {
+        $__companyName = 'Buckcrest Havens Limited';
+    }
+    $__isBuckcrest = (function_exists('tenant') && in_array(tenant('id'), ['bhl', 'buckcrest']))
+        || str_contains(strtolower($__companyName), 'buckcrest');
     $isRescheduled = $isRescheduled ?? false;
   @endphp
   <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc; padding: 40px 15px;">
@@ -18,10 +24,17 @@
           <!-- Header Banner -->
           <tr>
             <td style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); padding: 35px 30px; text-align: center; border-bottom: 4px solid #FEA500;">
-              @if($__setting?->logo_path && file_exists(public_path('storage/' . $__setting->logo_path)))
-                <img src="{{ asset('storage/' . $__setting->logo_path) }}" alt="{{ $__setting->company_name ?? config('app.name') }}" style="max-height: 48px; object-fit: contain; margin-bottom: 8px;">
+              @if($__isBuckcrest)
+                <img src="{{ \App\Support\BuckcrestAssets::crestDataUri() }}" alt="{{ $__companyName }}" style="max-height: 58px; object-fit: contain; margin-bottom: 8px;">
+                <h1 style="margin:4px 0 0; font-size:22px; font-weight:900; color:#ffffff; letter-spacing: -0.5px;">{{ $__companyName }}</h1>
+              @elseif($__setting?->logo_path && file_exists(public_path('storage/' . $__setting->logo_path)))
+                <img src="{{ asset('storage/' . $__setting->logo_path) }}" alt="{{ $__companyName }}" style="max-height: 48px; object-fit: contain; margin-bottom: 8px;">
+                <h1 style="margin:4px 0 0; font-size:22px; font-weight:900; color:#ffffff; letter-spacing: -0.5px;">{{ $__companyName }}</h1>
+              @elseif($__setting?->logo_path && file_exists(public_path($__setting->logo_path)))
+                <img src="{{ asset($__setting->logo_path) }}" alt="{{ $__companyName }}" style="max-height: 48px; object-fit: contain; margin-bottom: 8px;">
+                <h1 style="margin:4px 0 0; font-size:22px; font-weight:900; color:#ffffff; letter-spacing: -0.5px;">{{ $__companyName }}</h1>
               @else
-                <h1 style="margin:0; font-size:22px; font-weight:900; color:#ffffff; letter-spacing: -0.5px;">{{ $__setting?->company_name ?? 'NAW PropertyFlow' }}</h1>
+                <h1 style="margin:0; font-size:22px; font-weight:900; color:#ffffff; letter-spacing: -0.5px;">{{ $__companyName }}</h1>
               @endif
               <p style="margin:5px 0 0; font-size:12px; color:#94a3b8; font-weight:600; text-transform:uppercase; letter-spacing:1px;">
                 {{ $isRescheduled ? 'VIP Site Inspection (Updated Schedule)' : 'VIP Site Inspection Invitation' }}
@@ -127,8 +140,8 @@
           <!-- Footer -->
           <tr>
             <td style="background-color:#f1f5f9; padding: 25px 35px; text-align:center; border-top:1px solid #e2e8f0;">
-              <p style="margin:0 0 5px; font-size:12px; font-weight:700; color:#475569;">{{ $__setting?->company_name ?? config('app.name') }}</p>
-              <p style="margin:0; font-size:11px; color:#94a3b8;">{{ $__setting?->address ?? 'Nigeria' }} &bull; {{ $__setting?->email ?? config('mail.from.address') }}</p>
+              <p style="margin:0 0 5px; font-size:12px; font-weight:700; color:#475569;">{{ $__companyName }}</p>
+              <p style="margin:0; font-size:11px; color:#94a3b8;">{{ $__setting?->address ?? 'Abuja, Nigeria' }} &bull; {{ $__setting?->email ?? config('mail.from.address') }}</p>
             </td>
           </tr>
 

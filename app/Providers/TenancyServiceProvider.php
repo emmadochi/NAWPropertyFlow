@@ -72,6 +72,24 @@ class TenancyServiceProvider extends ServiceProvider
                 Listeners\BootstrapTenancy::class,
                 function () {
                     \Illuminate\Support\Facades\URL::defaults(['tenant' => tenant('id')]);
+
+                    try {
+                        $setting = \App\Models\CompanySetting::first();
+                        $tenantName = tenant('company_name') ?? tenant('name');
+                        $companyName = $setting?->company_name ?? $tenantName;
+                        if (!empty($companyName) && !in_array($companyName, ['Laravel', 'NAW PropertyFlow', 'NAW Propertyflow CRM'])) {
+                            config(['app.name' => $companyName]);
+                            config(['mail.from.name' => $companyName]);
+                        } elseif (in_array(tenant('id'), ['bhl', 'buckcrest'])) {
+                            config(['app.name' => 'Buckcrest Havens Limited']);
+                            config(['mail.from.name' => 'Buckcrest Havens Limited']);
+                        }
+                        if (!empty($setting?->email)) {
+                            config(['mail.from.address' => $setting->email]);
+                        }
+                    } catch (\Throwable $e) {
+                        // ignore during early migration / setup
+                    }
                 }
             ],
 

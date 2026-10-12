@@ -23,8 +23,22 @@
 <body>
     <div class="wrapper">
         <div class="container">
+            @php
+                $__setting = \App\Models\CompanySetting::first();
+                $__companyName = $__setting?->company_name ?? 'Buckcrest Havens Limited';
+                if (empty($__companyName) || in_array($__companyName, ['Laravel', 'NAW PropertyFlow', 'NAW PropertyFlow CRM'])) {
+                    $__companyName = 'Buckcrest Havens Limited';
+                }
+                $__isBuckcrest = (function_exists('tenant') && in_array(tenant('id'), ['bhl', 'buckcrest']))
+                    || str_contains(strtolower($__companyName), 'buckcrest');
+            @endphp
             <div class="header">
-                <div class="logo-text">NAW <span class="logo-accent">PropertyFlow</span></div>
+                @if($__isBuckcrest)
+                    <img src="{{ \App\Support\BuckcrestAssets::crestDataUri() }}" alt="{{ $__companyName }}" style="max-height: 52px; object-fit: contain; margin-bottom: 6px;">
+                    <div class="logo-text" style="font-size: 20px;">{{ $__companyName }}</div>
+                @else
+                    <div class="logo-text">{{ $__companyName }}</div>
+                @endif
             </div>
             
             <div class="content">
@@ -37,11 +51,11 @@
                 </div>
 
                 <p class="body-text">We wish you the very best in your search, and hope to have the privilege of serving you in the future when the right opportunity arises.</p>
-                <p class="body-text" style="margin-bottom: 0;">Sincerely,<br><strong>NAW PropertyFlow CRM Team</strong></p>
+                <p class="body-text" style="margin-bottom: 0;">Sincerely,<br><strong>{{ $__companyName }} Team</strong></p>
             </div>
             
             <div class="footer">
-                <p class="footer-text">© {{ date('Y') }} NAW PropertyFlow CRM. All rights reserved.</p>
+                <p class="footer-text">© {{ date('Y') }} {{ $__companyName }}. All rights reserved.</p>
             </div>
         </div>
     </div>

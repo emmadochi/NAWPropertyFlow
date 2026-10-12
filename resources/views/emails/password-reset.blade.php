@@ -28,13 +28,26 @@
 <body>
     <div class="wrapper">
         <div class="main-card">
+            @php
+                $__companyName = $companySetting?->company_name ?? 'Buckcrest Havens Limited';
+                if (empty($__companyName) || in_array($__companyName, ['Laravel', 'NAW PropertyFlow', 'NAW PropertyFlow CRM'])) {
+                    $__companyName = 'Buckcrest Havens Limited';
+                }
+                $__isBuckcrest = (function_exists('tenant') && in_array(tenant('id'), ['bhl', 'buckcrest']))
+                    || str_contains(strtolower($__companyName), 'buckcrest');
+            @endphp
             <!-- Brand Header -->
             <div class="header-band">
-                @if($companySetting?->logo_path)
-                    <img src="{{ asset('storage/' . $companySetting->logo_path) }}" alt="{{ $companySetting->company_name ?? 'RICAF' }}" class="header-logo">
+                @if($__isBuckcrest)
+                    <img src="{{ \App\Support\BuckcrestAssets::crestDataUri() }}" alt="{{ $__companyName }}" class="header-logo" style="max-height: 52px; object-fit: contain; margin-bottom: 8px;">
+                    <h1 class="brand-title">{{ $__companyName }}</h1>
+                @elseif($companySetting?->logo_path && file_exists(public_path('storage/' . $companySetting->logo_path)))
+                    <img src="{{ asset('storage/' . $companySetting->logo_path) }}" alt="{{ $__companyName }}" class="header-logo">
+                    <h1 class="brand-title">{{ $__companyName }}</h1>
+                @else
+                    <h1 class="brand-title">{{ $__companyName }}</h1>
                 @endif
-                <h1 class="brand-title">{{ $companySetting->company_name ?? config('app.name', 'RICAF Nigeria Limited') }}</h1>
-                <div class="brand-subtitle">Enterprise Real Estate Portal</div>
+                <div class="brand-subtitle">Client & Staff Real Estate Portal</div>
             </div>
 
             <!-- Content Area -->
@@ -62,8 +75,8 @@
 
             <!-- Footer -->
             <div class="footer">
-                <p style="margin: 0 0 6px;">{{ $companySetting->address ?? 'Lagos, Nigeria' }}</p>
-                <p style="margin: 0;">© {{ date('Y') }} {{ $companySetting->company_name ?? config('app.name') }}. All rights reserved.</p>
+                <p style="margin: 0 0 6px;">{{ $companySetting->address ?? 'Abuja, Nigeria' }}</p>
+                <p style="margin: 0;">© {{ date('Y') }} {{ $__companyName }}. All rights reserved.</p>
             </div>
         </div>
     </div>

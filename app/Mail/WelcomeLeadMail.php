@@ -9,9 +9,11 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+use App\Mail\Traits\TenantMailDefaults;
+
 class WelcomeLeadMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, TenantMailDefaults;
 
     public $lead;
 
@@ -28,8 +30,11 @@ class WelcomeLeadMail extends Mailable
      */
     public function envelope(): Envelope
     {
+        $companyName = $this->resolveCompanyName();
+
         return new Envelope(
-            subject: 'Welcome to NAW PropertyFlow - Inquiry Received',
+            from: $this->resolveFromAddress(),
+            subject: "Welcome to {$companyName} - Inquiry Received",
         );
     }
 

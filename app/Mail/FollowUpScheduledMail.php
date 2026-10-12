@@ -9,9 +9,11 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+use App\Mail\Traits\TenantMailDefaults;
+
 class FollowUpScheduledMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, TenantMailDefaults;
 
     public $followUp;
     public $isRescheduled;
@@ -32,9 +34,11 @@ class FollowUpScheduledMail extends Mailable
     {
         $type = ucfirst($this->followUp->type ?? 'Appointment');
         $prefix = $this->isRescheduled ? "🔄 [Rescheduled] {$type} Confirmation" : "📅 Scheduled: {$type} Confirmation";
+        $companyName = $this->resolveCompanyName();
 
         return new Envelope(
-            subject: "{$prefix} - NAW PropertyFlow",
+            from: $this->resolveFromAddress(),
+            subject: "{$prefix} - {$companyName}",
         );
     }
 

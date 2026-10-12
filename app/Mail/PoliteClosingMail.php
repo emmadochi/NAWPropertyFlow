@@ -9,9 +9,11 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+use App\Mail\Traits\TenantMailDefaults;
+
 class PoliteClosingMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, TenantMailDefaults;
 
     public $lead;
 
@@ -28,8 +30,11 @@ class PoliteClosingMail extends Mailable
      */
     public function envelope(): Envelope
     {
+        $companyName = $this->resolveCompanyName();
+
         return new Envelope(
-            subject: 'We value your feedback - NAW PropertyFlow',
+            from: $this->resolveFromAddress(),
+            subject: "We value your feedback - {$companyName}",
         );
     }
 

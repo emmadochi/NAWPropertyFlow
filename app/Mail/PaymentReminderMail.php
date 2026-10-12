@@ -9,9 +9,11 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+use App\Mail\Traits\TenantMailDefaults;
+
 class PaymentReminderMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, TenantMailDefaults;
 
     public $milestone;
 
@@ -28,8 +30,11 @@ class PaymentReminderMail extends Mailable
      */
     public function envelope(): Envelope
     {
+        $companyName = $this->resolveCompanyName();
+
         return new Envelope(
-            subject: 'Payment Milestone Due Reminder - ' . $this->milestone->label,
+            from: $this->resolveFromAddress(),
+            subject: "Payment Milestone Due Reminder - {$companyName} ({$this->milestone->label})",
         );
     }
 

@@ -9,9 +9,11 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
+use App\Mail\Traits\TenantMailDefaults;
+
 class InspectionScheduledMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, TenantMailDefaults;
 
     public $inspection;
     public $isRescheduled;
@@ -35,7 +37,8 @@ class InspectionScheduledMail extends Mailable
         $prefix = $this->isRescheduled ? '🔄 [Rescheduled] Site Inspection Update - ' : '📍 Site Inspection Scheduled - ';
 
         return new Envelope(
-            subject: $prefix . $this->inspection->property->name,
+            from: $this->resolveFromAddress(),
+            subject: $prefix . ($this->inspection->property?->name ?? 'Property Inspection'),
         );
     }
 

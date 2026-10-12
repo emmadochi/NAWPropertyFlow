@@ -10,9 +10,11 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Queue\SerializesModels;
 
+use App\Mail\Traits\TenantMailDefaults;
+
 class GeneratedDocumentMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, TenantMailDefaults;
 
     public $document;
 
@@ -27,6 +29,7 @@ class GeneratedDocumentMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
+            from: $this->resolveFromAddress(),
             subject: $this->document->title,
         );
     }

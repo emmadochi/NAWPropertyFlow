@@ -84,7 +84,7 @@
         </table>
     </div>
     <div class="footer">
-        This is an automated digest from NAW PropertyFlow CRM · {{ now()->format('d M Y') }}
+        This is an automated digest from {{ \App\Models\CompanySetting::first()?->company_name ?? 'Buckcrest Havens Limited' }} · {{ now()->format('d M Y') }}
     </div>
 </div>
 </body>

@@ -10,9 +10,11 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Queue\SerializesModels;
 
+use App\Mail\Traits\TenantMailDefaults;
+
 class PaymentInvoiceMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, TenantMailDefaults;
 
     public $sale;
 
@@ -29,8 +31,11 @@ class PaymentInvoiceMail extends Mailable
      */
     public function envelope(): Envelope
     {
+        $companyName = $this->resolveCompanyName();
+
         return new Envelope(
-            subject: 'Invoice & Payment Confirmation - Ref #INV-PF-' . $this->sale->id,
+            from: $this->resolveFromAddress(),
+            subject: "Invoice & Payment Confirmation - {$companyName} Ref #INV-PF-{$this->sale->id}",
         );
     }
 

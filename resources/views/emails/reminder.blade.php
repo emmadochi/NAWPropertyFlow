@@ -28,12 +28,23 @@
 <body>
     <div class="wrapper">
         <div class="container">
-            @php $__setting = \App\Models\CompanySetting::first(); @endphp
+            @php 
+                $__setting = \App\Models\CompanySetting::first(); 
+                $__companyName = $__setting?->company_name ?? 'Buckcrest Havens Limited';
+                if (empty($__companyName) || in_array($__companyName, ['Laravel', 'NAW PropertyFlow', 'NAW PropertyFlow CRM'])) {
+                    $__companyName = 'Buckcrest Havens Limited';
+                }
+                $__isBuckcrest = (function_exists('tenant') && in_array(tenant('id'), ['bhl', 'buckcrest']))
+                    || str_contains(strtolower($__companyName), 'buckcrest');
+            @endphp
             <div class="header">
-                @if($__setting?->logo_path)
-                    <img src="{{ asset('storage/' . $__setting->logo_path) }}" alt="{{ $__setting->company_name ?? config('app.name') }}" style="max-height: 48px; object-fit: contain;">
+                @if($__isBuckcrest)
+                    <img src="{{ \App\Support\BuckcrestAssets::crestDataUri() }}" alt="{{ $__companyName }}" style="max-height: 52px; object-fit: contain; margin-bottom: 6px;">
+                    <div class="logo-text" style="font-size: 20px;">{{ $__companyName }}</div>
+                @elseif($__setting?->logo_path && file_exists(public_path('storage/' . $__setting->logo_path)))
+                    <img src="{{ asset('storage/' . $__setting->logo_path) }}" alt="{{ $__companyName }}" style="max-height: 48px; object-fit: contain;">
                 @else
-                    <div class="logo-text">{{ $__setting?->company_name ?? config('app.name') }}</div>
+                    <div class="logo-text">{{ $__companyName }}</div>
                 @endif
             </div>
             
@@ -68,11 +79,11 @@
                     <strong>{{ $milestone->paymentPlan->sale->salesOfficer ? $milestone->paymentPlan->sale->salesOfficer->name : ($__setting?->company_name ? $__setting->company_name . ' Sales Desk' : 'Sales Desk') }}</strong>.
                 </p>
 
-                <p class="body-text" style="margin-bottom: 0;">If you have already made this payment, please disregard this reminder as we verify and process your confirmation.<br><br>Warm regards,<br><strong>{{ $__setting?->company_name ?? config('app.name') }} Finance Team</strong></p>
+                <p class="body-text" style="margin-bottom: 0;">If you have already made this payment, please disregard this reminder as we verify and process your confirmation.<br><br>Warm regards,<br><strong>{{ $__companyName }} Finance Team</strong></p>
             </div>
             
             <div class="footer">
-                <p class="footer-text">© {{ date('Y') }} {{ $__setting?->company_name ?? config('app.name') }}. All rights reserved.</p>
+                <p class="footer-text">© {{ date('Y') }} {{ $__companyName }}. All rights reserved.</p>
             </div>
         </div>
     </div>
