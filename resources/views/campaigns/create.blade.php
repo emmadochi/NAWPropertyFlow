@@ -12,12 +12,16 @@
     $companyPhone = $setting?->phone ?? ($isBuckcrest ? '+234 800 BUCKCREST' : '+234 800 RICAF CRM');
     $companyEmail = $setting?->email ?? ($isBuckcrest ? 'info@buckcresthavensltd.org' : 'info@ricafltd.com');
     $companyLogoUrl = '';
+    $fallbackLogoUrl = '';
     if ($isBuckcrest) {
-        $companyLogoUrl = asset('company/buckcrest-crest.png');
+        $companyLogoUrl = \App\Support\BuckcrestAssets::crestDataUri();
+        $fallbackLogoUrl = url('company/buckcrest-crest.png');
     } elseif ($setting?->logo_path && file_exists(public_path('storage/' . $setting->logo_path))) {
         $companyLogoUrl = asset('storage/' . $setting->logo_path);
+        $fallbackLogoUrl = url('storage/' . $setting->logo_path);
     } elseif ($setting?->logo_path) {
         $companyLogoUrl = asset($setting->logo_path);
+        $fallbackLogoUrl = url($setting->logo_path);
     }
 @endphp
 
@@ -706,7 +710,8 @@ window.campaignCreator = function() {
         insertBrandHeader() {
             const isBuckcrest = {{ $isBuckcrest ? 'true' : 'false' }};
             const company = '{{ $companyName }}';
-            const logoUrl = '{{ $companyLogoUrl }}';
+            const logoUrl = `{!! $companyLogoUrl !!}`;
+            const fallbackLogo = '{{ $fallbackLogoUrl }}';
             const headerBg = isBuckcrest 
                 ? 'linear-gradient(135deg, #18181B 0%, #27272A 45%, #946E19 100%)' 
                 : 'linear-gradient(135deg, #F37021 0%, #ea580c 100%)';
@@ -717,7 +722,7 @@ window.campaignCreator = function() {
 <div style="background: ${headerBg}; padding: 32px 20px 28px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder} margin-bottom: 20px;">
     ${logoUrl ? `
     <div style="margin: 0 auto 12px auto; text-align: center;">
-        <img src="${logoUrl}" alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
+        <img src="${logoUrl}" ${fallbackLogo ? `onerror="if(this.src!=='${fallbackLogo}') this.src='${fallbackLogo}'"` : ''} alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
     </div>` : ''}
     <h1 style="color: #ffffff; margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -0.3px;">${company}</h1>
     <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;">Luxury Real Estate &amp; Developments</p>
@@ -737,7 +742,8 @@ window.campaignCreator = function() {
             const isBuckcrest = {{ $isBuckcrest ? 'true' : 'false' }};
             const company = '{{ $companyName }}';
             const phone = '{{ $companyPhone }}';
-            const logoUrl = '{{ $companyLogoUrl }}';
+            const logoUrl = `{!! $companyLogoUrl !!}`;
+            const fallbackLogo = '{{ $fallbackLogoUrl }}';
 
             // Brand theme styling (Buckcrest Obsidian & Chocolate Gold vs Default Orange)
             const headerBg = isBuckcrest 
@@ -778,7 +784,7 @@ window.campaignCreator = function() {
     <div style="background: ${headerBg}; padding: 32px 20px 28px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
         ${logoUrl ? `
         <div style="margin: 0 auto 12px auto; text-align: center;">
-            <img src="${logoUrl}" alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
+            <img src="${logoUrl}" ${fallbackLogo ? `onerror="if(this.src!=='${fallbackLogo}') this.src='${fallbackLogo}'"` : ''} alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
         </div>` : ''}
         <h1 style="color: #ffffff; margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -0.3px;">${company}</h1>
         <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;">Exclusive New Estate Launch</p>
@@ -816,7 +822,7 @@ window.campaignCreator = function() {
     <div style="background: ${headerBg}; padding: 32px 20px 28px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
         ${logoUrl ? `
         <div style="margin: 0 auto 12px auto; text-align: center;">
-            <img src="${logoUrl}" alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
+            <img src="${logoUrl}" ${fallbackLogo ? `onerror="if(this.src!=='${fallbackLogo}') this.src='${fallbackLogo}'"` : ''} alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
         </div>` : ''}
         <h1 style="color: #ffffff; margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -0.3px;">${company}</h1>
         <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;">Monthly Real Estate Intelligence &amp; Opportunities</p>
@@ -850,7 +856,7 @@ window.campaignCreator = function() {
     <div style="background: ${headerBg}; padding: 32px 20px 28px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
         ${logoUrl ? `
         <div style="margin: 0 auto 12px auto; text-align: center;">
-            <img src="${logoUrl}" alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
+            <img src="${logoUrl}" ${fallbackLogo ? `onerror="if(this.src!=='${fallbackLogo}') this.src='${fallbackLogo}'"` : ''} alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
         </div>` : ''}
         <h1 style="color: #ffffff; margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -0.3px;">${company}</h1>
         <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;">⚡ 72-Hour Flash Sale &amp; Exclusive Price Reductions</p>
@@ -882,7 +888,7 @@ window.campaignCreator = function() {
     <div style="background: ${headerBg}; padding: 32px 20px 28px 20px; text-align: center; border-radius: 16px 16px 0 0; ${headerBorder}">
         ${logoUrl ? `
         <div style="margin: 0 auto 12px auto; text-align: center;">
-            <img src="${logoUrl}" alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
+            <img src="${logoUrl}" ${fallbackLogo ? `onerror="if(this.src!=='${fallbackLogo}') this.src='${fallbackLogo}'"` : ''} alt="${company}" height="52" style="max-height: 52px; max-width: 190px; height: 52px; width: auto; margin: 0 auto; display: block; object-fit: contain; border: 0;">
         </div>` : ''}
         <h1 style="color: #ffffff; margin: 0; font-size: 23px; font-weight: 800; letter-spacing: -0.3px;">${company}</h1>
         <p style="color: ${headerSubColor}; margin: 6px 0 0 0; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.2px;">Development Milestone Update</p>

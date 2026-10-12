@@ -203,11 +203,11 @@ class CampaignController extends Controller
 
         $logoUrl = '';
         if ($isBuckcrest) {
-            $logoUrl = asset('company/buckcrest-crest.png');
+            $logoUrl = url('company/buckcrest-crest.png');
         } elseif ($setting?->logo_path && file_exists(public_path('storage/' . $setting->logo_path))) {
-            $logoUrl = asset('storage/' . $setting->logo_path);
+            $logoUrl = url('storage/' . $setting->logo_path);
         } elseif ($setting?->logo_path) {
-            $logoUrl = asset($setting->logo_path);
+            $logoUrl = url($setting->logo_path);
         }
 
         // Replace sample tags
@@ -226,6 +226,9 @@ class CampaignController extends Controller
             '@{{unsubscribe_url}}'=> '#',
         ];
         $finalHtml = str_replace(array_keys($placeholders), array_values($placeholders), $htmlBody);
+        if ($isBuckcrest && str_contains($finalHtml, 'data:image/png;base64')) {
+            $finalHtml = str_replace(\App\Support\BuckcrestAssets::crestDataUri(), $logoUrl, $finalHtml);
+        }
 
         try {
             Mail::to($testRecipient)->send(

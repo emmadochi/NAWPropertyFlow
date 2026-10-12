@@ -59,11 +59,11 @@ class SendCampaignEmailJob implements ShouldQueue
                 || ($company && str_contains(strtolower($company->company_name ?? ''), 'buckcrest'));
             $companyLogo = '';
             if ($isBuckcrest) {
-                $companyLogo = asset('company/buckcrest-crest.png');
+                $companyLogo = url('company/buckcrest-crest.png');
             } elseif ($company && $company->logo_path && file_exists(public_path('storage/' . $company->logo_path))) {
-                $companyLogo = asset('storage/' . $company->logo_path);
+                $companyLogo = url('storage/' . $company->logo_path);
             } elseif ($company && $company->logo_path) {
-                $companyLogo = asset($company->logo_path);
+                $companyLogo = url($company->logo_path);
             }
             $prop = $lead->propertyInterest;
             $agent = $lead->assignedOfficer;
@@ -106,6 +106,9 @@ class SendCampaignEmailJob implements ShouldQueue
             }
 
             $body = str_replace(array_keys($replacements), array_values($replacements), $body);
+            if ($isBuckcrest && str_contains($body, 'data:image/png;base64')) {
+                $body = str_replace(\App\Support\BuckcrestAssets::crestDataUri(), $companyLogo, $body);
+            }
 
             Mail::to($lead->email, $lead->full_name)->send(
                 new CampaignMail(
